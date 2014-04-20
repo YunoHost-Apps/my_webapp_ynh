@@ -1,0 +1,52 @@
+{
+    "name": "Custom Webapp + FTP",
+    "id": "my_webapp",
+    "description": {
+        "en": "Empty App with FTP access to the web directory",
+        "fr": "App vide avec un accès FTP au répertoire Web"
+    },
+    "developer": {
+        "name": "kload",
+        "email": "kload@kload.fr",
+        "url": "http://kload.fr"
+    },
+    "multi_instance": "false",
+    "arguments": {
+        "install" : [
+            {
+                "name": "domain",
+                "ask": {
+                    "en": "Choose a domain for your Webapp",
+                    "fr": "Choisissez un domaine pour votre Webapp"
+                },
+                "example": "domain.org"
+            },
+            {
+                "name": "path",
+                "ask": {
+                    "en": "Choose a path for your Webapp",
+                    "fr": "Choisissez un chemin pour votre Webapp"
+                },
+                "example": "/site",
+                "default": "/site"
+            },
+            {
+                "name": "admin",
+                "ask": {
+                    "en": "Choose the YunoHost user who will be able to upload documents via FTP",
+                    "fr": "Choisissez l'utilisateur YunoHost qui sera capable d'envoyer des documents via FTP"
+                },
+                "example": "johndoe"
+            },
+            {
+                "name": "is_public",
+                "ask": {
+                    "en": "Is it a public website ?",
+                    "fr": "Est-ce un site public ?"
+                },
+                "choices": ["Yes", "No"],
+                "default": "Yes"
+            }
+        ]
+    }
+}
