@@ -34,10 +34,10 @@ sudo yunohost firewall allow TCP 21 > /dev/null 2>&1
 sudo apt-get install pure-ftpd-ldap -y -qq
 
 # Change user ID in configurations
-sed -i "s/FTPUSER/$user/g" ../conf/ldap.conf
-sed -i "s/FTPDIR/$final_path/g" ../conf/ldap.conf
-sed -i "s/FTPUSER/$user/g" ../sources/index.html
-sed -i "s/HOST/$domain/g" ../sources/index.html
+sed -i "s@FTPUSER@$user@g" ../conf/ldap.conf
+sed -i "s@FTPDIR@$final_path@g" ../conf/ldap.conf
+sed -i "s@FTPUSER@$user@g" ../sources/index.html
+sed -i "s@HOST@$domain@g" ../sources/index.html
 
 # Copy files to the right place
 sudo mkdir -p $final_path

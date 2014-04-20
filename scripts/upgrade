@@ -8,8 +8,8 @@ is_public=$(sudo yunohost app setting my_webapp is_public)
 final_path=/var/www/my_webapp
 
 # Change user ID in configurations
-sed -i "s/FTPUSER/$user/g" ../conf/ldap.conf
-sed -i "s/FTPDIR/$final_path/g" ../conf/ldap.conf
+sed -i "s@FTPUSER@$user@g" ../conf/ldap.conf
+sed -i "s@FTPDIR@$final_path@g" ../conf/ldap.conf
 
 # Modify Nginx configuration file and copy it to Nginx conf directory
 sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
