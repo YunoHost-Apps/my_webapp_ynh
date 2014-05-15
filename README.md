@@ -1,4 +1,4 @@
-Roundcube for YunoHost
-----------------------
+Custom Webapp + FTP
+-------------------
 
-http://roundcube.net/
+Empty App with FTP access to the web directory.
