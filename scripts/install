@@ -67,7 +67,7 @@ sudo sh -c 'echo "no" > /etc/pure-ftpd/conf/UnixAuthentication'
 sudo sh -c 'echo "50000 50100" > /etc/pure-ftpd/conf/PassivePortRange'
 
 # Register service to YunoHost monitoring
-sudo yunohost app service pure-ftpd-ldap --log "/var/log/pure-ftpd/transfer.log"
+sudo yunohost service add pure-ftpd-ldap --log "/var/log/pure-ftpd/transfer.log"
 
 # Reload Nginx, restart PureFTPd and regenerate SSOwat conf
 sudo service nginx reload
