@@ -17,7 +17,7 @@ sed -i "s@ALIASTOCHANGE@$final_path/@g" ../conf/nginx.conf
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/my_webapp.conf
 
 # Make app public if necessary
-if [ $is_public = "Yes" ];
+if [ "$is_public" = "Yes" ];
 then
     sudo yunohost app setting my_webapp skipped_uris -v "/"
 fi
