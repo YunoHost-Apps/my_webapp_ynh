@@ -54,7 +54,7 @@ sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/my_webapp.conf
 
 # Make app public if necessary
 sudo yunohost app setting my_webapp is_public -v "$is_public"
-if [ $is_public = "Yes" ];
+if [ "$is_public" = "Yes" ];
 then
     sudo yunohost app setting my_webapp skipped_uris -v "/"
 fi
