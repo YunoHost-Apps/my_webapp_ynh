@@ -19,7 +19,8 @@ sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/my_webapp.conf
 # Make app public if necessary
 if [ "$is_public" = "Yes" ];
 then
-    sudo yunohost app setting my_webapp skipped_uris -v "/"
+    sudo yunohost app setting my_webapp skipped_uris -d
+    sudo yunohost app setting my_webapp unprotected_uris -v "/"
 fi
 
 # Adapt PureFTPd configuration
