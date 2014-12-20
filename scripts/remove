@@ -4,7 +4,7 @@ domain=$(sudo yunohost app setting my_webapp domain)
 
 sudo service pure-ftpd-ldap stop
 sudo apt-get remove -y -qq pure-ftpd-ldap pure-ftpd-common
-sudo yunohost app service -R pure-ftpd-ldap
+sudo yunohost service remove pure-ftpd-ldap
 
 sudo rm -rf /var/www/my_webapp
 sudo rm -f /etc/nginx/conf.d/$domain.d/my_webapp.conf
