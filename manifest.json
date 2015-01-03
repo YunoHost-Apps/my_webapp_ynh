@@ -5,16 +5,16 @@
         "en": "Empty App with FTP access to the web directory",
         "fr": "App vide avec un accès FTP au répertoire Web"
     },
-    "developer": {
+    "maintainer": {
         "name": "kload",
-        "email": "kload@kload.fr",
-        "url": "http://kload.fr"
+        "email": "kload@kload.fr"
     },
     "multi_instance": "false",
     "arguments": {
         "install" : [
             {
                 "name": "domain",
+                "type": "domain",
                 "ask": {
                     "en": "Choose a domain for your Webapp",
                     "fr": "Choisissez un domaine pour votre Webapp"
@@ -23,6 +23,7 @@
             },
             {
                 "name": "path",
+                "type": "path",
                 "ask": {
                     "en": "Choose a path for your Webapp",
                     "fr": "Choisissez un chemin pour votre Webapp"
@@ -32,6 +33,7 @@
             },
             {
                 "name": "admin",
+                "type": "user",
                 "ask": {
                     "en": "Choose the YunoHost user who will be able to upload documents via FTP",
                     "fr": "Choisissez l'utilisateur YunoHost qui sera capable d'envoyer des documents via FTP"
