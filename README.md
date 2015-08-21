@@ -1,4 +1,4 @@
-Custom Webapp + FTP
--------------------
+Custom Webapp
+-------------
 
-Empty App with FTP access to the web directory.
+Empty App with a file access to the web directory.

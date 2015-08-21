@@ -1,17 +1,44 @@
 #!/bin/bash
 
+set -e
+
 # Retrieve arguments
 domain=$(sudo yunohost app setting my_webapp domain)
 path=$(sudo yunohost app setting my_webapp path)
-user=$(sudo yunohost app setting my_webapp ftp_user)
+user=$(sudo yunohost app setting my_webapp ftp_user \
+  || sudo yunohost app setting my_webapp allowed_users \
+  || echo "")
 is_public=$(sudo yunohost app setting my_webapp is_public)
 final_path=/var/www/my_webapp
 
-# Change user ID in configurations
-sed -i "s@FTPUSER@$user@g" ../conf/ldap.conf
-sed -i "s@FTPDIR@$final_path@g" ../conf/ldap.conf
+# Reset permissions
+if [[ "$user" != "" ]]; then
+  sudo yunohost app setting my_webapp allowed_users -v "$user"
+fi
+
+# Update the salt in the Cheryl.php file
+salt=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d 'A-Za-z0-9' | sed -n 's/\(.\{24\}\).*/\1/p')
+sed -i "s@SALTTOCHANGE@$salt@g" ../sources/Cheryl.php
+
+# Modify the index.html instruction file
+sed -i "s@USER@$user@g" ../sources/index.html
+sed -i "s@URL@https://$domain$path/admin/@g" ../sources/index.html
+
+# Copy files to the right place
+sudo mkdir -p $final_path/files
+sudo cp ../sources/index.html $final_path/files
+sudo cp ../sources/Cheryl.php $final_path/
+
+# Set permissions
+sudo chmod 775 -R $final_path/files
+sudo chown -hR www-data:www-data $final_path/files
 
 # Modify Nginx configuration file and copy it to Nginx conf directory
+if [[ "$path" == "" ]]; then
+  sed -i "s@LOCATIONTOCHANGE@/@g" ../conf/nginx.conf
+else
+  sed -i "s@LOCATIONTOCHANGE@$path@g" ../conf/nginx.conf
+fi
 sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
 sed -i "s@ALIASTOCHANGE@$final_path/@g" ../conf/nginx.conf
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/my_webapp.conf
@@ -19,18 +46,12 @@ sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/my_webapp.conf
 # Make app public if necessary
 if [ "$is_public" = "Yes" ];
 then
-    sudo yunohost app setting my_webapp skipped_uris -d
     sudo yunohost app setting my_webapp unprotected_uris -v "/"
 fi
 
-# Adapt PureFTPd configuration
-sudo cp ../conf/ldap.conf /etc/pure-ftpd/db/
-sudo sh -c 'echo "yes" > /etc/pure-ftpd/conf/NoAnonymous'
-sudo sh -c 'echo "yes" > /etc/pure-ftpd/conf/ChrootEveryone'
-sudo sh -c 'echo "no" > /etc/pure-ftpd/conf/UnixAuthentication'
-sudo sh -c 'echo "50000 50100" > /etc/pure-ftpd/conf/PassivePortRange'
+# Protect the file manager
+sudo yunohost app setting my_webapp protected_uris -v "/admin"
 
-# Reload Nginx, restart PureFTPd and regenerate SSOwat conf
+# Reload Nginx and regenerate SSOwat conf
 sudo service nginx reload
-sudo service pure-ftpd-ldap restart
 sudo yunohost app ssowatconf
