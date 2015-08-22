@@ -18,18 +18,19 @@ sudo yunohost user list --json | grep -q "\"username\": \"$user\"" \
   || (echo "User '$user' does not exist" && exit 1)
 sudo yunohost app setting my_webapp allowed_users -v "$user"
 
-# Update the salt in the Cheryl.php file
+# Update the salt in the admin.php file
 salt=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d 'A-Za-z0-9' | sed -n 's/\(.\{24\}\).*/\1/p')
-sed -i "s@SALTTOCHANGE@$salt@g" ../sources/Cheryl.php
+sed -i "s@SALTTOCHANGE@$salt@g" ../sources/admin.php
 
 # Modify the index.html instruction file
-sed -i "s@USER@$user@g" ../sources/index.html
-sed -i "s@URL@https://$domain$path/admin/@g" ../sources/index.html
+sed -i "s@USER@$user@g" ../sources/files/index.html
+sed -i "s@URL@https://$domain$path/admin/@g" ../sources/files/index.html
 
 # Copy files to the right place
-sudo mkdir -p $final_path/files
-sudo cp ../sources/index.html $final_path/files
-sudo cp ../sources/Cheryl.php $final_path/
+sudo mkdir -p $final_path
+sudo cp ../sources/admin.php $final_path/
+sudo cp -r ../sources/_assets $final_path/
+sudo cp -r ../sources/files $final_path/
 
 # Set permissions
 sudo chmod 775 -R $final_path/files
@@ -43,7 +44,12 @@ else
 fi
 sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
 sed -i "s@ALIASTOCHANGE@$final_path/@g" ../conf/nginx.conf
+sed -i "s@NAMETOCHANGE@my_webapp@g" ../conf/nginx.conf
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/my_webapp.conf
+
+# Same goes for PHP-FPM configuration
+sed -i "s@NAMETOCHANGE@my_webapp@g" ../conf/php-fpm.conf
+sudo cp ../conf/php-fpm.conf /etc/php5/fpm/pool.d/my_webapp.conf
 
 # Make app public if necessary
 sudo yunohost app setting my_webapp is_public -v "$is_public"
@@ -55,6 +61,8 @@ fi
 # Protect the file manager
 sudo yunohost app setting my_webapp protected_uris -v "/admin"
 
-# Reload Nginx and regenerate SSOwat conf
+# Reload Nginx, php5-fpm and regenerate SSOwat conf
 sudo service nginx reload
+sudo killall php5-fpm || echo "PHP-FPM already killed"
+sudo service php5-fpm start
 sudo yunohost app ssowatconf

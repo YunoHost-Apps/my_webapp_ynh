@@ -948,8 +948,6 @@ if (!class_exists('Cheryl_Template')) {
 <html ng-app="Cheryl">
 <head>
 <title>Cheryl</title>
-<link rel="shortcut icon" href="http://cheryl.io/icon.png">
-<link rel="apple-touch-icon-precomposed" href="http://cheryl.io/icon.png">
 	
 <style>html, body, margin, form, a, h1, h2, h3, h4, h5, h6, select, input, tr, td, table, ul, ol, li, textarea, p, button {
 	margin: 0;
@@ -1780,8 +1778,8 @@ button, .filter {
 }
 </style>
 
-<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
-<link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800" rel="stylesheet">
+<link href="_assets/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+<link href="_assets/fonts.css" rel="stylesheet">
 
 </head>
 <body ng-controller="RootCtrl" ng-class="{'modal-enabled': dialog, 'global-error': (dialog && dialog.type == 'error'), 'fullscreen-editor': fullscreenEdit}" ng-body ng-drop-upload>
@@ -2275,10 +2273,10 @@ button, .filter {
 	<iframe id="downloader"></iframe>
 	<input type="file" class="upload" ng-uploader multiple>
 </body>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular-route.min.js"></script>
+<script src="_assets/angular.min.js"></script>
+<script src="_assets/angular-route.min.js"></script>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace.js"></script>
+<script src="_assets/ace.js"></script>
 
 <script>
 /* http://caligatio.github.com/jsSHA/ */
