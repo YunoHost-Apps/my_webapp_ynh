@@ -32,7 +32,8 @@ sudo mkdir -p $final_path
 sudo cp ../sources/admin.php $final_path/
 sudo cp -r ../sources/_assets $final_path/
 
-# Set permissions
+# Create directory and set permissions
+sudo mkdir -p $final_path/files
 sudo chmod 775 -R $final_path/files
 sudo chown -hR www-data:www-data $final_path/files
 
