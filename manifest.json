@@ -10,6 +10,10 @@
         "email": "kload@kload.fr"
     },
     "multi_instance": "true",
+    "services": [
+        "nginx",
+        "php5-fpm",
+    ],
     "arguments": {
         "install" : [
             {
