@@ -1,0 +1,67 @@
+#!/bin/bash
+# This restore script is adapted to Yunohost >=2.4
+
+# The parameter $1 is the backup directory location dedicated to the app
+backup_dir=$1
+
+# The parameter $2 is the id of the app instance ex: ynhexample__2
+app=$2
+
+# Get old parameter of the app
+domain=$(sudo yunohost app setting $app domain)
+path=$(sudo yunohost app setting $app path)
+user=$(sudo yunohost app setting $app allowed_users)
+is_public=$(sudo yunohost app setting $app is_public)
+
+# Check domain/path availability
+sudo yunohost app checkurl $domain$path -a $app
+if [[ ! $? -eq 0 ]]; then
+    echo "There is already an app on this URL : $domain$path" | sudo tee /dev/stderr
+    exit 1
+fi
+
+final_path=/var/www/$app
+if [ -d $final_path ]; then
+    echo "There is already a directory: $final_path " | sudo tee /dev/stderr
+    exit 1
+fi
+
+conf=/etc/nginx/conf.d/$domain.d/$app.conf
+if [ -f $conf ]; then
+    echo "There is already a nginx conf file at this path: $conf " | sudo tee /dev/stderr
+    exit 1
+fi
+
+phpconf=/etc/php5/fpm/pool.d/$app.conf
+if [ -f $phpconf ]; then
+    echo "There is already a php-fpm conf file at this path: $phpconf " | sudo tee /dev/stderr
+    exit 1
+fi
+
+
+# Restore sources & data
+sudo cp -a "${backup_dir}/var/www/$app" $final_path
+
+# Set permissions
+sudo chmod 775 -R $final_path/files
+sudo chown -hR www-data:www-data $final_path/files
+
+# Restore conf files
+sudo cp -a "${backup_dir}/conf/nginx.conf" $conf
+sudo cp -a "${backup_dir}/conf/php-fpm.conf" $phpconf
+sudo chown root: $phpconf
+sudo chmod 644 $phpconf
+
+
+# Reload Nginx
+sudo service nginx reload
+sudo killall php5-fpm || echo "PHP-FPM already killed"
+sudo service php5-fpm start
+
+# Set ssowat config
+if [ "$is_public" = "Yes" ];
+then
+    sudo yunohost app setting $app unprotected_uris -v "/"
+fi
+sudo yunohost app setting $app protected_uris -v "/admin"
+sudo yunohost app ssowatconf
