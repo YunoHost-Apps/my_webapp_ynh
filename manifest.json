@@ -1,6 +1,7 @@
 {
     "name": "Custom Webapp",
     "id": "my_webapp",
+    "packaging_format": 1,
     "description": {
         "en": "Empty App with a file access to the web directory",
         "fr": "Répertoire Web vide avec un accès fichier"
