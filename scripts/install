@@ -82,6 +82,7 @@ ynh_app_setting_set "$app" user "$user"
 
 # Copy and set nginx configuration
 nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+sed -i "s@{PATH}@${path}@g"        ../conf/nginx.conf
 sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
 sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
 sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
