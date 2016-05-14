@@ -15,6 +15,10 @@
     "requirements": {
         "yunohost": ">= 2.4.0"
     },
+    "services": [
+        "nginx",
+        "php5-fpm"
+    ],
     "arguments": {
         "install" : [
             {
