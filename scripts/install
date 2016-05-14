@@ -43,7 +43,7 @@ Match User ${user}
   AllowTcpForwarding no
   PermitTunnel no
   X11Forwarding no
-##<- ${app}" | sudo tee -a /etc/ssh/sshd_config
+##<- ${app}" | sudo tee -a /etc/ssh/sshd_config >/dev/null
 
 # Specify the user and the domain in the home page
 sed -i "s@{DOMAIN}@${domain}@g" ../sources/www/index.html

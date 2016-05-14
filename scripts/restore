@@ -1,67 +1,81 @@
 #!/bin/bash
-# This restore script is adapted to Yunohost >=2.4
 
-# The parameter $1 is the backup directory location dedicated to the app
-backup_dir=$1
+set -e
 
-# The parameter $2 is the id of the app instance ex: ynhexample__2
-app=$2
+# Get multi-instances specific variables
+app=$YNH_APP_INSTANCE_NAME
 
-# Get old parameter of the app
-domain=$(sudo yunohost app setting $app domain)
-path=$(sudo yunohost app setting $app path)
-user=$(sudo yunohost app setting $app allowed_users)
-is_public=$(sudo yunohost app setting $app is_public)
+# Source app helpers
+. /usr/share/yunohost/helpers
+
+# Retrieve old app settings
+domain=$(ynh_app_setting_get "$app" domain)
+path=$(ynh_app_setting_get "$app" path)
+mysql_db=$(ynh_app_setting_get "$app" mysql_db)
+password=$(ynh_app_setting_get "$app" password)
+user=$(ynh_app_setting_get "$app" user)
 
 # Check domain/path availability
-sudo yunohost app checkurl $domain$path -a $app
-if [[ ! $? -eq 0 ]]; then
-    echo "There is already an app on this URL : $domain$path" | sudo tee /dev/stderr
-    exit 1
+sudo yunohost app checkurl "${domain}${path}" -a "$app" \
+  || exit 1
+
+# Check destination directory
+DESTDIR="/var/www/$app"
+[[ -d $DESTDIR ]] && ynh_die \
+"The destination directory '$DESTDIR' already exists.\
+ You should safely delete it before restoring this app."
+
+# Check configuration files
+nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+[[ -f $nginx_conf ]] && ynh_die \
+"The NGINX configuration already exists at '${nginx_conf}'.
+ You should safely delete it before restoring this app."
+phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
+[[ -f $phpfpm_conf ]] && ynh_die \
+"The PHP FPM configuration already exists at '${phpfpm_conf}'.
+ You should safely delete it before restoring this app."
+
+# Create the user account
+sudo useradd -c "${app} user account" \
+    -d "$DESTDIR" -M -g www-data "$user" \
+  || ynh_die "Unable to create user account"
+sudo chpasswd <<< "${user}:${password}"
+
+# Harden SSH connection for the user
+echo "##-> ${app}
+# Hardening user connection
+Match User ${user}
+  ChrootDirectory %h
+  ForceCommand internal-sftp
+  AllowTcpForwarding no
+  PermitTunnel no
+  X11Forwarding no
+##<- ${app}" | sudo tee -a /etc/ssh/sshd_config >/dev/null
+
+# Restore the app files
+sudo cp -a ./sources "$DESTDIR"
+sudo chown -hR "${user}:" "$DESTDIR"
+
+# Home directory of the user need to be owned by root to allow
+# SFTP connections
+sudo chown root: "$DESTDIR"
+
+# Create and restore the database as needed
+if [[ $mysql_db -eq 1 ]]; then
+    dbname=$app
+    dbuser=$app
+    dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
+    ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
+    [[ -f ./dump.sql ]] \
+      && ynh_mysql_connect_as "$dbuser" "$dbpass" "$dbname" < ./dump.sql \
+      || echo "No MySQL dump has been found" >&2
 fi
 
-final_path=/var/www/$app
-if [ -d $final_path ]; then
-    echo "There is already a directory: $final_path " | sudo tee /dev/stderr
-    exit 1
-fi
+# Restore configuration files
+sudo cp -a ./conf/nginx.conf   "$nginx_conf"
+sudo cp -a ./conf/php-fpm.conf "$phpfpm_conf"
 
-conf=/etc/nginx/conf.d/$domain.d/$app.conf
-if [ -f $conf ]; then
-    echo "There is already a nginx conf file at this path: $conf " | sudo tee /dev/stderr
-    exit 1
-fi
-
-phpconf=/etc/php5/fpm/pool.d/$app.conf
-if [ -f $phpconf ]; then
-    echo "There is already a php-fpm conf file at this path: $phpconf " | sudo tee /dev/stderr
-    exit 1
-fi
-
-
-# Restore sources & data
-sudo cp -a "${backup_dir}/var/www/$app" $final_path
-
-# Set permissions
-sudo chmod 775 -R $final_path/files
-sudo chown -hR www-data:www-data $final_path/files
-
-# Restore conf files
-sudo cp -a "${backup_dir}/conf/nginx.conf" $conf
-sudo cp -a "${backup_dir}/conf/php-fpm.conf" $phpconf
-sudo chown root: $phpconf
-sudo chmod 644 $phpconf
-
-
-# Reload Nginx
-sudo service nginx reload
-sudo killall php5-fpm || echo "PHP-FPM already killed"
-sudo service php5-fpm start
-
-# Set ssowat config
-if [ "$is_public" = "Yes" ];
-then
-    sudo yunohost app setting $app unprotected_uris -v "/"
-fi
-sudo yunohost app setting $app protected_uris -v "/admin"
-sudo yunohost app ssowatconf
+# Reload services
+sudo service php5-fpm reload || true
+sudo service nginx reload || true
+sudo service sshd reload

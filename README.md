@@ -10,7 +10,6 @@ the SFTP user.
 ## TODO
 
  * Update `upgrade` script and manage upgrading from current official app
- * Update `backup` and `restore` scripts
 
 ## Links
 
