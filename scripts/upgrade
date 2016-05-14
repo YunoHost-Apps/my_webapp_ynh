@@ -1,68 +1,72 @@
 #!/bin/bash
 
-set -e
+set -eu
 
-# Retrieve arguments
-domain=$(sudo yunohost app setting my_webapp domain)
-path=$(sudo yunohost app setting my_webapp path)
-user=$(sudo yunohost app setting my_webapp ftp_user \
-  || sudo yunohost app setting my_webapp allowed_users \
-  || echo "")
-is_public=$(sudo yunohost app setting my_webapp is_public)
-final_path=/var/www/my_webapp
+# Get multi-instances specific variables
+app=$YNH_APP_INSTANCE_NAME
 
-# Remove trailing "/" from the path
+# Source app helpers
+. /usr/share/yunohost/helpers
+
+# Retrieve app settings
+domain=$(ynh_app_setting_get "$app" domain)
+path=$(ynh_app_setting_get "$app" path)
 path=${path%/}
+is_public=$(ynh_app_setting_get "$app" is_public)
+mysql_db=$(ynh_app_setting_get "$app" mysql_db)
+password=$(ynh_app_setting_get "$app" password)
+user=$(ynh_app_setting_get "$app" user)
 
-# Reset permissions
-if [[ "$user" != "" ]]; then
-  sudo yunohost app setting my_webapp allowed_users -v "$user"
-fi
+([[ -n "$mysql_db" ]] && [[ -n "$password" ]] && [[ -n "$user" ]]) \
+  || ynh_die "The app changed and can not be automatically upgraded. \
+You will have to manually upgrade it following those instructions: \
+https://github.com/YunoHost-Apps/my_webapp_ynh#upgrade"
 
-# Update the salt in the admin.php file
-salt=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d 'A-Za-z0-9' | sed -n 's/\(.\{24\}\).*/\1/p')
-sed -i "s@SALTTOCHANGE@$salt@g" ../sources/admin.php
+# Check destination directory
+DESTDIR="/var/www/$app"
+[[ ! -d $DESTDIR ]] && ynh_die \
+"The destination directory '$DESTDIR' does not exist.\
+ The app is not correctly installed, you should remove it first."
 
-# Modify the index.html instruction file
-sed -i "s@USER@$user@g" ../sources/files/index.html
-sed -i "s@URL@https://$domain$path/admin/@g" ../sources/files/index.html
+# Harden SSH connection for the user
+sudo sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
+echo "##-> ${app}
+# Hardening user connection
+Match User ${user}
+  ChrootDirectory %h
+  ForceCommand internal-sftp
+  AllowTcpForwarding no
+  PermitTunnel no
+  X11Forwarding no
+##<- ${app}" | sudo tee -a /etc/ssh/sshd_config >/dev/null
 
-# Copy files to the right place
-sudo mkdir -p $final_path
-sudo cp ../sources/admin.php $final_path/
-sudo cp -r ../sources/_assets $final_path/
+# Fix permissions
+sudo chown -hR "${user}:" "$DESTDIR"
 
-# Create directory and set permissions
-sudo mkdir -p $final_path/files
-sudo chmod 775 -R $final_path/files
-sudo chown -hR www-data:www-data $final_path/files
+# Home directory of the user need to be owned by root to allow
+# SFTP connections
+sudo chown root: "$DESTDIR"
 
-# Modify Nginx configuration file and copy it to Nginx conf directory
-if [[ "$path" == "" ]]; then
-  sed -i "s@LOCATIONTOCHANGE@/@g" ../conf/nginx.conf
-else
-  sed -i "s@LOCATIONTOCHANGE@$path@g" ../conf/nginx.conf
-fi
-sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
-sed -i "s@ALIASTOCHANGE@$final_path/@g" ../conf/nginx.conf
-sed -i "s@NAMETOCHANGE@my_webapp@g" ../conf/nginx.conf
-sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/my_webapp.conf
+# Set SSOwat rules
+[[ $is_public -eq 1 ]] \
+  && ynh_app_setting_set "$app" skipped_uris "/"
 
-# Same goes for PHP-FPM configuration
-sed -i "s@NAMETOCHANGE@my_webapp@g" ../conf/php-fpm.conf
-sudo cp ../conf/php-fpm.conf /etc/php5/fpm/pool.d/my_webapp.conf
+# Copy and set nginx configuration
+nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+sed -i "s@{PATH}@${path}@g"        ../conf/nginx.conf
+sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
+sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
+sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
+sudo cp ../conf/nginx.conf "$nginx_conf"
 
-# Make app public if necessary
-if [ "$is_public" = "Yes" ];
-then
-    sudo yunohost app setting my_webapp unprotected_uris -v "/"
-fi
+# Copy and set php-fpm configuration
+phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
+sed -i "s@{USER}@${user}@g"       ../conf/php-fpm.conf
+sed -i "s@{POOLNAME}@${app}@g"    ../conf/php-fpm.conf
+sed -i "s@{DESTDIR}@${DESTDIR}@g" ../conf/php-fpm.conf
+sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
 
-# Protect the file manager
-sudo yunohost app setting my_webapp protected_uris -v "/admin"
-
-# Reload Nginx, php5-fpm and regenerate SSOwat conf
+# Reload services
+sudo service php5-fpm reload
 sudo service nginx reload
-sudo killall php5-fpm || echo "PHP-FPM already killed"
-sudo service php5-fpm start
-sudo yunohost app ssowatconf
+sudo service sshd reload
