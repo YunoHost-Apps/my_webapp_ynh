@@ -1,20 +1,20 @@
 {
-    "name": "Custom Webapp",
-    "id": "my_webapp",
     "packaging_format": 1,
+    "id": "my_webapp",
+    "name": "Custom Webapp",
     "description": {
-        "en": "Empty App with a file access to the web directory",
-        "fr": "Répertoire Web vide avec un accès fichier"
+        "en": "Custom Web app with SFTP access",
+        "fr": "Application Web personnalisée avec accès SFTP"
     },
+    "licence": "AGPL-3",
     "maintainer": {
-        "name": "kload",
-        "email": "kload@kload.fr"
+        "name": "YunoHost Contributors",
+        "email": "apps@yunohost.org"
     },
-    "multi_instance": "true",
-    "services": [
-        "nginx",
-        "php5-fpm"
-    ],
+    "multi_instance": true,
+    "requirements": {
+        "yunohost": ">= 2.4.0"
+    },
     "arguments": {
         "install" : [
             {
@@ -37,22 +37,31 @@
                 "default": "/site"
             },
             {
-                "name": "admin",
-                "type": "user",
+                "name": "password",
+                "type": "password",
                 "ask": {
-                    "en": "Choose the YunoHost user who will be able to upload documents to this directory",
-                    "fr": "Choisissez l'utilisateur YunoHost qui sera capable d'envoyer des documents dans ce répertoire web"
+                    "en": "Set the password for the SFTP access",
+                    "fr": "Définissez le mot de passe pour l'accès SFTP"
                 },
-                "example": "johndoe"
+                "example": "myreallystrengthpassword"
             },
             {
                 "name": "is_public",
+                "type": "boolean",
                 "ask": {
-                    "en": "Is it a public website ?",
+                    "en": "Is it a public website?",
                     "fr": "Est-ce un site public ?"
                 },
-                "choices": ["Yes", "No"],
-                "default": "Yes"
+                "default": true
+            },
+            {
+                "name": "mysql_db",
+                "type": "boolean",
+                "ask": {
+                    "en": "Do you need a MySQL database?",
+                    "fr": "Avez-vous besoin d'une base de données MySQL ?"
+                },
+                "default": false
             }
         ]
     }

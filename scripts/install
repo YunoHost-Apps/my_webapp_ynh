@@ -1,68 +1,100 @@
 #!/bin/bash
 
-set -e
+# Exit on command errors and treat unset variables as an error
+set -eu
+
+# Get multi-instances specific variables
+app=$YNH_APP_INSTANCE_NAME
+app_nb=$YNH_APP_INSTANCE_NUMBER
 
 # Retrieve arguments
 domain=$1
-path=$2
-user=$3
+path=${2%/}
+password=$3
 is_public=$4
-final_path=/var/www/my_webapp
+mysql_db=$5
+
+# Source app helpers
+. /usr/share/yunohost/helpers
 
 # Check domain/path availability
-sudo yunohost app checkurl $domain$path -a my_webapp
-path=${path%/}
+sudo yunohost app checkurl "${domain}${path}" -a "$app" \
+  || exit 1
 
-# Check user
-sudo yunohost user list --json | grep -q "\"username\": \"$user\"" \
-  || (echo "User '$user' does not exist" && exit 1)
-sudo yunohost app setting my_webapp allowed_users -v "$user"
+# Check destination directory
+DESTDIR="/var/www/${app}"
+[[ -d "$DESTDIR" ]] && ynh_die \
+"The destination directory '${DESTDIR}' already exists.\
+ You should safely delete it before installing this app."
 
-# Update the salt in the admin.php file
-salt=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d 'A-Za-z0-9' | sed -n 's/\(.\{24\}\).*/\1/p')
-sed -i "s@SALTTOCHANGE@$salt@g" ../sources/admin.php
+# Create the user account
+user="webapp${app_nb}"
+sudo useradd -c "${app} user account" \
+    -d "$DESTDIR" -M -g www-data "$user" \
+  || ynh_die "Unable to create user account"
+sudo chpasswd <<< "${user}:${password}"
 
-# Modify the index.html instruction file
-sed -i "s@USER@$user@g" ../sources/files/index.html
-sed -i "s@URL@https://$domain$path/admin/@g" ../sources/files/index.html
+# Harden SSH connection for the user
+echo "##-> ${app}
+# Hardening user connection
+Match User ${user}
+  ChrootDirectory %h
+  ForceCommand internal-sftp
+  AllowTcpForwarding no
+  PermitTunnel no
+  X11Forwarding no
+##<- ${app}" | sudo tee -a /etc/ssh/sshd_config
 
-# Copy files to the right place
-sudo mkdir -p $final_path
-sudo cp ../sources/admin.php $final_path/
-sudo cp -r ../sources/_assets $final_path/
-sudo cp -r ../sources/files $final_path/
+# Specify the user and the domain in the home page
+sed -i "s@{DOMAIN}@${domain}@g" ../sources/www/index.html
+sed -i "s@{USER}@${user}@g"     ../sources/www/index.html
 
-# Set permissions
-sudo chmod 775 -R $final_path/files
-sudo chown -hR www-data:www-data $final_path/files
+# Initialize database as needed
+if [[ $mysql_db -eq 1 ]]; then
+    dbname=$app
+    dbuser=$app
+    dbpass=$(ynh_string_random)
+    ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
 
-# Modify Nginx configuration file and copy it to Nginx conf directory
-if [[ "$path" == "" ]]; then
-  sed -i "s@LOCATIONTOCHANGE@/@g" ../conf/nginx.conf
-else
-  sed -i "s@LOCATIONTOCHANGE@$path@g" ../conf/nginx.conf
-fi
-sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
-sed -i "s@ALIASTOCHANGE@$final_path/@g" ../conf/nginx.conf
-sed -i "s@NAMETOCHANGE@my_webapp@g" ../conf/nginx.conf
-sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/my_webapp.conf
-
-# Same goes for PHP-FPM configuration
-sed -i "s@NAMETOCHANGE@my_webapp@g" ../conf/php-fpm.conf
-sudo cp ../conf/php-fpm.conf /etc/php5/fpm/pool.d/my_webapp.conf
-
-# Make app public if necessary
-sudo yunohost app setting my_webapp is_public -v "$is_public"
-if [ "$is_public" = "Yes" ];
-then
-    sudo yunohost app setting my_webapp unprotected_uris -v "/"
+    # Store the database access
+    echo -e "# MySQL Database
+name: ${dbname}\nuser: ${dbuser}\npass: ${dbpass}" > ../sources/db_access.txt
+    ynh_app_setting_set "$app" mysqlpwd "$dbpass"
 fi
 
-# Protect the file manager
-sudo yunohost app setting my_webapp protected_uris -v "/admin"
+# Copy files to the right place and set permissions
+sudo cp -r ../sources "$DESTDIR"
+sudo chown -hR "${user}:" "$DESTDIR"
 
-# Reload Nginx, php5-fpm and regenerate SSOwat conf
+# Home directory of the user need to be owned by root to allow
+# SFTP connections
+sudo chown root: "$DESTDIR"
+
+# Save app settings
+ynh_app_setting_set "$app" is_public "$is_public"
+ynh_app_setting_set "$app" mysql_db "$mysql_db"
+ynh_app_setting_set "$app" password "$password"
+ynh_app_setting_set "$app" user "$user"
+
+# Set SSOwat rules
+[[ $is_public -eq 1 ]] \
+  && ynh_app_setting_set "$app" skipped_uris "/"
+
+# Copy and set nginx configuration
+nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
+sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
+sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
+sudo cp ../conf/nginx.conf "$nginx_conf"
+
+# Copy and set php-fpm configuration
+phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
+sed -i "s@{USER}@${user}@g"       ../conf/php-fpm.conf
+sed -i "s@{POOLNAME}@${app}@g"    ../conf/php-fpm.conf
+sed -i "s@{DESTDIR}@${DESTDIR}@g" ../conf/php-fpm.conf
+sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
+
+# Reload services
+sudo service php5-fpm reload
 sudo service nginx reload
-sudo killall php5-fpm || echo "PHP-FPM already killed"
-sudo service php5-fpm start
-sudo yunohost app ssowatconf
+sudo service sshd reload

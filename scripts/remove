@@ -1,14 +1,38 @@
 #!/bin/bash
 
-domain=$(sudo yunohost app setting my_webapp domain)
+# Get multi-instances specific variables
+app=$YNH_APP_INSTANCE_NAME
+app_nb=$YNH_APP_INSTANCE_NUMBER
 
-sudo service pure-ftpd-ldap stop
-sudo apt-get remove -y -qq pure-ftpd-ldap pure-ftpd-common
-sudo yunohost service remove pure-ftpd-ldap
+# Source app helpers
+. /usr/share/yunohost/helpers
 
-sudo rm -rf /var/www/my_webapp
-sudo rm -f /etc/nginx/conf.d/$domain.d/my_webapp.conf
-sudo rm -f /etc/php5/fpm/pool.d/my_webapp.conf
+# Retrieve app settings
+domain=$(ynh_app_setting_get "$app" domain)
+mysql_db=$(ynh_app_setting_get "$app" mysql_db)
 
-sudo service nginx reload
-sudo yunohost app ssowatconf
+# Drop MySQL database and user as needed
+if [[ $mysql_db -eq 1 ]]; then
+    dbname=$app
+    dbuser=$app
+    dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
+    ynh_mysql_drop_db $dbname || true
+    ynh_mysql_drop_user $dbuser || true
+fi
+
+# Delete app directory and configurations
+sudo rm -rf "/var/www/${app}"
+sudo rm -f "/etc/php5/fpm/pool.d/${app}.conf"
+[[ -n $domain ]] && sudo rm -f "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+
+# Remove custom SSH configuration
+sudo sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
+
+# Reload services
+sudo service php5-fpm restart || true
+sudo service nginx reload || true
+sudo service sshd reload
+
+# Remove the user account
+user="webapp${app_nb}"
+sudo deluser --quiet --force "$user" >/dev/null
