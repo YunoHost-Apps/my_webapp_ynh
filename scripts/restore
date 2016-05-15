@@ -11,7 +11,7 @@ app=$YNH_APP_INSTANCE_NAME
 # Retrieve old app settings
 domain=$(ynh_app_setting_get "$app" domain)
 path=$(ynh_app_setting_get "$app" path)
-mysql_db=$(ynh_app_setting_get "$app" mysql_db)
+with_mysql=$(ynh_app_setting_get "$app" with_mysql)
 password=$(ynh_app_setting_get "$app" password)
 user=$(ynh_app_setting_get "$app" user)
 
@@ -61,7 +61,7 @@ sudo chown -hR "${user}:" "$DESTDIR"
 sudo chown root: "$DESTDIR"
 
 # Create and restore the database as needed
-if [[ $mysql_db -eq 1 ]]; then
+if [[ $with_mysql -eq 1 ]]; then
     dbname=$app
     dbuser=$app
     dbpass=$(ynh_app_setting_get "$app" mysqlpwd)

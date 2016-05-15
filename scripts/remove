@@ -9,10 +9,10 @@ app_nb=$YNH_APP_INSTANCE_NUMBER
 
 # Retrieve app settings
 domain=$(ynh_app_setting_get "$app" domain)
-mysql_db=$(ynh_app_setting_get "$app" mysql_db)
+with_mysql=$(ynh_app_setting_get "$app" with_mysql)
 
 # Drop MySQL database and user as needed
-if [[ $mysql_db -eq 1 ]]; then
+if [[ $with_mysql -eq 1 ]]; then
     dbname=$app
     dbuser=$app
     dbpass=$(ynh_app_setting_get "$app" mysqlpwd)

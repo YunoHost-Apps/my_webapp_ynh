@@ -12,7 +12,7 @@ app=$YNH_APP_INSTANCE_NAME
 # Retrieve app settings
 domain=$(ynh_app_setting_get "$app" domain)
 path=$(ynh_app_setting_get "$app" path)
-mysql_db=$(ynh_app_setting_get "$app" mysql_db)
+with_mysql=$(ynh_app_setting_get "$app" with_mysql)
 
 # Copy the app files
 DESTDIR="/var/www/${app}"
@@ -23,7 +23,7 @@ ynh_backup "/etc/nginx/conf.d/${domain}.d/${app}.conf" "conf/nginx.conf"
 ynh_backup "/etc/php5/fpm/pool.d/${app}.conf" "conf/php-fpm.conf"
 
 # Dump the database
-if [[ $mysql_db -eq 1 ]]; then
+if [[ $with_mysql -eq 1 ]]; then
     dbname=$app
     dbuser=$app
     dbpass=$(ynh_app_setting_get "$app" mysqlpwd)

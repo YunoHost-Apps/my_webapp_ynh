@@ -13,11 +13,11 @@ domain=$(ynh_app_setting_get "$app" domain)
 path=$(ynh_app_setting_get "$app" path)
 path=${path%/}
 is_public=$(ynh_app_setting_get "$app" is_public)
-mysql_db=$(ynh_app_setting_get "$app" mysql_db)
+with_mysql=$(ynh_app_setting_get "$app" with_mysql)
 password=$(ynh_app_setting_get "$app" password)
 user=$(ynh_app_setting_get "$app" user)
 
-([[ -n "$mysql_db" ]] && [[ -n "$password" ]] && [[ -n "$user" ]]) \
+([[ -n "$with_mysql" ]] && [[ -n "$password" ]] && [[ -n "$user" ]]) \
   || ynh_die "The app changed and can not be automatically upgraded. \
 You will have to manually upgrade it following those instructions: \
 https://github.com/YunoHost-Apps/my_webapp_ynh#upgrade"

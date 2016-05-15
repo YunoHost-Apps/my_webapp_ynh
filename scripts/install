@@ -12,7 +12,7 @@ domain=$1
 path=${2%/}
 password=$3
 is_public=$4
-mysql_db=$5
+with_mysql=$5
 
 # Source app helpers
 . /usr/share/yunohost/helpers
@@ -50,7 +50,7 @@ sed -i "s@{DOMAIN}@${domain}@g" ../sources/www/index.html
 sed -i "s@{USER}@${user}@g"     ../sources/www/index.html
 
 # Initialize database as needed
-if [[ $mysql_db -eq 1 ]]; then
+if [[ $with_mysql -eq 1 ]]; then
     dbname=$app
     dbuser=$app
     dbpass=$(ynh_string_random)
@@ -72,7 +72,7 @@ sudo chown root: "$DESTDIR"
 
 # Save app settings
 ynh_app_setting_set "$app" is_public "$is_public"
-ynh_app_setting_set "$app" mysql_db "$mysql_db"
+ynh_app_setting_set "$app" with_mysql "$with_mysql"
 ynh_app_setting_set "$app" password "$password"
 ynh_app_setting_set "$app" user "$user"
 

@@ -59,7 +59,7 @@
                 "default": true
             },
             {
-                "name": "mysql_db",
+                "name": "with_mysql",
                 "type": "boolean",
                 "ask": {
                     "en": "Do you need a MySQL database?",
