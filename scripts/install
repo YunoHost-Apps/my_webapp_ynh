@@ -21,14 +21,24 @@ with_mysql=$5
 sudo yunohost app checkurl "${domain}${path}" -a "$app" \
   || exit 1
 
+# Check password strength
+[[ ${#password} -gt 5 ]] || ynh_die \
+"The password is too weak, it must be longer than 5 characters"
+
 # Check destination directory
 DESTDIR="/var/www/${app}"
 [[ -d "$DESTDIR" ]] && ynh_die \
 "The destination directory '${DESTDIR}' already exists.\
  You should safely delete it before installing this app."
 
-# Create the user account
+# Save app settings
 user="webapp${app_nb}"
+ynh_app_setting_set "$app" is_public "$is_public"
+ynh_app_setting_set "$app" with_mysql "$with_mysql"
+ynh_app_setting_set "$app" password "$password"
+ynh_app_setting_set "$app" user "$user"
+
+# Create the user account
 sudo useradd -c "${app} user account" \
     -d "$DESTDIR" -M -g www-data "$user" \
   || ynh_die "Unable to create user account"
@@ -69,12 +79,6 @@ sudo chown -hR "${user}:" "$DESTDIR"
 # Home directory of the user need to be owned by root to allow
 # SFTP connections
 sudo chown root: "$DESTDIR"
-
-# Save app settings
-ynh_app_setting_set "$app" is_public "$is_public"
-ynh_app_setting_set "$app" with_mysql "$with_mysql"
-ynh_app_setting_set "$app" password "$password"
-ynh_app_setting_set "$app" user "$user"
 
 # Set SSOwat rules
 [[ $is_public -eq 1 ]] \

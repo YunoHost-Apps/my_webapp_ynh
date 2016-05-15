@@ -10,6 +10,7 @@ app_nb=$YNH_APP_INSTANCE_NUMBER
 # Retrieve app settings
 domain=$(ynh_app_setting_get "$app" domain)
 with_mysql=$(ynh_app_setting_get "$app" with_mysql)
+user=$(ynh_app_setting_get "$app" user)
 
 # Drop MySQL database and user as needed
 if [[ $with_mysql -eq 1 ]]; then
@@ -34,5 +35,6 @@ sudo service nginx reload || true
 sudo service sshd reload
 
 # Remove the user account
-user="webapp${app_nb}"
-sudo deluser --quiet --force "$user" >/dev/null
+id "$user" >/dev/null 2>&1 \
+  && sudo deluser --quiet --force "$user" >/dev/null \
+  || true
