@@ -26,28 +26,30 @@ it first and install this new one, taking care of migrating your data.
 ### Save your files and the database
 
 You will have to save the content of the `/var/www/my_webapp/files`
-directory, either from the Web admin interface provided with the old app or
+directory, either from the Web admin interface provided by the old app or
 connecting to your server using SSH - or SFTP as `admin`.
 
 If you've created a MySQL database, you can also migrate it since the new
 version allows to manage it for you. To create a dump, you could either use
-*phpMyAdmin* or connect to your server and execute:
-`mysqldump -u root -p$(cat /etc/yunohost/password --no-create-db "$dbname" > ./dump.sql`
+[phpMyAdmin](https://github.com/YunoHost-Apps/phpmyadmin_ynh) or connect to
+your server and execute:
+`mysqldump -u root -p$(cat /etc/yunohost/mysql --no-create-db "$dbname" > ./dump.sql`
 (do not forget to replace `$dbname` by your database name).
 
 ### Restore your custom Webapp
 
-When you've take care of saving your files - and optionally your database,
+When you've taken care of saving your files - and optionally your database,
 you can remove the app and install this new one. You can set the same
 settings as the previous installation.
 
-To restore your files, connect to the Web directory using the SFTP account
-and put everything into the `www` directory.
+To restore your files, connect to the Web directory using the SFTP account - as
+described at the installation path - and put everything into the `www` directory.
 
 If you have chosen to migrate your database too, open the file `db_access.txt`
 to know the new database, user and password you will have to set in your app
 configuration. You can restore the dump you've created earlier either using
-*phpMyAdmin* or connect to your server and execute:
+[phpMyAdmin](https://github.com/YunoHost-Apps/phpmyadmin_ynh) or connect to
+your server and execute:
 `mysql -u "$dbuser" -p"$dbpass" "$dbname" < ./dump.sql`
 (do not forget to replace `$dbuser`, `$dbpass` and `$dbname` with the values
 given in the file).
