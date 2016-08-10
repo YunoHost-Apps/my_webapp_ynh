@@ -3,6 +3,10 @@ Custom Webapp
 
 Empty application with SFTP access to the Web directory.
 
+## Issues
+
+Repport issues here: https://dev.yunohost.org/projects/apps/issues (you don't need to create an account and you can use you github credentials if you want)
+
 ## Overview
 
 This application allows you to easily install a custom Web application,
