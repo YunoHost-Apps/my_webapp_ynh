@@ -44,8 +44,8 @@
                 "name": "password",
                 "type": "password",
                 "ask": {
-                    "en": "Set the password for the SFTP access",
-                    "fr": "Définissez le mot de passe pour l'accès SFTP"
+                    "en": "Set the password for the SFTP access. ≥ 5 character",
+                    "fr": "Définissez le mot de passe pour l'accès SFTP. ≥ cinq charactères"
                 },
                 "example": "myreallystrengthpassword"
             },
