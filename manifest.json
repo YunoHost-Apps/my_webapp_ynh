@@ -6,7 +6,7 @@
         "en": "Custom Web app with SFTP access",
         "fr": "Application Web personnalisée avec accès SFTP"
     },
-    "licence": "GPL-3",
+    "license": "free",
     "maintainer": {
         "name": "YunoHost Contributors",
         "email": "apps@yunohost.org"
