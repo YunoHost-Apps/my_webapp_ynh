@@ -102,4 +102,4 @@ sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
 # Reload services
 sudo service php5-fpm reload
 sudo service nginx reload
-sudo service sshd reload
+sudo systemctl reload sshd
