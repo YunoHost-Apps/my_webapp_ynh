@@ -78,4 +78,4 @@ sudo cp -a ./conf/php-fpm.conf "$phpfpm_conf"
 # Reload services
 sudo service php5-fpm reload || true
 sudo service nginx reload || true
-sudo service sshd reload
+sudo systemctl reload sshd
