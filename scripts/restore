@@ -76,6 +76,6 @@ sudo cp -a ./conf/nginx.conf   "$nginx_conf"
 sudo cp -a ./conf/php-fpm.conf "$phpfpm_conf"
 
 # Reload services
-sudo service php5-fpm reload || true
-sudo service nginx reload || true
-sudo service ssh reload
+sudo systemctl reload php5-fpm || true
+sudo systemctl reload nginx || true
+sudo systemctl reload ssh

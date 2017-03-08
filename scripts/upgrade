@@ -67,6 +67,6 @@ sed -i "s@{DESTDIR}@${DESTDIR}@g" ../conf/php-fpm.conf
 sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
 
 # Reload services
-sudo service php5-fpm reload
-sudo service nginx reload
-sudo service ssh reload
+sudo systemctl reload php5-fpm
+sudo systemctl reload nginx
+sudo systemctl reload ssh
