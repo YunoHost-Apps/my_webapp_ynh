@@ -32,7 +32,7 @@ sudo sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
 # Reload services
 sudo service php5-fpm restart || true
 sudo service nginx reload || true
-sudo systemctl reload sshd
+sudo service ssh reload
 
 # Remove the user account
 id "$user" >/dev/null 2>&1 \
