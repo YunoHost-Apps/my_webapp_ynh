@@ -30,9 +30,9 @@ sudo rm -f "/etc/php5/fpm/pool.d/${app}.conf"
 sudo sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
 
 # Reload services
-sudo service php5-fpm restart || true
-sudo service nginx reload || true
-sudo systemctl reload sshd
+sudo systemctl restart php5-fpm || true
+sudo systemctl reload nginx || true
+sudo systemctl reload ssh
 
 # Remove the user account
 id "$user" >/dev/null 2>&1 \
