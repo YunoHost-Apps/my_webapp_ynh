@@ -54,6 +54,12 @@ your server and execute:
 (do not forget to replace `$dbuser`, `$dbpass` and `$dbname` with the values
 given in the file).
 
+### SFTP port ###
+
+You may have change the SSH port as described 
+[here (section "Modifier le port SSH"](https://yunohost.org/#/security_fr) ; 
+then you should use this port to update your website with SFTP.
+
 ## Links
 
 **YunoHost**: https://yunohost.org/
