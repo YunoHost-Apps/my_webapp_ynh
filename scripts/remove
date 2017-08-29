@@ -1,40 +1,71 @@
 #!/bin/bash
 
-# Get multi-instances specific variables
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
 app=$YNH_APP_INSTANCE_NAME
-app_nb=$YNH_APP_INSTANCE_NUMBER
 
-# Source app helpers
-. /usr/share/yunohost/helpers
+domain=$(ynh_app_setting_get $app domain)
+with_mysql=$(ynh_app_setting_get $app with_mysql)
+user=$(ynh_app_setting_get $app user)
+db_name=$(ynh_app_setting_get $app db_name)
+final_path=$(ynh_app_setting_get $app final_path)
 
-# Retrieve app settings
-domain=$(ynh_app_setting_get "$app" domain)
-with_mysql=$(ynh_app_setting_get "$app" with_mysql)
-user=$(ynh_app_setting_get "$app" user)
+#=================================================
+# STANDARD REMOVE
+#=================================================
+# REMOVE THE MYSQL DATABASE
+#=================================================
 
-# Drop MySQL database and user as needed
-if [[ $with_mysql -eq 1 ]]; then
-    dbname=$app
-    dbuser=$app
-    dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
-    ynh_mysql_drop_db $dbname || true
-    ynh_mysql_drop_user $dbuser || true
+if [ $with_mysql -eq 1 ]; then
+    # Remove a database if it exists, along with the associated user
+    ynh_mysql_remove_db $db_name $db_name
 fi
 
-# Delete app directory and configurations
-sudo rm -rf "/var/www/${app}"
-sudo rm -f "/etc/php5/fpm/pool.d/${app}.conf"
-[[ -n $domain ]] && sudo rm -f "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+#=================================================
+# REMOVE APP MAIN DIR
+#=================================================
 
-# Remove custom SSH configuration
-sudo sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
+# Remove the app directory securely
+ynh_secure_remove "$final_path"
 
-# Reload services
-sudo systemctl restart php5-fpm || true
-sudo systemctl reload nginx || true
-sudo systemctl reload ssh
+#=================================================
+# REMOVE NGINX CONFIGURATION
+#=================================================
 
-# Remove the user account
-id "$user" >/dev/null 2>&1 \
-  && sudo deluser --quiet --force "$user" >/dev/null \
-  || true
+# Remove the dedicated nginx config
+ynh_remove_nginx_config
+
+#=================================================
+# REMOVE PHP-FPM CONFIGURATION
+#=================================================
+
+# Remove the dedicated php-fpm config
+ynh_remove_fpm_config
+
+#=================================================
+# SPECIFIC REMOVE
+#=================================================
+# REMOVE THE CUSTOM SSH CONFIG
+#=================================================
+
+sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
+systemctl reload ssh
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# REMOVE DEDICATED USER
+#=================================================
+
+# Delete an user
+ynh_system_user_delete $user

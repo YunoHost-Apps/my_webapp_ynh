@@ -1,48 +1,107 @@
 #!/bin/bash
 
-# Exit on command errors and treat unset variables as an error
-set -eu
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Get multi-instances specific variables
+source /usr/share/yunohost/helpers
+
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
+# RETRIEVE ARGUMENTS FROM THE MANIFEST
+#=================================================
+
+domain=$YNH_APP_ARG_DOMAIN
+path_url=$YNH_APP_ARG_PATH
+password=$YNH_APP_ARG_PASSWORD
+is_public=$YNH_APP_ARG_IS_PUBLIC
+with_mysql=$YNH_APP_ARG_WITH_MYSQL
+
 app=$YNH_APP_INSTANCE_NAME
 app_nb=$YNH_APP_INSTANCE_NUMBER
 
-# Retrieve arguments
-domain=$1
-path=${2%/}
-password=$3
-is_public=$4
-with_mysql=$5
+#=================================================
+# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
+#=================================================
 
-# Source app helpers
-. /usr/share/yunohost/helpers
-
-# Check domain/path availability
-sudo yunohost app checkurl "${domain}${path}" -a "$app" \
-  || exit 1
+final_path=/var/www/$app
+test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
 # Check password strength
 [[ ${#password} -gt 5 ]] || ynh_die \
 "The password is too weak, it must be longer than 5 characters"
 
-# Check destination directory
-DESTDIR="/var/www/${app}"
-[[ -d "$DESTDIR" ]] && ynh_die \
-"The destination directory '${DESTDIR}' already exists.\
- You should safely delete it before installing this app."
+# Normalize the url path syntax
+path_url=$(ynh_normalize_url_path $path_url)
 
-# Save app settings
-user="webapp${app_nb}"
-ynh_app_setting_set "$app" is_public "$is_public"
-ynh_app_setting_set "$app" with_mysql "$with_mysql"
-ynh_app_setting_set "$app" password "$password"
-ynh_app_setting_set "$app" user "$user"
+# Check web path availability
+ynh_webpath_available $domain $path_url
+# Register (book) web path
+ynh_webpath_register $app $domain $path_url
 
-# Create the user account
-sudo useradd -c "${app} user account" \
-    -d "$DESTDIR" -M -g www-data "$user" \
-  || ynh_die "Unable to create user account"
-sudo chpasswd <<< "${user}:${password}"
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
+
+user=webapp${app_nb}
+ynh_app_setting_set $app domain $domain
+ynh_app_setting_set $app path $path_url
+ynh_app_setting_set $app is_public $is_public
+ynh_app_setting_set $app with_mysql $with_mysql
+ynh_app_setting_set $app password "$password"
+ynh_app_setting_set $app user $user
+ynh_app_setting_set $app final_path $final_path
+
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# CREATE A MYSQL DATABASE
+#=================================================
+
+if [ $with_mysql -eq 1 ]; then
+    db_name=$(ynh_sanitize_dbid $app)
+    ynh_app_setting_set $app db_name $db_name
+    ynh_mysql_setup_db $db_name $db_name
+fi
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+
+# Create a dedicated nginx config
+ynh_add_nginx_config
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+# Create a standart user (not a system user for sftp)
+ynh_system_user_exists "$user" || \
+    useradd -d "$final_path" -M --user-group "$user"
+# Add the password to this user
+chpasswd <<< "${user}:${password}"
+
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+
+# Create a dedicated php-fpm config
+ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
+ynh_add_fpm_config
+
+#=================================================
+# SPECIFIC SETUP
+#=================================================
+# CONFIGURE SSH
+#=================================================
 
 # Harden SSH connection for the user
 echo "##-> ${app}
@@ -53,53 +112,50 @@ Match User ${user}
   AllowTcpForwarding no
   PermitTunnel no
   X11Forwarding no
-##<- ${app}" | sudo tee -a /etc/ssh/sshd_config >/dev/null
+##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
 
-# Specify the user and the domain in the home page
-sed -i "s@{DOMAIN}@${domain}@g" ../sources/www/index.html
-sed -i "s@{USER}@${user}@g"     ../sources/www/index.html
+systemctl reload ssh
 
-# Initialize database as needed
-if [[ $with_mysql -eq 1 ]]; then
-    dbname=$app
-    dbuser=$app
-    dbpass=$(ynh_string_random)
-    ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
+#=================================================
+# FILL AND COPY SOURCE FILES
+#=================================================
 
+ynh_replace_string "{DOMAIN}" "$domain" ../sources/www/index.html
+ynh_replace_string "{USER}" "$user" ../sources/www/index.html
+
+if [ $with_mysql -eq 1 ]; then
     # Store the database access
     echo -e "# MySQL Database
-name: ${dbname}\nuser: ${dbuser}\npass: ${dbpass}" > ../sources/db_access.txt
-    ynh_app_setting_set "$app" mysqlpwd "$dbpass"
+    name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
 fi
 
-# Copy files to the right place and set permissions
-sudo cp -r ../sources "$DESTDIR"
-sudo chown -hR "${user}:" "$DESTDIR"
+# Copy files to the right place
+cp -r ../sources "$final_path"
 
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+
+# Set permissions to app files
+chown -R $user: "$final_path"
 # Home directory of the user need to be owned by root to allow
 # SFTP connections
-sudo chown root: "$DESTDIR"
+chown root: "$final_path"
 
-# Set SSOwat rules
-[[ $is_public -eq 1 ]] \
-  && ynh_app_setting_set "$app" skipped_uris "/"
+#=================================================
+# SETUP SSOWAT
+#=================================================
 
-# Copy and set nginx configuration
-nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-sed -i "s@{PATH}@${path}@g"        ../conf/nginx.conf
-sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
-sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
-sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
-sudo cp ../conf/nginx.conf "$nginx_conf"
+# Make app public if necessary
+if [ $is_public -eq 1 ]
+then
+	ynh_app_setting_set $app skipped_uris "/"
+fi
 
-# Copy and set php-fpm configuration
-phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
-sed -i "s@{USER}@${user}@g"       ../conf/php-fpm.conf
-sed -i "s@{POOLNAME}@${app}@g"    ../conf/php-fpm.conf
-sed -i "s@{DESTDIR}@${DESTDIR}@g" ../conf/php-fpm.conf
-sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
+#=================================================
+# RELOAD NGINX
+#=================================================
 
-# Reload services
-sudo systemctl reload php5-fpm
-sudo systemctl reload nginx
-sudo systemctl reload ssh
+systemctl reload nginx

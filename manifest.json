@@ -1,20 +1,22 @@
 {
-    "packaging_format": 1,
     "id": "my_webapp",
     "name": "Custom Webapp",
+    "packaging_format": 1,
     "description": {
         "en": "Custom Web app with SFTP access",
         "fr": "Application Web personnalisée avec accès SFTP"
     },
-    "license": "free",
+    "version": "1.0",
+    "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
+    "license": "GPLv3",
     "maintainer": {
         "name": "YunoHost Contributors",
         "email": "apps@yunohost.org"
     },
-    "multi_instance": true,
     "requirements": {
-        "yunohost": ">= 2.4.0"
+        "yunohost": ">= 2.7.2"
     },
+    "multi_instance": true,
     "services": [
         "nginx",
         "php5-fpm"
