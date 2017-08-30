@@ -83,7 +83,7 @@ ynh_add_nginx_config
 # CREATE DEDICATED USER
 #=================================================
 
-# Create a standart user (not a system user for sftp)
+# Create a standard user (not a system user for sftp)
 ynh_system_user_exists "$user" || \
     useradd -d "$final_path" -M --user-group "$user"
 # Add the password to this user
@@ -140,7 +140,7 @@ cp -r ../sources "$final_path"
 
 # Set permissions to app files
 chown -R $user: "$final_path"
-# Home directory of the user need to be owned by root to allow
+# Home directory of the user needs to be owned by root to allow
 # SFTP connections
 chown root: "$final_path"
 

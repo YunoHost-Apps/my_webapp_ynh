@@ -66,7 +66,7 @@ fi
 # RECREATE THE DEDICATED USER
 #=================================================
 
-# Create a standart user (not a system user for sftp)
+# Create a standard user (not a system user for sftp)
 ynh_system_user_exists "$user" || \
     useradd -d "$final_path" -M --user-group "$user"
 # Add the password to this user
