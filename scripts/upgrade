@@ -108,6 +108,10 @@ ynh_system_user_exists "$user" || \
 # Add the password to this user
 chpasswd <<< "${user}:${password}"
 
+# Change the user group for previous my_webapp install script
+groupadd -f "$user"
+usermod -g "$user" "$user"
+
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
