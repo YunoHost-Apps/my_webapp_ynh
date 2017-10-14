@@ -1,35 +1,137 @@
 #!/bin/bash
 
-set -eu
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Get multi-instances specific variables
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
 app=$YNH_APP_INSTANCE_NAME
 
-# Source app helpers
-. /usr/share/yunohost/helpers
+domain=$(ynh_app_setting_get $app domain)
+path_url=$(ynh_app_setting_get $app path)
+is_public=$(ynh_app_setting_get $app is_public)
+final_path=$(ynh_app_setting_get $app final_path)
+db_name=$(ynh_app_setting_get $app db_name)
+with_mysql=$(ynh_app_setting_get $app with_mysql)
+password=$(ynh_app_setting_get $app password)
+user=$(ynh_app_setting_get $app user)
 
-# Retrieve app settings
-domain=$(ynh_app_setting_get "$app" domain)
-path=$(ynh_app_setting_get "$app" path)
-path=${path%/}
-is_public=$(ynh_app_setting_get "$app" is_public)
-with_mysql=$(ynh_app_setting_get "$app" with_mysql)
-password=$(ynh_app_setting_get "$app" password)
-user=$(ynh_app_setting_get "$app" user)
+#=================================================
+# CHECK IF THE UPGRADE CAN BE AUTOMATED
+#=================================================
 
 ([[ -n "$with_mysql" ]] && [[ -n "$password" ]] && [[ -n "$user" ]]) \
   || ynh_die "The app changed and can not be automatically upgraded. \
-You will have to manually upgrade it following those instructions: \
+You will have to manually upgrade it following these instructions: \
 https://github.com/YunoHost-Apps/my_webapp_ynh#upgrade"
 
-# Check destination directory
-DESTDIR="/var/www/$app"
-[[ ! -d $DESTDIR ]] && ynh_die \
-"The destination directory '$DESTDIR' does not exist.\
- The app is not correctly installed, you should remove it first."
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
 
-# Harden SSH connection for the user
+# If db_name doesn't exist, create it
+if [ -z $db_name ]; then
+	db_name=$(ynh_sanitize_dbid $app)
+	ynh_app_setting_set $app db_name $db_name
+fi
+
+# If final_path doesn't exist, create it
+if [ -z $final_path ]; then
+	final_path=/var/www/$app
+	ynh_app_setting_set $app final_path $final_path
+fi
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+
+ynh_backup_before_upgrade	# Backup the current version of the app
+ynh_clean_setup () {
+	ynh_restore_upgradebackup	# restore it if the upgrade fails
+}
+ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
+
+#=================================================
+# CHECK THE PATH
+#=================================================
+
+# Normalize the URL path syntax
+path_url=$(ynh_normalize_url_path $path_url)
+
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+
+# Check if a config file was modified
+is_checksum_different () {
+    local file=$1
+    local checksum_setting_name=checksum_${file//[\/ ]/_}	# Replace all '/' and ' ' by '_'
+    local checksum_value=$(ynh_app_setting_get $app $checksum_setting_name)
+    if [ -n "$checksum_value" ]
+    then	# Proceed only if a value was stored into the app settings
+      if ! echo "$checksum_value $file" | sudo md5sum -c --status
+      then	# If the checksum is now different
+        echo "File $file has been manually modified since the installation or last upgrade. So it will not be replaced." >&2
+        echo "1"
+      else
+        echo "0"
+      fi
+    else
+      echo "0"
+    fi
+}
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+
+if [ $(is_checksum_different "/etc/nginx/conf.d/$domain.d/$app.conf") -eq 0 ]
+then
+    # Create a dedicated nginx config
+    ynh_add_nginx_config
+fi
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+# Create a standard user (not a system user for sftp)
+ynh_system_user_exists "$user" || \
+    useradd -d "$final_path" -M --user-group "$user"
+# Add the password to this user
+chpasswd <<< "${user}:${password}"
+
+# Change the user group for previous my_webapp install script
+groupadd -f "$user"
+usermod -g "$user" "$user"
+
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+
+if [ $(is_checksum_different "/etc/php5/fpm/pool.d/$app.conf") -eq 0 ]
+then
+    # Create a dedicated php-fpm config
+    ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
+    ynh_add_fpm_config
+fi
+
+#=================================================
+# SPECIFIC UPGRADE
+#=================================================
+# CONFIGURE SSH
+#=================================================
+
+# Remove the previous config for upgrading it
 sudo sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
+# Harden SSH connection for the user
 echo "##-> ${app}
 # Hardening user connection
 Match User ${user}
@@ -38,35 +140,32 @@ Match User ${user}
   AllowTcpForwarding no
   PermitTunnel no
   X11Forwarding no
-##<- ${app}" | sudo tee -a /etc/ssh/sshd_config >/dev/null
+##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
 
-# Fix permissions
-sudo chown -hR "${user}:" "$DESTDIR"
+systemctl reload ssh
 
-# Home directory of the user need to be owned by root to allow
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+
+# Home directory of the user needs to be owned by root to allow
 # SFTP connections
-sudo chown root: "$DESTDIR"
+chown root: "$final_path"
 
-# Set SSOwat rules
-[[ $is_public -eq 1 ]] \
-  && ynh_app_setting_set "$app" skipped_uris "/"
+#=================================================
+# SETUP SSOWAT
+#=================================================
 
-# Copy and set nginx configuration
-nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-sed -i "s@{PATH}@${path}@g"        ../conf/nginx.conf
-sed -i "s@{LOCATION}@${path:-/}@g" ../conf/nginx.conf
-sed -i "s@{DESTDIR}@${DESTDIR}@g"  ../conf/nginx.conf
-sed -i "s@{POOLNAME}@${app}@g"     ../conf/nginx.conf
-sudo cp ../conf/nginx.conf "$nginx_conf"
+# Make app public if necessary
+if [ $is_public -eq 1 ]
+then
+	ynh_app_setting_set $app skipped_uris "/"
+fi
 
-# Copy and set php-fpm configuration
-phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
-sed -i "s@{USER}@${user}@g"       ../conf/php-fpm.conf
-sed -i "s@{POOLNAME}@${app}@g"    ../conf/php-fpm.conf
-sed -i "s@{DESTDIR}@${DESTDIR}@g" ../conf/php-fpm.conf
-sudo cp ../conf/php-fpm.conf "$phpfpm_conf"
+#=================================================
+# RELOAD NGINX
+#=================================================
 
-# Reload services
-sudo systemctl reload php5-fpm
-sudo systemctl reload nginx
-sudo systemctl reload ssh
+systemctl reload nginx
