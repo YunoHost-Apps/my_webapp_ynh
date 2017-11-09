@@ -140,6 +140,7 @@ Match User ${user}
   AllowTcpForwarding no
   PermitTunnel no
   X11Forwarding no
+  PasswordAuthentication yes
 ##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
 
 systemctl reload ssh
