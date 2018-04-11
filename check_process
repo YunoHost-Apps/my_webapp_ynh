@@ -13,6 +13,7 @@
 		setup_private=1
 		setup_public=1
 		upgrade=1
+		upgrade=1	from_commit=4a6fdbdfef2951d1c86ac0448e6c00ce14c333f7
 		backup_restore=1
 		multi_instance=1
 		incorrect_path=1
@@ -33,3 +34,7 @@
 ;;; Options
 Email=
 Notification=none
+;;; Upgrade options
+	; commit=4a6fdbdfef2951d1c86ac0448e6c00ce14c333f7
+		name=Complete refactoring
+		manifest_arg=domain=DOMAIN&path=PATH&password=myreallystrengthpassword&is_public=1&with_mysql=1&
