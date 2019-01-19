@@ -26,6 +26,31 @@ user=$(ynh_app_setting_get $app user)
 #=================================================
 # STANDARD REMOVE
 #=================================================
+# STOP AND REMOVE SERVICE
+#=================================================
+
+# Remove the dedicated systemd config
+ynh_remove_systemd_config
+
+#=================================================
+# REMOVE SERVICE FROM ADMIN PANEL
+#=================================================
+
+# Remove a service from the admin panel, added by `yunohost service add`
+if yunohost service status | grep -q $app
+then
+	echo "Remove $app service"
+	yunohost service remove $app
+fi
+
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+
+# Remove metapackage and its dependencies
+ynh_remove_app_dependencies
+
+#=================================================
 # REMOVE THE MYSQL DATABASE
 #=================================================
 
