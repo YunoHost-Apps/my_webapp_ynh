@@ -8,7 +8,7 @@
     },
     "version": "1.0",
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
-    "license": "GPL-3.0-only",
+    "license": "free",
     "maintainer": {
         "name": "YunoHost Contributors",
         "email": "apps@yunohost.org"
@@ -43,15 +43,6 @@
                 "default": "/site"
             },
             {
-                "name": "is_public",
-                "type": "boolean",
-                "ask": {
-                    "en": "Is it a public website?",
-                    "fr": "Est-ce un site public ?"
-                },
-                "default": true
-            },
-            {
                 "name": "password",
                 "type": "password",
                 "ask": {
@@ -59,6 +50,15 @@
                     "fr": "Définissez le mot de passe pour l'accès SFTP. ≥ cinq charactères"
                 },
                 "example": "myreallystrengthpassword"
+            },
+            {
+                "name": "is_public",
+                "type": "boolean",
+                "ask": {
+                    "en": "Is it a public website?",
+                    "fr": "Est-ce un site public ?"
+                },
+                "default": true
             },
             {
                 "name": "with_mysql",

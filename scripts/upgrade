@@ -17,10 +17,8 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path)
- 
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
- 
 db_name=$(ynh_app_setting_get $app db_name)
 with_mysql=$(ynh_app_setting_get $app with_mysql)
 password=$(ynh_app_setting_get $app password)
