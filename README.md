@@ -1,6 +1,6 @@
 # Custom Webapp
 
-[![Integration level](https://dash.yunohost.org/integration/my_webapp.svg)](https://ci-apps.yunohost.org/jenkins/job/my_webapp%20%28Community%29/lastBuild/consoleFull)  
+[![Integration level](https://dash.yunohost.org/integration/my_webapp.svg)](https://dash.yunohost.org/appci/app/my_webapp)  
 [![Install my_webapp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=my_webapp)
 
 
