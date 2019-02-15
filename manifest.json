@@ -6,9 +6,9 @@
         "en": "Custom Web app with SFTP access",
         "fr": "Application Web personnalisée avec accès SFTP"
     },
-    "version": "1.0",
+    "version": "1.0~ynh1",
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
-    "license": "GPLv3",
+    "license": "GPL-3.0-only",
     "maintainer": {
         "name": "YunoHost Contributors",
         "email": "apps@yunohost.org"

@@ -42,8 +42,6 @@ test ! -e "$final_path" || ynh_die "This path already contains a folder"
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
@@ -90,14 +88,6 @@ ynh_system_user_exists "$user" || \
 chpasswd <<< "${user}:${password}"
 
 #=================================================
-# PHP-FPM CONFIGURATION
-#=================================================
-
-# Create a dedicated php-fpm config
-ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
-ynh_add_fpm_config
-
-#=================================================
 # SPECIFIC SETUP
 #=================================================
 # CONFIGURE SSH
@@ -120,8 +110,8 @@ systemctl reload ssh
 # FILL AND COPY SOURCE FILES
 #=================================================
 
-ynh_replace_string "{DOMAIN}" "$domain" ../sources/www/index.html
-ynh_replace_string "{USER}" "$user" ../sources/www/index.html
+ynh_replace_string "__DOMAIN__" "$domain" ../sources/www/index.html
+ynh_replace_string "__USER__" "$user" ../sources/www/index.html
 
 if [ $with_mysql -eq 1 ]; then
     # Store the database access
@@ -131,6 +121,15 @@ fi
 
 # Copy files to the right place
 cp -r ../sources "$final_path"
+
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+ynh_print_info "Configuring php-fpm..."
+
+# Create a dedicated php-fpm config
+ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
+ynh_add_fpm_config
 
 #=================================================
 # GENERIC FINALIZATION

@@ -36,6 +36,15 @@ https://github.com/YunoHost-Apps/my_webapp_ynh#upgrade"
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 
+# Fix is_public as a boolean value
+if [ "$is_public" = "Yes" ]; then
+	ynh_app_setting_set $app is_public 1
+	is_public=1
+elif [ "$is_public" = "No" ]; then
+	ynh_app_setting_set $app is_public 0
+	is_public=0
+fi
+
 # If db_name doesn't exist, create it
 if [ -z $db_name ]; then
 	db_name=$(ynh_sanitize_dbid $app)
@@ -52,11 +61,14 @@ fi
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
 
-ynh_backup_before_upgrade	# Backup the current version of the app
+# Backup the current version of the app
+ynh_backup_before_upgrade
 ynh_clean_setup () {
-	ynh_restore_upgradebackup	# restore it if the upgrade fails
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
 }
-ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # CHECK THE PATH
@@ -130,7 +142,7 @@ fi
 #=================================================
 
 # Remove the previous config for upgrading it
-sudo sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
+sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
 # Harden SSH connection for the user
 echo "##-> ${app}
 # Hardening user connection
