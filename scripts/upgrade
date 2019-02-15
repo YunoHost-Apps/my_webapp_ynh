@@ -71,31 +71,12 @@ path_url=$(ynh_normalize_url_path $path_url)
 #=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
-
-# Check if a config file was modified
-is_checksum_different () {
-    local file=$1
-    local checksum_setting_name=checksum_${file//[\/ ]/_}	# Replace all '/' and ' ' by '_'
-    local checksum_value=$(ynh_app_setting_get $app $checksum_setting_name)
-    if [ -n "$checksum_value" ]
-    then	# Proceed only if a value was stored into the app settings
-      if ! echo "$checksum_value $file" | sudo md5sum -c --status
-      then	# If the checksum is now different
-        echo "File $file has been manually modified since the installation or last upgrade. So it will not be replaced." >&2
-        echo "1"
-      else
-        echo "0"
-      fi
-    else
-      echo "0"
-    fi
-}
-
-#=================================================
 # NGINX CONFIGURATION
 #=================================================
 
-if [ $(is_checksum_different "/etc/nginx/conf.d/$domain.d/$app.conf") -eq 0 ]
+modified_config=$(ynh_backup_if_checksum_is_different "/etc/nginx/conf.d/$domain.d/$app.conf")
+# Replace nginx config only if it wasn't modified.
+if [ -z "$modified_config" ]
 then
     # Create a dedicated nginx config
     ynh_add_nginx_config
@@ -119,7 +100,9 @@ usermod -g "$user" "$user"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-if [ $(is_checksum_different "/etc/php5/fpm/pool.d/$app.conf") -eq 0 ]
+modified_config=$(ynh_backup_if_checksum_is_different "/etc/php5/fpm/pool.d/$app.conf")
+# Replace nginx config only if it wasn't modified.
+if [ -z "$modified_config" ]
 then
     # Create a dedicated php-fpm config
     ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
