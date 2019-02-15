@@ -24,15 +24,6 @@ password=$(ynh_app_setting_get $app password)
 user=$(ynh_app_setting_get $app user)
 
 #=================================================
-# CHECK IF THE UPGRADE CAN BE AUTOMATED
-#=================================================
-
-([[ -n "$with_mysql" ]] && [[ -n "$password" ]] && [[ -n "$user" ]]) \
-  || ynh_die "The app changed and can not be automatically upgraded. \
-You will have to manually upgrade it following these instructions: \
-https://github.com/YunoHost-Apps/my_webapp_ynh#upgrade"
-
-#=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 
