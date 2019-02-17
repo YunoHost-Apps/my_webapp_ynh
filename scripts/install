@@ -31,6 +31,7 @@ app_nb=$YNH_APP_INSTANCE_NUMBER
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
+ynh_print_info "Validating installation parameters..."
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
@@ -48,6 +49,7 @@ ynh_webpath_register $app $domain $path_url
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
+ynh_print_info "Storing installation settings..."
 
 user=webapp${app_nb}
 ynh_app_setting_set $app domain $domain
@@ -65,6 +67,7 @@ ynh_app_setting_set $app final_path $final_path
 #=================================================
 
 if [ $with_mysql -eq 1 ]; then
+    ynh_print_info "Creating a MySQL database..."
     db_name=$(ynh_sanitize_dbid $app)
     ynh_app_setting_set $app db_name $db_name
     ynh_mysql_setup_db $db_name $db_name
@@ -73,6 +76,7 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Configuring nginx web server..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -80,6 +84,7 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_print_info "Configuring system user..."
 
 # Create a standard user (not a system user for sftp)
 ynh_system_user_exists "$user" || \
@@ -92,6 +97,7 @@ chpasswd <<< "${user}:${password}"
 #=================================================
 # CONFIGURE SSH
 #=================================================
+ynh_print_info "Configuring ssh..."
 
 # Harden SSH connection for the user
 echo "##-> ${app}
@@ -146,6 +152,7 @@ chown root: "$final_path"
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_print_info "Configuring SSOwat..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
@@ -156,5 +163,12 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Installation of $app completed"
