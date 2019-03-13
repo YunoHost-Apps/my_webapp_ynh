@@ -6,6 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
+source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -23,6 +24,7 @@ domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 password=$YNH_APP_ARG_PASSWORD
 is_public=$YNH_APP_ARG_IS_PUBLIC
+
 with_mysql=$YNH_APP_ARG_WITH_MYSQL
 
 app=$YNH_APP_INSTANCE_NAME
@@ -42,8 +44,6 @@ test ! -e "$final_path" || ynh_die "This path already contains a folder"
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
@@ -117,7 +117,7 @@ Match User ${user}
 systemctl reload ssh
 
 #=================================================
-# FILL AND COPY SOURCE FILES
+# MODIFY A CONFIG FILE
 #=================================================
 
 ynh_replace_string "{DOMAIN}" "$domain" ../sources/www/index.html
@@ -138,7 +138,6 @@ cp -r ../sources "$final_path"
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Set permissions to app files
 chown -R $user: "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
