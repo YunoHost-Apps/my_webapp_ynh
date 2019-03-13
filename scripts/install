@@ -6,6 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
+source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -23,6 +24,7 @@ domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 password=$YNH_APP_ARG_PASSWORD
 is_public=$YNH_APP_ARG_IS_PUBLIC
+
 with_mysql=$YNH_APP_ARG_WITH_MYSQL
 
 app=$YNH_APP_INSTANCE_NAME
@@ -113,7 +115,7 @@ Match User ${user}
 systemctl reload ssh
 
 #=================================================
-# FILL AND COPY SOURCE FILES
+# MODIFY A CONFIG FILE
 #=================================================
 
 ynh_replace_string "__DOMAIN__" "$domain" ../sources/www/index.html
@@ -143,7 +145,6 @@ ynh_add_fpm_config
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Set permissions to app files
 chown -R $user: "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
