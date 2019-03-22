@@ -28,10 +28,6 @@ app=$YNH_APP_INSTANCE_NAME
 # Needed for helper "ynh_add_nginx_config"
 final_path=$(ynh_app_setting_get $app final_path)
 
-# Add settings here as needed by your application
-#db_name=$(ynh_app_setting_get "$app" db_name)
-#db_pwd=$(ynh_app_setting_get $app db_pwd)
-
 #=================================================
 # CHECK THE SYNTAX OF THE PATHS
 #=================================================
@@ -86,12 +82,6 @@ then
 	# Store file checksum for the new config file location
 	ynh_store_file_checksum "/etc/nginx/conf.d/$new_domain.d/$app.conf"
 fi
-
-#=================================================
-# SPECIFIC MODIFICATIONS
-#=================================================
-# ...
-#=================================================
 
 #=================================================
 # GENERIC FINALISATION
