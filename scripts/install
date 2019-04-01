@@ -6,6 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
+source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -23,6 +24,7 @@ domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 password=$YNH_APP_ARG_PASSWORD
 is_public=$YNH_APP_ARG_IS_PUBLIC
+
 with_mysql=$YNH_APP_ARG_WITH_MYSQL
 
 app=$YNH_APP_INSTANCE_NAME
@@ -31,6 +33,7 @@ app_nb=$YNH_APP_INSTANCE_NUMBER
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
+ynh_print_info "Validating installation parameters..."
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
@@ -42,14 +45,13 @@ test ! -e "$final_path" || ynh_die "This path already contains a folder"
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
+ynh_print_info "Storing installation settings..."
 
 user=webapp${app_nb}
 ynh_app_setting_set $app domain $domain
@@ -67,6 +69,7 @@ ynh_app_setting_set $app final_path $final_path
 #=================================================
 
 if [ $with_mysql -eq 1 ]; then
+    ynh_print_info "Creating a MySQL database..."
     db_name=$(ynh_sanitize_dbid $app)
     ynh_app_setting_set $app db_name $db_name
     ynh_mysql_setup_db $db_name $db_name
@@ -75,6 +78,7 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Configuring nginx web server..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -82,6 +86,7 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_print_info "Configuring system user..."
 
 # Create a standard user (not a system user for sftp)
 ynh_system_user_exists "$user" || \
@@ -90,18 +95,11 @@ ynh_system_user_exists "$user" || \
 chpasswd <<< "${user}:${password}"
 
 #=================================================
-# PHP-FPM CONFIGURATION
-#=================================================
-
-# Create a dedicated php-fpm config
-ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
-ynh_add_fpm_config
-
-#=================================================
 # SPECIFIC SETUP
 #=================================================
 # CONFIGURE SSH
 #=================================================
+ynh_print_info "Configuring ssh..."
 
 # Harden SSH connection for the user
 echo "##-> ${app}
@@ -117,11 +115,11 @@ Match User ${user}
 systemctl reload ssh
 
 #=================================================
-# FILL AND COPY SOURCE FILES
+# MODIFY A CONFIG FILE
 #=================================================
 
-ynh_replace_string "{DOMAIN}" "$domain" ../sources/www/index.html
-ynh_replace_string "{USER}" "$user" ../sources/www/index.html
+ynh_replace_string "__DOMAIN__" "$domain" ../sources/www/index.html
+ynh_replace_string "__USER__" "$user" ../sources/www/index.html
 
 if [ $with_mysql -eq 1 ]; then
     # Store the database access
@@ -133,12 +131,20 @@ fi
 cp -r ../sources "$final_path"
 
 #=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+ynh_print_info "Configuring php-fpm..."
+
+# Create a dedicated php-fpm config
+ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
+ynh_add_fpm_config
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Set permissions to app files
 chown -R $user: "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
@@ -147,6 +153,7 @@ chown root: "$final_path"
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_print_info "Configuring SSOwat..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
@@ -157,5 +164,12 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Installation of $app completed"

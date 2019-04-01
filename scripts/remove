@@ -6,18 +6,22 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
+source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_print_info "Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get $app domain)
 with_mysql=$(ynh_app_setting_get $app with_mysql)
 user=$(ynh_app_setting_get $app user)
+
 db_name=$(ynh_app_setting_get $app db_name)
+db_user=$db_name
 final_path=$(ynh_app_setting_get $app final_path)
 
 #=================================================
@@ -27,13 +31,15 @@ final_path=$(ynh_app_setting_get $app final_path)
 #=================================================
 
 if [ $with_mysql -eq 1 ]; then
+    ynh_print_info "Removing the MySQL database"
     # Remove a database if it exists, along with the associated user
-    ynh_mysql_remove_db $db_name $db_name
+    ynh_mysql_remove_db $db_user $db_name
 fi
 
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
+ynh_print_info "Removing app main directory"
 
 # Remove the app directory securely
 ynh_secure_remove "$final_path"
@@ -41,6 +47,8 @@ ynh_secure_remove "$final_path"
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Removing nginx web server configuration"
+
 
 # Remove the dedicated nginx config
 ynh_remove_nginx_config
@@ -48,6 +56,7 @@ ynh_remove_nginx_config
 #=================================================
 # REMOVE PHP-FPM CONFIGURATION
 #=================================================
+ynh_print_info "Removing php-fpm configuration"
 
 # Remove the dedicated php-fpm config
 ynh_remove_fpm_config
@@ -57,6 +66,7 @@ ynh_remove_fpm_config
 #=================================================
 # REMOVE THE CUSTOM SSH CONFIG
 #=================================================
+ynh_print_info "Removing the custom ssh config"
 
 sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
 systemctl reload ssh
@@ -66,6 +76,13 @@ systemctl reload ssh
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
+ynh_print_info "Removing the dedicated system user"
 
 # Delete an user
 ynh_system_user_delete $user
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Removal of $app completed"
