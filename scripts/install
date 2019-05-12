@@ -33,34 +33,33 @@ app_nb=$YNH_APP_INSTANCE_NUMBER
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_print_info "Validating installation parameters..."
+ynh_script_progression --message="Validating installation parameters..." --weight=2
 
 final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die "This path already contains a folder"
+test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
 # Check password strength
-[[ ${#password} -gt 5 ]] || ynh_die \
-"The password is too weak, it must be longer than 5 characters"
-
-# Normalize the url path syntax
-path_url=$(ynh_normalize_url_path $path_url)
+if [ ${#password} -le 5 ]
+then
+    ynh_die --message="The password is too weak, it must be longer than 5 characters"
+fi
 
 # Register (book) web path
-ynh_webpath_register $app $domain $path_url
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_print_info "Storing installation settings..."
+ynh_script_progression --message="Storing installation settings..."
 
 user=webapp${app_nb}
-ynh_app_setting_set $app domain $domain
-ynh_app_setting_set $app path $path_url
-ynh_app_setting_set $app is_public $is_public
-ynh_app_setting_set $app with_mysql $with_mysql
-ynh_app_setting_set $app password "$password"
-ynh_app_setting_set $app user $user
-ynh_app_setting_set $app final_path $final_path
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=is_public --value=$is_public
+ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
+ynh_app_setting_set --app=$app --key=password --value="$password"
+ynh_app_setting_set --app=$app --key=user --value=$user
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -69,16 +68,17 @@ ynh_app_setting_set $app final_path $final_path
 #=================================================
 
 if [ $with_mysql -eq 1 ]; then
-    ynh_print_info "Creating a MySQL database..."
-    db_name=$(ynh_sanitize_dbid $app)
-    ynh_app_setting_set $app db_name $db_name
-    ynh_mysql_setup_db $db_name $db_name
+    ynh_script_progression --message="Creating a MySQL database..." --weight=2
+
+    db_name=$(ynh_sanitize_dbid --db_name=$app)
+    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+    ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name
 fi
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_print_info "Configuring nginx web server..."
+ynh_script_progression --message="Configuring nginx web server..." --weight=2
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -86,10 +86,10 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_print_info "Configuring system user..."
+ynh_script_progression --message="Configuring system user..."
 
 # Create a standard user (not a system user for sftp)
-ynh_system_user_exists "$user" || \
+ynh_system_user_exists --username=$user || \
     useradd -d "$final_path" -M --user-group "$user"
 # Add the password to this user
 chpasswd <<< "${user}:${password}"
@@ -99,7 +99,7 @@ chpasswd <<< "${user}:${password}"
 #=================================================
 # CONFIGURE SSH
 #=================================================
-ynh_print_info "Configuring ssh..."
+ynh_script_progression --message="Configuring ssh..."
 
 # Harden SSH connection for the user
 echo "##-> ${app}
@@ -112,14 +112,14 @@ Match User ${user}
   X11Forwarding no
 ##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
 
-systemctl reload ssh
+ynh_systemd_action --service_name=ssh --action=reload
 
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
 
-ynh_replace_string "__DOMAIN__" "$domain" ../sources/www/index.html
-ynh_replace_string "__USER__" "$user" ../sources/www/index.html
+ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file=../sources/www/index.html
+ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=../sources/www/index.html
 
 if [ $with_mysql -eq 1 ]; then
     # Store the database access
@@ -133,10 +133,10 @@ cp -r ../sources "$final_path"
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_print_info "Configuring php-fpm..."
+ynh_script_progression --message="Configuring php-fpm..." --weight=2
 
 # Create a dedicated php-fpm config
-ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
+ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file="../conf/php-fpm.conf"
 ynh_add_fpm_config
 
 #=================================================
@@ -153,23 +153,23 @@ chown root: "$final_path"
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_print_info "Configuring SSOwat..."
+ynh_script_progression --message="Configuring SSOwat..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	ynh_app_setting_set $app skipped_uris "/"
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..."
 
-systemctl reload nginx
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Installation of $app completed"
+ynh_script_progression --message="Installation of $app completed" --last
