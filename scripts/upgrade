@@ -107,7 +107,7 @@ usermod -g "$user" "$user"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-modified_config=$(ynh_backup_if_checksum_is_different --file="/etc/php5/fpm/pool.d/$app.conf")
+modified_config=$(ynh_backup_if_checksum_is_different --file="/etc/php/7.0/fpm/pool.d/$app.conf")
 # Replace nginx config only if it wasn't modified.
 if [ -z "$modified_config" ]
 then
