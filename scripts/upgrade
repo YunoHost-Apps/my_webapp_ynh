@@ -12,58 +12,49 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info "Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..." --weight=2
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get $app domain)
-path_url=$(ynh_app_setting_get $app path)
-is_public=$(ynh_app_setting_get $app is_public)
-final_path=$(ynh_app_setting_get $app final_path)
-db_name=$(ynh_app_setting_get $app db_name)
-with_mysql=$(ynh_app_setting_get $app with_mysql)
-password=$(ynh_app_setting_get $app password)
-user=$(ynh_app_setting_get $app user)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
+password=$(ynh_app_setting_get --app=$app --key=password)
+user=$(ynh_app_setting_get --app=$app --key=user)
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_print_info "Ensuring downward compatibility..."
+ynh_script_progression --message="Ensuring downward compatibility..."
 
 # Fix is_public as a boolean value
 if [ "$is_public" = "Yes" ]; then
-	ynh_app_setting_set $app is_public 1
+	ynh_app_setting_set --app=$app --key=is_public --value=1
 	is_public=1
 elif [ "$is_public" = "No" ]; then
-	ynh_app_setting_set $app is_public 0
-	is_public=0
-fi
-
-# Fix is_public as a boolean value
-if [ "$is_public" = "Yes" ]; then
-	ynh_app_setting_set $app is_public 1
-	is_public=1
-elif [ "$is_public" = "No" ]; then
-	ynh_app_setting_set $app is_public 0
+	ynh_app_setting_set --app=$app --key=is_public --value=0
 	is_public=0
 fi
 
 # If db_name doesn't exist, create it
-if [ -z $db_name ]; then
-	db_name=$(ynh_sanitize_dbid $app)
-	ynh_app_setting_set $app db_name $db_name
+if [ -z "$db_name" ]; then
+	db_name=$(ynh_sanitize_dbid --db_name=$app)
+	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 fi
 
 # If final_path doesn't exist, create it
-if [ -z $final_path ]; then
+if [ -z "$final_path" ]; then
 	final_path=/var/www/$app
-	ynh_app_setting_set $app final_path $final_path
+	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_print_info "Backing up the app before upgrading (may take a while)..."
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=3
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -79,7 +70,7 @@ ynh_abort_if_errors
 #=================================================
 
 # Normalize the URL path syntax
-path_url=$(ynh_normalize_url_path $path_url)
+path_url=$(ynh_normalize_url_path --path_url=$path_url)
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -87,11 +78,12 @@ path_url=$(ynh_normalize_url_path $path_url)
 # NGINX CONFIGURATION
 #=================================================
 
-modified_config=$(ynh_backup_if_checksum_is_different "/etc/nginx/conf.d/$domain.d/$app.conf")
+modified_config=$(ynh_backup_if_checksum_is_different --file="/etc/nginx/conf.d/$domain.d/$app.conf")
 # Replace nginx config only if it wasn't modified.
 if [ -z "$modified_config" ]
 then
-    ynh_print_info "Upgrading nginx web server configuration..."
+    ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=2
+
     # Create a dedicated nginx config
     ynh_add_nginx_config
 fi
@@ -99,10 +91,10 @@ fi
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_print_info "Making sure dedicated system user exists..."
+ynh_script_progression --message="Making sure dedicated system user exists..." --weight=2
 
 # Create a standard user (not a system user for sftp)
-ynh_system_user_exists "$user" || \
+ynh_system_user_exists --username=$user || \
     useradd -d "$final_path" -M --user-group "$user"
 # Add the password to this user
 chpasswd <<< "${user}:${password}"
@@ -115,13 +107,14 @@ usermod -g "$user" "$user"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-modified_config=$(ynh_backup_if_checksum_is_different "/etc/php5/fpm/pool.d/$app.conf")
+modified_config=$(ynh_backup_if_checksum_is_different --file="/etc/php/7.0/fpm/pool.d/$app.conf")
 # Replace nginx config only if it wasn't modified.
 if [ -z "$modified_config" ]
 then
-    ynh_print_info "Upgrading php-fpm configuration..."
+    ynh_script_progression --message="Upgrading php-fpm configuration..." --weight=2
+
     # Create a dedicated php-fpm config
-    ynh_replace_string "__USER__" "$user" "../conf/php-fpm.conf"
+    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file="../conf/php-fpm.conf"
     ynh_add_fpm_config
 fi
 
@@ -130,7 +123,7 @@ fi
 #=================================================
 # CONFIGURE SSH
 #=================================================
-ynh_print_info "Configuring ssh..."
+ynh_script_progression --message="Configuring ssh..." --time --weight=1
 
 # Remove the previous config for upgrading it
 sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
@@ -145,7 +138,7 @@ Match User ${user}
   X11Forwarding no
 ##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
 
-systemctl reload ssh
+ynh_systemd_action --service_name=ssh --action=reload
 
 #=================================================
 # GENERIC FINALIZATION
@@ -160,23 +153,23 @@ chown root: "$final_path"
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_print_info "Upgrading SSOwat configuration..."
+ynh_script_progression --message="Upgrading SSOwat configuration..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	ynh_app_setting_set $app skipped_uris "/"
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..."
 
-systemctl reload nginx
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Upgrade of $app completed"
+ynh_script_progression --message="Upgrade of $app completed" --last
