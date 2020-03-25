@@ -24,6 +24,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 password=$YNH_APP_ARG_PASSWORD
+with_sftp=$YNH_APP_ARG_WITH_SFTP
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 with_mysql=$YNH_APP_ARG_WITH_MYSQL
@@ -39,10 +40,13 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
-# Check password strength
-if [ ${#password} -le 5 ]
+if [ $with_sftp -eq 1 ]
 then
-    ynh_die --message="The password is too weak, it must be longer than 5 characters"
+    # Check password strength
+    if [ ${#password} -le 5 ]
+    then
+        ynh_die --message="The password is too weak, it must be longer than 5 characters"
+    fi
 fi
 
 # Register (book) web path
@@ -58,7 +62,7 @@ ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
-ynh_app_setting_set --app=$app --key=password --value="$password"
+ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=user --value=$user
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 
@@ -94,35 +98,47 @@ ynh_script_progression --message="Configuring system user..."
 # Create a standard user (not a system user for sftp)
 ynh_system_user_exists --username=$user || \
     useradd -d "$final_path" -M --user-group "$user"
-# Add the password to this user
-chpasswd <<< "${user}:${password}"
+if [ $with_sftp -eq 1 ]
+then
+    # Add the password to this user
+    ynh_print_OFF; chpasswd <<< "${user}:${password}"; ynh_print_ON
+    ynh_print_OFF; ynh_app_setting_set --app=$app --key=password --value="$password"; ynh_print_ON
+fi
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 # CONFIGURE SSH
 #=================================================
-ynh_script_progression --message="Configuring ssh..."
+if [ $with_sftp -eq 1 ]
+then
+    ynh_script_progression --message="Configuring ssh..."
 
-# Harden SSH connection for the user
-echo "##-> ${app}
-# Hardening user connection
-Match User ${user}
-  ChrootDirectory %h
-  ForceCommand internal-sftp
-  AllowTcpForwarding no
-  PermitTunnel no
-  X11Forwarding no
-##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
+    cp -R ../conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
 
-ynh_systemd_action --service_name=ssh --action=reload
+    ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+
+    yunohost tools regen-conf ssh
+fi
 
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
 
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file=../sources/www/index.html
-ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=../sources/www/index.html
+mkdir -p "$final_path/www"
+
+if [ $with_sftp -eq 1 ]
+then
+    ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file=../sources/www/index.html
+    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=../sources/www/index.html
+
+    # Copy files to the right place
+    cp "../sources/www/index.html" "$final_path/www/index.html"
+else
+    # Copy files to the right place
+    cp "../sources/www/index_no_sftp.html" "$final_path/www/index.html"
+fi
 
 if [ $with_mysql -eq 1 ]; then
     # Store the database access

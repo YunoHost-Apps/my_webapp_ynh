@@ -29,6 +29,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 password=$(ynh_app_setting_get --app=$app --key=password)
+with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 user=$(ynh_app_setting_get --app=$app --key=user)
 
 #=================================================
@@ -76,8 +77,14 @@ ynh_script_progression --message="Recreating the dedicated system user..." --wei
 # Create a standard user (not a system user for sftp)
 ynh_system_user_exists --username=$user || \
     useradd -d "$final_path" -M --user-group "$user"
-# Add the password to this user
-chpasswd <<< "${user}:${password}"
+
+ynh_print_OFF
+if [ -n "$password" ]
+then
+    # Add the password to this user
+    chpasswd <<< "${user}:${password}"
+fi
+ynh_print_ON
 
 #=================================================
 # RESTORE USER RIGHTS
@@ -100,20 +107,15 @@ ynh_restore_file --origin_path="/etc/php/7.0/fpm/pool.d/$app.conf"
 #=================================================
 # CONFIGURE SSH
 #=================================================
-ynh_script_progression --message="Configuring ssh..."
 
-# Harden SSH connection for the user
-echo "##-> ${app}
-# Hardening user connection
-Match User ${user}
-  ChrootDirectory %h
-  ForceCommand internal-sftp
-  AllowTcpForwarding no
-  PermitTunnel no
-  X11Forwarding no
-##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
+if [ $with_sftp -eq 1 ]
+then
+    ynh_script_progression --message="Configuring ssh..."
 
-ynh_systemd_action --service_name=ssh --action=reload
+    ynh_restore_file "/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
+
+    yunohost tools regen-conf ssh
+fi
 
 #=================================================
 # GENERIC FINALIZATION

@@ -24,6 +24,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 password=$(ynh_app_setting_get --app=$app --key=password)
+with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 user=$(ynh_app_setting_get --app=$app --key=user)
 
 admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
@@ -69,6 +70,13 @@ if [ -z "$fpm_usage" ]; then
 	fpm_usage=low
 	ynh_app_setting_set --app=$app --key=fpm_usage --value=$fpm_usage
 fi
+
+# If with_sftp doesn't exist, create it
+if [ -z "$with_sftp" ]; then
+	with_sftp=1
+	ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
+fi
+
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
@@ -114,8 +122,11 @@ ynh_script_progression --message="Making sure dedicated system user exists..." -
 # Create a standard user (not a system user for sftp)
 ynh_system_user_exists --username=$user || \
     useradd -d "$final_path" -M --user-group "$user"
-# Add the password to this user
-chpasswd <<< "${user}:${password}"
+if [ $with_sftp -eq 1 ]
+then
+    # Add the password to this user
+    ynh_print_OFF; chpasswd <<< "${user}:${password}"; ynh_print_ON
+fi
 
 # Change the user group for previous my_webapp install script
 groupadd -f "$user"
@@ -148,22 +159,18 @@ fi
 #=================================================
 # CONFIGURE SSH
 #=================================================
-ynh_script_progression --message="Configuring ssh..." --time --weight=1
 
-# Remove the previous config for upgrading it
-sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
-# Harden SSH connection for the user
-echo "##-> ${app}
-# Hardening user connection
-Match User ${user}
-  ChrootDirectory %h
-  ForceCommand internal-sftp
-  AllowTcpForwarding no
-  PermitTunnel no
-  X11Forwarding no
-##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
+if [ $with_sftp -eq 1 ]
+then
+    ynh_script_progression --message="Configuring ssh..." --weight=1
 
-ynh_systemd_action --service_name=ssh --action=reload
+    cp -R ../conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+
+    ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+
+    yunohost tools regen-conf ssh
+fi
 
 #=================================================
 # GENERIC FINALIZATION

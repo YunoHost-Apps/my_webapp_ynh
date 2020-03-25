@@ -43,8 +43,18 @@
                 "default": "/site"
             },
             {
+                "name": "with_sftp",
+                "type": "boolean",
+                "ask": {
+                    "en": "Do you need a SFTP access?",
+                    "fr": "Avez-vous besoin d'un accès SFTP ?"
+                },
+                "default": true
+            },
+            {
                 "name": "password",
                 "type": "password",
+                "optional": true,
                 "ask": {
                     "en": "Set the password for the SFTP access. ≥ 5 character",
                     "fr": "Définissez le mot de passe pour l'accès SFTP. ≥ cinq charactères"
