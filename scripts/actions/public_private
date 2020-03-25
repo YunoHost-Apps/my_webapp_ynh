@@ -1,0 +1,74 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+# Get is_public
+is_public=${YNH_ACTION_IS_PUBLIC}
+
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+
+#=================================================
+# CHECK IF ARGUMENTS ARE CORRECT
+#=================================================
+
+#=================================================
+# CHECK IF AN ACTION HAS TO BE DONE
+#=================================================
+
+is_public_old=$(ynh_app_setting_get --app=$app --key=is_public)
+
+if [ $is_public -eq $is_public_old ]
+then
+    ynh_die --message="is_public is already set as $is_public." --ret_code=0
+fi
+
+#=================================================
+# SPECIFIC ACTION
+#=================================================
+# MOVE TO PUBLIC OR PRIVATE
+#=================================================
+
+if [ $is_public -eq 0 ]; then
+	public_private="private"
+else
+	public_private="public"
+fi
+ynh_script_progression --message="Moving the application to $public_private..." --weight=3
+
+if [ $is_public -eq 0 ]
+then
+	ynh_app_setting_delete --app=$app --key=skipped_uris
+else
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
+fi
+
+ynh_script_progression --message="Upgrading SSOwat configuration..."
+# Regen ssowat configuration
+yunohost app ssowatconf
+
+# Update the config of the app
+ynh_app_setting_set --app=$app --key=is_public --value=$is_public
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading nginx web server..."
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Execution completed" --last

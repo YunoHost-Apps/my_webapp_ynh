@@ -27,6 +27,8 @@ password=$(ynh_app_setting_get --app=$app --key=password)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 user=$(ynh_app_setting_get --app=$app --key=user)
 
+overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
+overwrite_phpfpm=$(ynh_app_setting_get --app=$app --key=overwrite_phpfpm)
 admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
 
 fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
@@ -58,6 +60,23 @@ if [ -z "$final_path" ]; then
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
+# If overwrite_nginx doesn't exist, create it
+if [ -z "$overwrite_nginx" ]; then
+	overwrite_nginx=0
+	ynh_app_setting_set --app=$app --key=overwrite_nginx --value=$overwrite_nginx
+fi
+
+# If overwrite_phpfpm doesn't exist, create it
+if [ -z "$overwrite_phpfpm" ]; then
+	overwrite_phpfpm=1
+	ynh_app_setting_set --app=$app --key=overwrite_phpfpm --value=$overwrite_phpfpm
+fi
+
+# If admin_mail_html doesn't exist, create it
+if [ -z "$admin_mail_html" ]; then
+	admin_mail_html=1
+	ynh_app_setting_set --app=$app --key=admin_mail_html --value=$admin_mail_html
+fi
 
 # If fpm_footprint doesn't exist, create it
 if [ -z "$fpm_footprint" ]; then
@@ -104,9 +123,8 @@ path_url=$(ynh_normalize_url_path --path_url=$path_url)
 # NGINX CONFIGURATION
 #=================================================
 
-modified_config=$(ynh_backup_if_checksum_is_different --file="/etc/nginx/conf.d/$domain.d/$app.conf")
-# Replace nginx config only if it wasn't modified.
-if [ -z "$modified_config" ]
+# Overwrite the nginx configuration only if it's allowed
+if [ $overwrite_nginx -eq 1 ]
 then
     ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=2
 
@@ -136,9 +154,8 @@ usermod -g "$user" "$user"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-modified_config=$(ynh_backup_if_checksum_is_different --file="/etc/php/7.0/fpm/pool.d/$app.conf")
-# Replace nginx config only if it wasn't modified.
-if [ -z "$modified_config" ]
+# Overwrite the php-fpm configuration only if it's allowed
+if [ $overwrite_phpfpm -eq 1 ]
 then
     ynh_script_progression --message="Upgrading php-fpm configuration..." --weight=2
 
