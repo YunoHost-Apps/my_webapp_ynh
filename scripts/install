@@ -23,8 +23,8 @@ ynh_abort_if_errors
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
-password=$YNH_APP_ARG_PASSWORD
 with_sftp=$YNH_APP_ARG_WITH_SFTP
+ynh_print_OFF; password=$YNH_APP_ARG_PASSWORD; ynh_print_ON
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 with_mysql=$YNH_APP_ARG_WITH_MYSQL
@@ -76,7 +76,8 @@ ynh_app_setting_set --app=$app --key=admin_mail_html --value=1
 # CREATE A MYSQL DATABASE
 #=================================================
 
-if [ $with_mysql -eq 1 ]; then
+if [ $with_mysql -eq 1 ]
+then
     ynh_script_progression --message="Creating a MySQL database..." --weight=2
 
     db_name=$(ynh_sanitize_dbid --db_name=$app)
@@ -145,11 +146,11 @@ fi
 if [ $with_mysql -eq 1 ]; then
     # Store the database access
     echo -e "# MySQL Database
-    name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
-fi
+name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
 
-# Copy files to the right place
-cp -r ../sources "$final_path"
+    # Copy files to the right place
+    cp -r "../sources/db_access.txt" "$final_path/db_access.txt"
+fi
 
 #=================================================
 # PHP-FPM CONFIGURATION

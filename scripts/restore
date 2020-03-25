@@ -28,8 +28,8 @@ path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
-password=$(ynh_app_setting_get --app=$app --key=password)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
+ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
 user=$(ynh_app_setting_get --app=$app --key=user)
 
 #=================================================

@@ -23,8 +23,8 @@ is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
-password=$(ynh_app_setting_get --app=$app --key=password)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
+ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
 user=$(ynh_app_setting_get --app=$app --key=user)
 
 overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
@@ -33,6 +33,12 @@ admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
 
 fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
 fpm_usage=$(ynh_app_setting_get --app=$app --key=fpm_usage)
+
+#=================================================
+# CHECK VERSION
+#=================================================
+
+upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -116,6 +122,13 @@ ynh_abort_if_errors
 
 # Normalize the URL path syntax
 path_url=$(ynh_normalize_url_path --path_url=$path_url)
+
+#=================================================
+# ACTIVATE MAINTENANCE MODE
+#=================================================
+ynh_script_progression --message="Activating maintenance mode..."
+
+ynh_maintenance_mode_ON
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -216,6 +229,13 @@ fi
 ynh_script_progression --message="Reloading nginx web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# DEACTIVE MAINTENANCE MODE
+#=================================================
+ynh_script_progression --message="Disabling maintenance mode..."
+
+ynh_maintenance_mode_OFF
 
 #=================================================
 # SEND A README FOR THE ADMIN

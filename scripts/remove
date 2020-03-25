@@ -86,7 +86,7 @@ fi
 ynh_script_progression --message="Removing the dedicated system user..."
 
 # Delete a system user
-ynh_system_user_delete --username=$app
+ynh_system_user_delete --username=$user
 
 #=================================================
 # END OF SCRIPT
