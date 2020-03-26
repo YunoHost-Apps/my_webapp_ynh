@@ -218,7 +218,7 @@ if [ $with_sftp -eq 1 ]
 then
     sftp_infos="You can connect to this repository by using sftp with the following credentials.
 Domain: $domain
-Port: 22 (or the port you defined if you change the ssh port)
+Port: $(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 User: $user
 Password: The one you set at installation."
 else
