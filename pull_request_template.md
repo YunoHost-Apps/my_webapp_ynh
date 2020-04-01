@@ -13,11 +13,9 @@
 
 ## Validation
 ---
-*Minor decision*
-- **Upgrade previous version** : 
 - [ ] **Code review** : 
-- [ ] **Approval (LGTM)** : 
-- [ ] **Approval (LGTM)** : 
+- [ ] **Approval (LGTM)** :  
+*Code review and approval have to be from a member of @YunoHost-Apps/apps-group*
 - **CI succeeded** : 
 [![Build Status](https://ci-apps-hq.yunohost.org/jenkins/job/my_webapp_ynh%20PR-NUM-/badge/icon)](https://ci-apps-hq.yunohost.org/jenkins/job/my_webapp_ynh%20PR-NUM-/)  
 *Please replace '-NUM-' in this link by the PR number.*  
