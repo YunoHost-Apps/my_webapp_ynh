@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+
+#=================================================
+# CHECK IF ARGUMENTS ARE CORRECT
+#=================================================
+
+#=================================================
+# CHECK IF AN ACTION HAS TO BE DONE
+#=================================================
+
+#=================================================
+# SPECIFIC ACTION
+#=================================================
+# REMOVE THE PREVIOUS DATABASE
+#=================================================
+ynh_script_progression --message="Removing the previous database..." --weight=6
+
+if [ $with_mysql -eq 1 ]
+then
+	yunohost app action run $app remove_database
+fi
+
+#=================================================
+# CREATE A NEW DATABASE
+#=================================================
+ynh_script_progression --message="Creating a new database..." --weight=4
+
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+
+# Reuse the previous password if existing
+db_pwd=$(grep "pass:" "$final_path/db_access.txt" | cut -d' ' -f2 2> /dev/null)
+
+ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
+
+echo -e "# MySQL Database
+    name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > "$final_path/db_access.txt"
+
+# Update the config of the app
+ynh_app_setting_set --app=$app --key=with_mysql --value=1
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Execution completed" --last

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+force=${2:-0}  # 0/1 --force argument
+dryrun=${3:-0}  # 0/1 --dry-run argument
+pending_conf=$4 # Path of the pending conf file
+
+# https://github.com/YunoHost/yunohost/blob/c7eaeca6486e6240c832b8863791f8b03520a0f0/data/hooks/conf_regen/43-dnsmasq
+
+do_pre_regen() {
+    if [ $dryrun -eq 0 ]
+    then
+        # Remove added lines into the sshd config
+        sed -i "/##-> __APP__/,/##<- __APP__/d" /etc/ssh/sshd_config
+    fi
+}
+
+do_post_regen() {
+    # Harden SSH connection for the user
+    if ! grep --quiet "^##-> __APP__$" /etc/ssh/sshd_config
+    then
+        echo "##-> __APP__
+    # Hardening user connection
+    Match User __USER__
+    ChrootDirectory %h
+    ForceCommand internal-sftp
+    AllowTcpForwarding no
+    PermitTunnel no
+    X11Forwarding no
+    PasswordAuthentication yes
+##<- __APP__" | tee -a "/etc/ssh/sshd_config" >/dev/null
+
+        # Reload sshd
+        systemctl reload ssh
+   fi
+}
+
+case "$1" in
+    pre)
+        do_pre_regen
+        ;;
+    post)
+        do_post_regen
+        ;;
+    *)
+        echo "Hook called with unknown argument \`$1'" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

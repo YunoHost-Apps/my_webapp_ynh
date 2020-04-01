@@ -8,6 +8,7 @@
 
 source _common.sh
 source /usr/share/yunohost/helpers
+source _ynh_add_fpm_config
 
 #=================================================
 # MANAGE SCRIPT FAILURE
@@ -22,7 +23,8 @@ ynh_abort_if_errors
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
-password=$YNH_APP_ARG_PASSWORD
+with_sftp=$YNH_APP_ARG_WITH_SFTP
+ynh_print_OFF; password=$YNH_APP_ARG_PASSWORD; ynh_print_ON
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 with_mysql=$YNH_APP_ARG_WITH_MYSQL
@@ -38,10 +40,13 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
-# Check password strength
-if [ ${#password} -le 5 ]
+if [ $with_sftp -eq 1 ]
 then
-    ynh_die --message="The password is too weak, it must be longer than 5 characters"
+    # Check password strength
+    if [ ${#password} -le 5 ]
+    then
+        ynh_die --message="The password is too weak, it must be longer than 5 characters"
+    fi
 fi
 
 # Register (book) web path
@@ -57,9 +62,13 @@ ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
-ynh_app_setting_set --app=$app --key=password --value="$password"
+ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=user --value=$user
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+
+ynh_app_setting_set --app=$app --key=overwrite_nginx --value=0
+ynh_app_setting_set --app=$app --key=overwrite_phpfpm --value=1
+ynh_app_setting_set --app=$app --key=admin_mail_html --value=1
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -67,7 +76,8 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # CREATE A MYSQL DATABASE
 #=================================================
 
-if [ $with_mysql -eq 1 ]; then
+if [ $with_mysql -eq 1 ]
+then
     ynh_script_progression --message="Creating a MySQL database..." --weight=2
 
     db_name=$(ynh_sanitize_dbid --db_name=$app)
@@ -91,44 +101,56 @@ ynh_script_progression --message="Configuring system user..."
 # Create a standard user (not a system user for sftp)
 ynh_system_user_exists --username=$user || \
     useradd -d "$final_path" -M --user-group "$user"
-# Add the password to this user
-chpasswd <<< "${user}:${password}"
+if [ $with_sftp -eq 1 ]
+then
+    # Add the password to this user
+    ynh_print_OFF; chpasswd <<< "${user}:${password}"; ynh_print_ON
+    ynh_print_OFF; ynh_app_setting_set --app=$app --key=password --value="$password"; ynh_print_ON
+fi
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 # CONFIGURE SSH
 #=================================================
-ynh_script_progression --message="Configuring ssh..."
+if [ $with_sftp -eq 1 ]
+then
+    ynh_script_progression --message="Configuring ssh..."
 
-# Harden SSH connection for the user
-echo "##-> ${app}
-# Hardening user connection
-Match User ${user}
-  ChrootDirectory %h
-  ForceCommand internal-sftp
-  AllowTcpForwarding no
-  PermitTunnel no
-  X11Forwarding no
-##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
+    cp -R ../conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
 
-ynh_systemd_action --service_name=ssh --action=reload
+    ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+
+    yunohost tools regen-conf ssh
+fi
 
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
 
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file=../sources/www/index.html
-ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=../sources/www/index.html
+mkdir -p "$final_path/www"
+
+if [ $with_sftp -eq 1 ]
+then
+    ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file=../sources/www/index.html
+    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=../sources/www/index.html
+
+    # Copy files to the right place
+    cp "../sources/www/index.html" "$final_path/www/index.html"
+else
+    # Copy files to the right place
+    cp "../sources/www/index_no_sftp.html" "$final_path/www/index.html"
+fi
 
 if [ $with_mysql -eq 1 ]; then
     # Store the database access
     echo -e "# MySQL Database
-    name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
-fi
+name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
 
-# Copy files to the right place
-cp -r ../sources "$final_path"
+    # Copy files to the right place
+    cp -r "../sources/db_access.txt" "$final_path/db_access.txt"
+fi
 
 #=================================================
 # PHP-FPM CONFIGURATION
@@ -136,8 +158,15 @@ cp -r ../sources "$final_path"
 ynh_script_progression --message="Configuring php-fpm..." --weight=2
 
 # Create a dedicated php-fpm config
-ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file="../conf/php-fpm.conf"
-ynh_add_fpm_config
+ynh_add_fpm_config --usage=low --footprint=low
+
+# use $user instead of $app as user that run the fpm processes
+finalphpconf="/etc/php/7.0/fpm/pool.d/$app.conf"
+ynh_replace_string --match_string="^user = .*" --replace_string="user = $user" --target_file="$finalphpconf"
+ynh_replace_string --match_string="^group = .*" --replace_string="group = $user" --target_file="$finalphpconf"
+ynh_store_file_checksum --file="$finalphpconf"
+
+ynh_systemd_action --service_name=php7.0-fpm --action=reload
 
 #=================================================
 # GENERIC FINALIZATION
@@ -167,6 +196,46 @@ fi
 ynh_script_progression --message="Reloading nginx web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# SEND A README FOR THE ADMIN
+#=================================================
+
+# Get main domain and buid the url of the admin panel of the app.
+admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
+
+if [ $with_mysql -eq 1 ]
+then
+    sql_infos="
+You've asked for a database, please find here the information about this SQL database.
+$(cat "$final_path/db_access.txt")
+"
+else
+    sql_infos=""
+fi
+
+if [ $with_sftp -eq 1 ]
+then
+    sftp_infos="You can connect to this repository by using sftp with the following credentials.
+Domain: $domain
+Port: $(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
+User: $user
+Password: The one you set at installation."
+else
+    sftp_infos=""
+fi
+
+echo "This app is simply a blank web app container. You have to put your own app inside.
+$sql_infos
+Please put your files into this directory: $final_path/www/
+$sftp_infos
+
+You can configure this app easily by using the experimental __URL_TAG1__config-panel feature__URL_TAG2__$admin_panel/config-panel__URL_TAG3__.
+You can also find some specific actions for this app by using the experimental __URL_TAG1__action feature__URL_TAG2__$admin_panel/actions__URL_TAG3__.
+
+If you're facing an issue or want to improve this app, please open a new issue in this __URL_TAG1__project__URL_TAG2__https://github.com/YunoHost-Apps/my_webapp_ynh__URL_TAG3__." > mail_to_send
+
+ynh_send_readme_to_admin --app_message="mail_to_send" --recipients=root --type=install
 
 #=================================================
 # END OF SCRIPT
