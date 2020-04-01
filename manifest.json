@@ -10,8 +10,8 @@
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
     "license": "GPL-3.0-only",
     "maintainer": {
-        "name": "YunoHost Contributors",
-        "email": "apps@yunohost.org"
+        "name": "Maniack Crudelis",
+        "email": "maniackc_dev@crudelis.fr"
     },
     "requirements": {
         "yunohost": ">= 3.6.0"
