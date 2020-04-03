@@ -5,6 +5,7 @@ command = "/bin/bash scripts/actions/sftp"
 # cwd = "/" # optional
 # accepted_return_codes = [0, 1, 2, 3]  # optional
 accepted_return_codes = [0]
+description = "Enable or disable the sftp access."
 
     [sftp.arguments]
         [sftp.arguments.with_sftp]
@@ -43,3 +44,4 @@ command = "/bin/bash scripts/actions/remove_database"
 # cwd = "/" # optional
 # accepted_return_codes = [0, 1, 2, 3]  # optional
 accepted_return_codes = [0]
+description = "Remove the current database."
