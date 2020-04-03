@@ -35,7 +35,7 @@ is_password_exist=0
 ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password)
 if [ -n "$password" ]
 then
-    ynh_print_warn --memssage="A password already exist, it will not be replaced."
+    ynh_print_warn --message="A password already exist, it will not be replaced."
     # If a password already exist, unset the variable password and to not change it.
     unset password
     is_password_exist=1
