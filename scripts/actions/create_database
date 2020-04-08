@@ -10,13 +10,20 @@ source scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
 
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-
-app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
 
 #=================================================
 # CHECK IF ARGUMENTS ARE CORRECT

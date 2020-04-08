@@ -6,6 +6,18 @@
 		password="myreallystrengthpassword"
 		is_public=1	(PUBLIC|public=1|private=0)
 		with_mysql=1
+	; Actions
+        with_sftp=1|0
+        is_public=1|0
+	; Config_panel
+        main.sftp.sftp=1|0
+        main.sftp.password=password1
+        main.is_public.is_public=1|0
+        main.overwrite_files.overwrite_nginx=1|0
+        main.overwrite_files.overwrite_phpfpm=1|0
+        main.php_fpm_config.footprint=low|medium|high
+        main.php_fpm_config.free_footprint=20
+        main.php_fpm_config.usage=low|medium|high
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
@@ -19,6 +31,8 @@
 		multi_instance=1
 		port_already_use=0
 		change_url=1
+		actions=1
+		config_panel=1
 ;; Test without sftp
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
