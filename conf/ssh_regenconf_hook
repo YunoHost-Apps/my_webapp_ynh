@@ -18,7 +18,10 @@ do_post_regen() {
     # Harden SSH connection for the user
     if ! grep --quiet "^##-> __APP__$" /etc/ssh/sshd_config
     then
-        echo "##-> __APP__
+        # Please keep the linebreak to avoid some bug
+        # See: https://forum.yunohost.org/t/yunohost-3-8-testing-call-for-feedback/10870/115?u=ljf
+        echo "
+##-> __APP__
     # Hardening user connection
     Match User __USER__
     ChrootDirectory %h
