@@ -29,7 +29,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
-ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
+password=$(ynh_app_setting_get --app=$app --key=password)
 user=$(ynh_app_setting_get --app=$app --key=user)
 
 #=================================================
@@ -78,13 +78,11 @@ ynh_script_progression --message="Recreating the dedicated system user..." --wei
 ynh_system_user_exists --username=$user || \
     useradd -d "$final_path" -M --user-group "$user"
 
-ynh_print_OFF
 if [ -n "$password" ]
 then
     # Add the password to this user
     chpasswd <<< "${user}:${password}"
 fi
-ynh_print_ON
 
 #=================================================
 # RESTORE USER RIGHTS

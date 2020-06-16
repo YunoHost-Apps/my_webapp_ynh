@@ -23,7 +23,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
-ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
+password=$(ynh_app_setting_get --app=$app --key=password)
 user=$(ynh_app_setting_get --app=$app --key=user)
 
 overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
@@ -155,7 +155,7 @@ ynh_system_user_exists --username=$user || \
 if [ $with_sftp -eq 1 ]
 then
     # Add the password to this user
-    ynh_print_OFF; chpasswd <<< "${user}:${password}"; ynh_print_ON
+    chpasswd <<< "${user}:${password}"
 fi
 
 # Change the user group for previous my_webapp install script

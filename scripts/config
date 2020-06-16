@@ -32,7 +32,7 @@ with_sftp="${YNH_CONFIG_MAIN_SFTP_SFTP:-$old_with_sftp}"
 
 # sftp password
 is_password_exist=0
-ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password)
+password=$(ynh_app_setting_get --app=$app --key=password)
 if [ -n "$password" ]
 then
     ynh_print_warn --message="A password already exist, it will not be replaced."
@@ -43,7 +43,6 @@ else
     # Otherwise, get the new password
     password="$YNH_CONFIG_MAIN_SFTP_PASSWORD"
 fi
-ynh_print_ON
 
 
 # is_public
@@ -87,7 +86,7 @@ show_config() {
 	# here you are supposed to read some config file/database/other then print the values
 	# ynh_return "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
 	ynh_return "YNH_CONFIG_MAIN_SFTP_SFTP=$with_sftp"
-# 	ynh_print_OFF; ynh_return "YNH_CONFIG_MAIN_SFTP_PASSWORD=$password"; ynh_print_ON
+# 	ynh_return "YNH_CONFIG_MAIN_SFTP_PASSWORD=$password"
 
 	ynh_return "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
 
@@ -129,10 +128,8 @@ apply_config() {
             else
                 user=$(ynh_app_setting_get --app=$app --key=user)
                 # Add the password to the user
-                ynh_print_OFF
                 chpasswd <<< "${user}:${password}"
                 ynh_app_setting_set --app=$app --key=password --value="$password"
-                ynh_print_ON
             fi
         fi
     fi

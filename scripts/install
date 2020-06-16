@@ -23,7 +23,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 with_sftp=$YNH_APP_ARG_WITH_SFTP
-ynh_print_OFF; password=$YNH_APP_ARG_PASSWORD; ynh_print_ON
+password=$YNH_APP_ARG_PASSWORD
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 with_mysql=$YNH_APP_ARG_WITH_MYSQL
@@ -103,8 +103,8 @@ ynh_system_user_exists --username=$user || \
 if [ $with_sftp -eq 1 ]
 then
     # Add the password to this user
-    ynh_print_OFF; chpasswd <<< "${user}:${password}"; ynh_print_ON
-    ynh_print_OFF; ynh_app_setting_set --app=$app --key=password --value="$password"; ynh_print_ON
+    chpasswd <<< "${user}:${password}"
+    ynh_app_setting_set --app=$app --key=password --value="$password"
 fi
 
 #=================================================
