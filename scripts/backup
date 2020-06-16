@@ -27,6 +27,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
+with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 
 #=================================================
 # STANDARD BACKUP STEPS
@@ -55,9 +56,21 @@ ynh_backup --src_path="/etc/php/7.0/fpm/pool.d/$app.conf"
 # BACKUP THE MYSQL DATABASE
 #=================================================
 
-if [ $with_mysql -eq 1 ]; then
+if [ $with_mysql -eq 1 ]
+then
     ynh_script_progression --message="Backing up the MySQL database..."
     ynh_mysql_dump_db --database="$db_name" > db.sql
+fi
+
+#=================================================
+# BACKUP SPECIFIC FILES
+#=================================================
+
+if [ $with_sftp -eq 1 ]
+then
+    ynh_script_progression --message="Backup specific files..."
+
+    ynh_backup "/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
 fi
 
 #=================================================

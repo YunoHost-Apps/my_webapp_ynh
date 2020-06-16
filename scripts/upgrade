@@ -22,8 +22,22 @@ is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
+with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 password=$(ynh_app_setting_get --app=$app --key=password)
 user=$(ynh_app_setting_get --app=$app --key=user)
+
+overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
+overwrite_phpfpm=$(ynh_app_setting_get --app=$app --key=overwrite_phpfpm)
+admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
+
+fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
+fpm_usage=$(ynh_app_setting_get --app=$app --key=fpm_usage)
+
+#=================================================
+# CHECK VERSION
+#=================================================
+
+upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -51,6 +65,42 @@ if [ -z "$final_path" ]; then
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
+# If overwrite_nginx doesn't exist, create it
+if [ -z "$overwrite_nginx" ]; then
+	overwrite_nginx=0
+	ynh_app_setting_set --app=$app --key=overwrite_nginx --value=$overwrite_nginx
+fi
+
+# If overwrite_phpfpm doesn't exist, create it
+if [ -z "$overwrite_phpfpm" ]; then
+	overwrite_phpfpm=1
+	ynh_app_setting_set --app=$app --key=overwrite_phpfpm --value=$overwrite_phpfpm
+fi
+
+# If admin_mail_html doesn't exist, create it
+if [ -z "$admin_mail_html" ]; then
+	admin_mail_html=1
+	ynh_app_setting_set --app=$app --key=admin_mail_html --value=$admin_mail_html
+fi
+
+# If fpm_footprint doesn't exist, create it
+if [ -z "$fpm_footprint" ]; then
+	fpm_footprint=low
+	ynh_app_setting_set --app=$app --key=fpm_footprint --value=$fpm_footprint
+fi
+
+# If fpm_usage doesn't exist, create it
+if [ -z "$fpm_usage" ]; then
+	fpm_usage=low
+	ynh_app_setting_set --app=$app --key=fpm_usage --value=$fpm_usage
+fi
+
+# If with_sftp doesn't exist, create it
+if [ -z "$with_sftp" ]; then
+	with_sftp=1
+	ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
+fi
+
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
@@ -73,14 +123,20 @@ ynh_abort_if_errors
 path_url=$(ynh_normalize_url_path --path_url=$path_url)
 
 #=================================================
+# ACTIVATE MAINTENANCE MODE
+#=================================================
+ynh_script_progression --message="Activating maintenance mode..."
+
+ynh_maintenance_mode_ON
+
+#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 
-modified_config=$(ynh_backup_if_checksum_is_different --file="/etc/nginx/conf.d/$domain.d/$app.conf")
-# Replace nginx config only if it wasn't modified.
-if [ -z "$modified_config" ]
+# Overwrite the nginx configuration only if it's allowed
+if [ $overwrite_nginx -eq 1 ]
 then
     ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=2
 
@@ -96,8 +152,11 @@ ynh_script_progression --message="Making sure dedicated system user exists..." -
 # Create a standard user (not a system user for sftp)
 ynh_system_user_exists --username=$user || \
     useradd -d "$final_path" -M --user-group "$user"
-# Add the password to this user
-chpasswd <<< "${user}:${password}"
+if [ $with_sftp -eq 1 ]
+then
+    # Add the password to this user
+    chpasswd <<< "${user}:${password}"
+fi
 
 # Change the user group for previous my_webapp install script
 groupadd -f "$user"
@@ -107,15 +166,21 @@ usermod -g "$user" "$user"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-modified_config=$(ynh_backup_if_checksum_is_different --file="/etc/php/7.0/fpm/pool.d/$app.conf")
-# Replace nginx config only if it wasn't modified.
-if [ -z "$modified_config" ]
+# Overwrite the php-fpm configuration only if it's allowed
+if [ $overwrite_phpfpm -eq 1 ]
 then
     ynh_script_progression --message="Upgrading php-fpm configuration..." --weight=2
 
     # Create a dedicated php-fpm config
-    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file="../conf/php-fpm.conf"
-    ynh_add_fpm_config
+    ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
+
+    # Use $user instead of $app as user that run the fpm processes
+    finalphpconf="/etc/php/7.0/fpm/pool.d/$app.conf"
+    ynh_replace_string --match_string="^user = .*" --replace_string="user = $user" --target_file="$finalphpconf"
+    ynh_replace_string --match_string="^group = .*" --replace_string="group = $user" --target_file="$finalphpconf"
+    ynh_store_file_checksum --file="$finalphpconf"
+
+    ynh_systemd_action --service_name=php7.0-fpm --action=reload
 fi
 
 #=================================================
@@ -123,22 +188,18 @@ fi
 #=================================================
 # CONFIGURE SSH
 #=================================================
-ynh_script_progression --message="Configuring ssh..." --time --weight=1
 
-# Remove the previous config for upgrading it
-sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
-# Harden SSH connection for the user
-echo "##-> ${app}
-# Hardening user connection
-Match User ${user}
-  ChrootDirectory %h
-  ForceCommand internal-sftp
-  AllowTcpForwarding no
-  PermitTunnel no
-  X11Forwarding no
-##<- ${app}" | tee -a /etc/ssh/sshd_config >/dev/null
+if [ $with_sftp -eq 1 ]
+then
+    ynh_script_progression --message="Configuring ssh..." --weight=1
 
-ynh_systemd_action --service_name=ssh --action=reload
+    cp -R ../conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+
+    ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+
+    yunohost tools regen-conf ssh
+fi
 
 #=================================================
 # GENERIC FINALIZATION
@@ -167,6 +228,44 @@ fi
 ynh_script_progression --message="Reloading nginx web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# DEACTIVE MAINTENANCE MODE
+#=================================================
+ynh_script_progression --message="Disabling maintenance mode..."
+
+ynh_maintenance_mode_OFF
+
+#=================================================
+# SEND A README FOR THE ADMIN
+#=================================================
+
+# Get main domain and buid the url of the admin panel of the app.
+admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
+
+# Build the changelog
+# Get the value of admin_mail_html
+admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
+admin_mail_html="${admin_mail_html:-0}"
+# If a html email is required. Apply html to the changelog.
+if [ "$admin_mail_html" -eq 1 ]; then
+    format=html
+else
+    format=plain
+fi
+ynh_app_changelog --format=$format
+
+echo "You can configure this app easily by using the experimental __URL_TAG1__config-panel feature__URL_TAG2__$admin_panel/config-panel__URL_TAG3__.
+You can also find some specific actions for this app by using the experimental __URL_TAG1__action feature__URL_TAG2__$admin_panel/actions__URL_TAG3__.
+
+If you're facing an issue or want to improve this app, please open a new issue in this __URL_TAG1__project__URL_TAG2__https://github.com/YunoHost-Apps/my_webapp_ynh__URL_TAG3__.
+
+---
+
+Changelog since your last upgrade:
+$(cat changelog)" > mail_to_send
+
+ynh_send_readme_to_admin --app_message="mail_to_send" --recipients=root --type=upgrade
 
 #=================================================
 # END OF SCRIPT

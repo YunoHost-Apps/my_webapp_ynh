@@ -1,0 +1,156 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+
+#=================================================
+# SPECIFIC CODE
+#=================================================
+# LOAD VALUES
+#=================================================
+
+# Load the real value from the app config or elsewhere.
+# Then get the value from the form.
+# If the form has a value for a variable, take the value from the form,
+# Otherwise, keep the value from the app config.
+
+# with_sftp
+old_with_sftp="$(ynh_app_setting_get --app=$app --key=with_sftp)"
+with_sftp="${YNH_CONFIG_MAIN_SFTP_SFTP:-$old_with_sftp}"
+
+# sftp password
+is_password_exist=0
+password=$(ynh_app_setting_get --app=$app --key=password)
+if [ -n "$password" ]
+then
+    ynh_print_warn --message="A password already exist, it will not be replaced."
+    # If a password already exist, unset the variable password and to not change it.
+    unset password
+    is_password_exist=1
+else
+    # Otherwise, get the new password
+    password="$YNH_CONFIG_MAIN_SFTP_PASSWORD"
+fi
+
+
+# is_public
+old_is_public="$(ynh_app_setting_get --app=$app --key=is_public)"
+is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
+
+
+# Overwrite nginx configuration
+old_overwrite_nginx="$(ynh_app_setting_get --app=$app --key=overwrite_nginx)"
+overwrite_nginx="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX:-$old_overwrite_nginx}"
+
+# Overwrite php-fpm configuration
+old_overwrite_phpfpm="$(ynh_app_setting_get --app=$app --key=overwrite_phpfpm)"
+overwrite_phpfpm="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_PHPFPM:-$old_overwrite_phpfpm}"
+
+
+# Footprint for php-fpm
+old_fpm_footprint="$(ynh_app_setting_get --app=$app --key=fpm_footprint)"
+fpm_footprint="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FOOTPRINT:-$old_fpm_footprint}"
+
+# Free footprint value for php-fpm
+# Check if fpm_footprint is an integer
+if [ "$fpm_footprint" -eq "$fpm_footprint" ] 2> /dev/null
+then
+    # If fpm_footprint is an integer, that's a numeric value for the footprint
+    old_free_footprint=$fpm_footprint
+else
+    old_free_footprint=0
+fi
+free_footprint="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FREE_FOOTPRINT:-$old_free_footprint}"
+
+# Usage for php-fpm
+old_fpm_usage="$(ynh_app_setting_get --app=$app --key=fpm_usage)"
+fpm_usage="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_USAGE:-$old_fpm_usage}"
+
+#=================================================
+# SHOW_CONFIG FUNCTION FOR 'SHOW' COMMAND
+#=================================================
+
+show_config() {
+	# here you are supposed to read some config file/database/other then print the values
+	# ynh_return "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
+	ynh_return "YNH_CONFIG_MAIN_SFTP_SFTP=$with_sftp"
+# 	ynh_return "YNH_CONFIG_MAIN_SFTP_PASSWORD=$password"
+
+	ynh_return "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
+
+	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FOOTPRINT=$fpm_footprint"
+	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FREE_FOOTPRINT=$free_footprint"
+	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_USAGE=$fpm_usage"
+}
+
+#=================================================
+# MODIFY THE CONFIGURATION
+#=================================================
+
+apply_config() {
+	# Change public accessibility
+	if [ "$is_public" = "1" ]
+	then
+		yunohost app action run $app public_private --args is_public=1
+	else
+		yunohost app action run $app public_private --args is_public=0
+	fi
+
+    #=================================================
+    # REMOVE OR ADD SFTP ACCESS
+    #=================================================
+
+    if [ "$with_sftp" != "$old_with_sftp" ]
+    then
+        yunohost app action run $app sftp --args with_sftp=$with_sftp
+
+        # Change the password only if none was already set for the user
+        if [ $is_password_exist -eq 0 ] && [ $with_sftp -eq 1 ]
+        then
+            # Check password strength
+            if [ ${#password} -le 5 ]
+            then
+                ynh_print_err --message="The password is too weak, it must be longer than 5 characters."
+                # Disable the sftp access, as the password is incorrect
+                yunohost app action run $app sftp --args with_sftp=0
+            else
+                user=$(ynh_app_setting_get --app=$app --key=user)
+                # Add the password to the user
+                chpasswd <<< "${user}:${password}"
+                ynh_app_setting_set --app=$app --key=password --value="$password"
+            fi
+        fi
+    fi
+
+    #=================================================
+    # RECONFIGURE PHP-FPM
+    #=================================================
+
+    if [ "$fpm_usage" != "$old_fpm_usage" ] || [ "$fpm_footprint" != "$old_fpm_footprint" ]
+    then
+        ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
+    fi
+}
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SELECT THE ACTION FOLLOWING THE GIVEN ARGUMENT
+#=================================================
+
+case $1 in
+  show) show_config;;
+  apply) apply_config;;
+esac

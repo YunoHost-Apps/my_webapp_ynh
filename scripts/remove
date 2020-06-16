@@ -18,6 +18,7 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
+with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 user=$(ynh_app_setting_get --app=$app --key=user)
 
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
@@ -66,10 +67,13 @@ ynh_remove_fpm_config
 #=================================================
 # REMOVE THE CUSTOM SSH CONFIG
 #=================================================
-ynh_script_progression --message="Removing the custom ssh config"
 
-sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
-ynh_systemd_action --service_name=ssh --action=reload
+if [ $with_sftp -eq 1 ]
+then
+    ynh_script_progression --message="Removing the custom ssh config..."
+    ynh_secure_remove --file="/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
+    yunohost tools regen-conf ssh
+fi
 
 #=================================================
 # GENERIC FINALIZATION
@@ -79,7 +83,7 @@ ynh_systemd_action --service_name=ssh --action=reload
 ynh_script_progression --message="Removing the dedicated system user..."
 
 # Delete a system user
-ynh_system_user_delete --username=$app
+ynh_system_user_delete --username=$user
 
 #=================================================
 # END OF SCRIPT

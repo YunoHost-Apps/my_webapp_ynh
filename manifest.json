@@ -6,20 +6,21 @@
         "en": "Custom Web app with SFTP access",
         "fr": "Application Web personnalisée avec accès SFTP"
     },
-    "version": "1.0~ynh2",
+    "version": "1.0~ynh3",
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
     "license": "GPL-3.0-only",
     "maintainer": {
-        "name": "YunoHost Contributors",
-        "email": "apps@yunohost.org"
+        "name": "Maniack Crudelis",
+        "email": "maniackc_dev@crudelis.fr"
     },
     "requirements": {
-        "yunohost": ">= 3.5.0"
+        "yunohost": ">= 3.8.0"
     },
     "multi_instance": true,
     "services": [
         "nginx",
-        "php7.0-fpm"
+        "php7.0-fpm",
+        "mysql"
     ],
     "arguments": {
         "install" : [
@@ -43,11 +44,21 @@
                 "default": "/site"
             },
             {
+                "name": "with_sftp",
+                "type": "boolean",
+                "ask": {
+                    "en": "Do you need a SFTP access?",
+                    "fr": "Avez-vous besoin d'un accès SFTP ?"
+                },
+                "default": true
+            },
+            {
                 "name": "password",
                 "type": "password",
+                "optional": true,
                 "ask": {
-                    "en": "Set the password for the SFTP access. ≥ 5 character",
-                    "fr": "Définissez le mot de passe pour l'accès SFTP. ≥ cinq charactères"
+                    "en": "Set the password for the SFTP access.",
+                    "fr": "Définissez le mot de passe pour l'accès SFTP."
                 },
                 "example": "myreallystrengthpassword"
             },
