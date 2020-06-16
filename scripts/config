@@ -8,6 +8,7 @@
 
 source _common.sh
 source /usr/share/yunohost/helpers
+source _ynh_add_fpm_config
 
 #=================================================
 # RETRIEVE ARGUMENTS
@@ -33,15 +34,18 @@ with_sftp="${YNH_CONFIG_MAIN_SFTP_SFTP:-$old_with_sftp}"
 # sftp password
 is_password_exist=0
 ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password)
-if [ -n "$password" ]
+if [ -n "$YNH_CONFIG_MAIN_SFTP_PASSWORD" ]
 then
-    ynh_print_warn --message="A password already exist, it will not be replaced."
-    # If a password already exist, unset the variable password and to not change it.
-    unset password
-    is_password_exist=1
-else
-    # Otherwise, get the new password
-    password="$YNH_CONFIG_MAIN_SFTP_PASSWORD"
+    if [ -n "$password" ]
+    then
+        ynh_print_warn --message="A password already exist, it will not be replaced."
+        # If a password already exist, unset the variable password and to not change it.
+        unset password
+        is_password_exist=1
+    else
+        # Otherwise, get the new password
+        password="$YNH_CONFIG_MAIN_SFTP_PASSWORD"
+    fi
 fi
 ynh_print_ON
 
@@ -144,6 +148,14 @@ apply_config() {
     if [ "$fpm_usage" != "$old_fpm_usage" ] || [ "$fpm_footprint" != "$old_fpm_footprint" ]
     then
         ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
+
+        user=$(ynh_app_setting_get --app=$app --key=user)
+        # use $user instead of $app as user that run the fpm processes
+        finalphpconf="/etc/php/7.0/fpm/pool.d/$app.conf"
+        ynh_replace_string --match_string="^user = .*" --replace_string="user = $user" --target_file="$finalphpconf"
+        ynh_replace_string --match_string="^group = .*" --replace_string="group = $user" --target_file="$finalphpconf"
+
+        ynh_systemd_action --service_name=php7.0-fpm --action=reload
     fi
 }
 
