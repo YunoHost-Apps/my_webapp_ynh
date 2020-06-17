@@ -52,6 +52,13 @@ elif [ "$is_public" = "No" ]; then
 	is_public=0
 fi
 
+# Delete old user
+if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
+then
+    ynh_system_user_delete --username="$(ynh_app_setting_get --app=$app --key=user)"
+    ynh_app_setting_delete --app=$app --key=user
+fi
+
 # If db_name doesn't exist, create it
 if [ -z "$db_name" ]; then
 	db_name=$(ynh_sanitize_dbid --db_name=$app)
