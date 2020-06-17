@@ -19,7 +19,6 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
-user=$(ynh_app_setting_get --app=$app --key=user)
 
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
@@ -83,7 +82,7 @@ fi
 ynh_script_progression --message="Removing the dedicated system user..."
 
 # Delete a system user
-ynh_system_user_delete --username=$user
+ynh_system_user_delete --username=$app
 
 #=================================================
 # END OF SCRIPT

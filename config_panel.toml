@@ -13,19 +13,10 @@ name = "My webapp configuration"
         default = true
 
         [main.sftp.password]
-        ask = "Set a password for the SFTP access. ≥ 5 character"
+        ask = "Set a password for the SFTP access"
         type = "password"
         optional = true
         help = "If a password already exist, it will not be replaced."
-
-    [main.is_public]
-    name = "Public access"
-
-        [main.is_public.is_public]
-        ask = "Is it a public website ?"
-        type = "boolean"
-        default = true
-
 
     [main.overwrite_files]
     name = "Overwriting config files"
