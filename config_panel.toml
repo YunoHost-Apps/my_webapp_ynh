@@ -13,7 +13,7 @@ name = "My webapp configuration"
         default = true
 
         [main.sftp.password]
-        ask = "Set a password for the SFTP access. ≥ 5 character"
+        ask = "Set a password for the SFTP access"
         type = "password"
         optional = true
         help = "If a password already exist, it will not be replaced."

@@ -119,17 +119,9 @@ apply_config() {
         # Change the password only if none was already set for the user
         if [ $is_password_exist -eq 0 ] && [ $with_sftp -eq 1 ]
         then
-            # Check password strength
-            if [ ${#password} -le 5 ]
-            then
-                ynh_print_err --message="The password is too weak, it must be longer than 5 characters."
-                # Disable the sftp access, as the password is incorrect
-                yunohost app action run $app sftp --args with_sftp=0
-            else
-                # Add the password to the user
-                chpasswd <<< "${app}:${password}"
-                ynh_app_setting_set --app=$app --key=password --value="$password"
-            fi
+            # Add the password to the user
+            chpasswd <<< "${app}:${password}"
+            ynh_app_setting_set --app=$app --key=password --value="$password"
         fi
     fi
 
