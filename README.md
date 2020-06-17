@@ -40,7 +40,6 @@ of your custom Web application inside.
 
 * x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 * ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/my_webapp/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/my_webapp/)
 
 ## Limitations
 
