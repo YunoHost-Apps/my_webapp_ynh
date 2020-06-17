@@ -43,26 +43,18 @@ then
     ynh_script_progression --message="Configuring ssh to add a SFTP access..." --weight=3
 
     cp -R conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
-
     ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
-    yunohost tools regen-conf ssh
 else
     ynh_script_progression --message="Removing the custom ssh config for the SFTP access..." --weight=3
 
-    sed -i "/##-> ${app}/,/##<- ${app}/d" /etc/ssh/sshd_config
     # Remove regen-conf hook
     ynh_secure_remove --file="/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
 fi
 
+yunohost tools regen-conf ssh
+
 # Update the config of the app
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
-
-#=================================================
-# RELOAD SSH
-#=================================================
-ynh_script_progression --message="Reloading SSH..."
-
-ynh_systemd_action --service_name=ssh --action=reload
 
 #=================================================
 # END OF SCRIPT
