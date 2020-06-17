@@ -18,15 +18,6 @@ name = "My webapp configuration"
         optional = true
         help = "If a password already exist, it will not be replaced."
 
-    [main.is_public]
-    name = "Public access"
-
-        [main.is_public.is_public]
-        ask = "Is it a public website ?"
-        type = "boolean"
-        default = true
-
-
     [main.overwrite_files]
     name = "Overwriting config files"
 
