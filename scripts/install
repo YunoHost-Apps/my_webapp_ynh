@@ -129,6 +129,7 @@ mkdir -p "$final_path/www"
 if [ $with_sftp -eq 1 ]
 then
     ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file=../sources/www/index.html
+    ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=../sources/www/index.html
 
     # Copy files to the right place
     cp "../sources/www/index.html" "$final_path/www/index.html"
