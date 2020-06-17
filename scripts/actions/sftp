@@ -16,7 +16,6 @@ source /usr/share/yunohost/helpers
 app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
 
 with_sftp=${YNH_ACTION_WITH_SFTP}
-user=$(ynh_app_setting_get --app=$app --key=user)
 
 #=================================================
 # CHECK IF ARGUMENTS ARE CORRECT
@@ -46,7 +45,6 @@ then
     cp -R conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
 
     ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
-    ynh_replace_string --match_string="__USER__" --replace_string="$user" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
     yunohost tools regen-conf ssh
 else
     ynh_script_progression --message="Removing the custom ssh config for the SFTP access..." --weight=3

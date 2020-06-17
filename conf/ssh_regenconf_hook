@@ -11,7 +11,7 @@ echo "
 
 ##-> __APP__
 # Hardening user connection
-Match User __USER__
+Match User __APP__
     ChrootDirectory %h
     ForceCommand internal-sftp
     AllowTcpForwarding no

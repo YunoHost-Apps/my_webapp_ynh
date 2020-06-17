@@ -30,7 +30,6 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 password=$(ynh_app_setting_get --app=$app --key=password)
-user=$(ynh_app_setting_get --app=$app --key=user)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -74,14 +73,12 @@ fi
 #=================================================
 ynh_script_progression --message="Recreating the dedicated system user..." --weight=2
 
-# Create a standard user (not a system user for sftp)
-ynh_system_user_exists --username=$user || \
-    useradd -d "$final_path" -M --user-group "$user"
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 if [ -n "$password" ]
 then
     # Add the password to this user
-    chpasswd <<< "${user}:${password}"
+    chpasswd <<< "${app}:${password}"
 fi
 
 #=================================================
@@ -89,7 +86,7 @@ fi
 #=================================================
 
 # Restore permissions on app files
-chown -R $user: "$final_path"
+chown -R $app: "$final_path"
 # Home directory of the user need to be owned by root to allow
 # SFTP connections
 chown root: "$final_path"

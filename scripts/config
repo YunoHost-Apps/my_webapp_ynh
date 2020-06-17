@@ -126,9 +126,8 @@ apply_config() {
                 # Disable the sftp access, as the password is incorrect
                 yunohost app action run $app sftp --args with_sftp=0
             else
-                user=$(ynh_app_setting_get --app=$app --key=user)
                 # Add the password to the user
-                chpasswd <<< "${user}:${password}"
+                chpasswd <<< "${app}:${password}"
                 ynh_app_setting_set --app=$app --key=password --value="$password"
             fi
         fi
