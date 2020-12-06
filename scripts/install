@@ -76,9 +76,9 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..." --weight=2
+ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
-# Create a dedicated nginx config
+# Create a dedicated NGINX config
 ynh_add_nginx_config
 
 #=================================================
@@ -145,6 +145,7 @@ ynh_script_progression --message="Configuring php-fpm..." --weight=2
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config --usage=low --footprint=low
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
 #=================================================
 # GENERIC FINALIZATION
@@ -171,7 +172,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -194,7 +195,7 @@ fi
 
 if [ $with_sftp -eq 1 ]
 then
-    sftp_infos="You can connect to this repository by using sftp with the following credentials.
+    sftp_infos="You can connect to this repository by using SFTP with the following credentials.
 Domain: $domain
 Port: $(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 User: $app

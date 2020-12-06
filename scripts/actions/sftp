@@ -40,7 +40,7 @@ fi
 
 if [ $with_sftp -eq 1 ]
 then
-    ynh_script_progression --message="Configuring ssh to add a SFTP access..." --weight=3
+    ynh_script_progression --message="Configuring SSH to add a SFTP access..." --weight=3
 
     cp -R conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
     ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app

@@ -122,13 +122,6 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
-# CHECK THE PATH
-#=================================================
-
-# Normalize the URL path syntax
-path_url=$(ynh_normalize_url_path --path_url=$path_url)
-
-#=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
 ynh_script_progression --message="Activating maintenance mode..."
@@ -141,12 +134,12 @@ ynh_maintenance_mode_ON
 # NGINX CONFIGURATION
 #=================================================
 
-# Overwrite the nginx configuration only if it's allowed
+# Overwrite the NGINX configuration only if it's allowed
 if [ $overwrite_nginx -eq 1 ]
 then
-    ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=2
+    ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
 
-    # Create a dedicated nginx config
+    # Create a dedicated NGINX config
     ynh_add_nginx_config
 fi
 
@@ -171,12 +164,12 @@ usermod -g "$app" "$app"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-# Overwrite the php-fpm configuration only if it's allowed
+# Overwrite the PHP-FPM configuration only if it's allowed
 if [ $overwrite_phpfpm -eq 1 ]
 then
-    ynh_script_progression --message="Upgrading php-fpm configuration..." --weight=2
+    ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
 
-    # Create a dedicated php-fpm config
+    # Create a dedicated PHP-FPM config
     ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
 fi
 
@@ -188,7 +181,7 @@ fi
 
 if [ $with_sftp -eq 1 ]
 then
-    ynh_script_progression --message="Configuring ssh..." --weight=1
+    ynh_script_progression --message="Configuring SSH..." --weight=1
 
     cp -R ../conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
 
@@ -221,7 +214,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
