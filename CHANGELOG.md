@@ -1,8 +1,11 @@
 Changelog
 =========
 
-## Unreleased
-- Nothing for now...
+## [1.0~ynh4]()
+
+#### Changed
+* [Use php7.3]
+
 
 ## [1.0~ynh3](https://github.com/YunoHost-Apps/my_webapp_ynh/pull/42) - 2020-01-01
 

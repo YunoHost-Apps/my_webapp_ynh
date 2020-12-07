@@ -38,7 +38,7 @@ of your custom Web application inside.
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 * ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/my_webapp/)
 
 ## Limitations
@@ -58,8 +58,7 @@ then you should use this port to update your website with SFTP.
 
 ---
 
-Developers info
-----------------
+## Developers info
 
 **Only if you want to use a testing branch for coding, instead of merging directly into master.**
 Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing).
