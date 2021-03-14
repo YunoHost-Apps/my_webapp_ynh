@@ -49,7 +49,6 @@ ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
@@ -163,10 +162,12 @@ chown root: "$final_path"
 #=================================================
 ynh_script_progression --message="Configuring SSOwat..."
 
+
+
 # Make app public if necessary
-if [ $is_public -eq 1 ]
+if [ "$is_public" -eq 1 ]
 then
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
+	ynh_permission_update --permission="main" --add="visitors"
 fi
 
 #=================================================
