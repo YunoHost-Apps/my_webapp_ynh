@@ -196,6 +196,7 @@ fi
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
+chown -R $app: "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
 chown root: "$final_path"
