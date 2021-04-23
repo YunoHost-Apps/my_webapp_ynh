@@ -17,10 +17,6 @@ seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire raci
 
 **Version incluse :** 1.0
 
-## Captures d'écran
-
-## Démo
-
 ## Configuration
 
 ## Documentation
@@ -33,8 +29,8 @@ seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire raci
 
 #### Architectures supportées
 
-* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/my_webapp/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/my_webapp.svg)](https://ci-apps-arm.yunohost.org/ci/apps/my_webapp/)
 
 ## Limitations
 

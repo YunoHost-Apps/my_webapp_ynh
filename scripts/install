@@ -49,7 +49,6 @@ ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
@@ -102,11 +101,9 @@ fi
 #=================================================
 if [ $with_sftp -eq 1 ]
 then
-    ynh_script_progression --message="Configuring ssh..."
+    ynh_script_progression --message="Configuring SSH..."
 
-    cp -R ../conf/ssh_regenconf_hook /usr/share/yunohost/hooks/conf_regen/90-ssh_$app
-
-    ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=/usr/share/yunohost/hooks/conf_regen/90-ssh_$app
+    ynh_add_config --template="../conf/ssh_regenconf_hook" --destination="/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
 
     yunohost tools regen-conf ssh
 fi
@@ -119,11 +116,9 @@ mkdir -p "$final_path/www"
 
 if [ $with_sftp -eq 1 ]
 then
-    ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file=../sources/www/index.html
-    ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file=../sources/www/index.html
 
-    # Copy files to the right place
-    cp "../sources/www/index.html" "$final_path/www/index.html"
+    ynh_add_config --template="../sources/www/index.html" --destination="$final_path/www/index.html"
+
 else
     # Copy files to the right place
     cp "../sources/www/index_no_sftp.html" "$final_path/www/index.html"
@@ -141,9 +136,9 @@ fi
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring php-fpm..." --weight=2
+ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
-# Create a dedicated php-fpm config
+# Create a dedicatedPHP-FPM config
 ynh_add_fpm_config --usage=low --footprint=low
 phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
@@ -161,12 +156,12 @@ chown root: "$final_path"
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..."
+ynh_script_progression --message="Configuring permissions..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
+    ynh_permission_update --permission="main" --add="visitors"
 fi
 
 #=================================================
