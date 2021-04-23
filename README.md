@@ -3,6 +3,8 @@
 [![Integration level](https://dash.yunohost.org/integration/my_webapp.svg)](https://dash.yunohost.org/appci/app/my_webapp) ![](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)  
 [![Install Custom Webapp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=my_webapp)
 
+*[Lire ce readme en français.](./README_fr.md)*
+
 > *This package allow you to install Custom Webapp quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
@@ -22,10 +24,6 @@ of your custom Web application inside.
 
 **Shipped version:** 1.0
 
-## Screenshots
-
-## Demo
-
 ## Configuration
 
 ## Documentation
@@ -38,8 +36,8 @@ of your custom Web application inside.
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/my_webapp%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/my_webapp/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/my_webapp.svg)](https://ci-apps-arm.yunohost.org/ci/apps/my_webapp/)
 
 ## Limitations
 
@@ -48,7 +46,7 @@ of your custom Web application inside.
 #### SFTP port
 
 You may have change the SSH port as described 
-[here (section "Modifier le port SSH"](https://yunohost.org/#/security_fr) ; 
+[here section "Modifier le port SSH"](https://yunohost.org/#/security_fr) ; 
 then you should use this port to update your website with SFTP.
 
 ## Links
@@ -58,10 +56,8 @@ then you should use this port to update your website with SFTP.
 
 ---
 
-Developers info
-----------------
+## Developers info
 
-**Only if you want to use a testing branch for coding, instead of merging directly into master.**
 Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing).
 
 To try the testing branch, please proceed like that.

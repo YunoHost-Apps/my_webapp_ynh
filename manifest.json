@@ -6,20 +6,24 @@
         "en": "Custom Web app with SFTP access",
         "fr": "Application Web personnalisée avec accès SFTP"
     },
-    "version": "1.0~ynh3",
+    "version": "1.0~ynh4",
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
     "license": "GPL-3.0-only",
     "maintainer": {
+        "name": "None...",
+        "email": ""
+    },
+    "previous_maintainers": [{
         "name": "Maniack Crudelis",
         "email": "maniackc_dev@crudelis.fr"
-    },
+    }],
     "requirements": {
-        "yunohost": ">= 3.8.0"
+        "yunohost": ">= 4.1.7"
     },
     "multi_instance": true,
     "services": [
         "nginx",
-        "php7.0-fpm",
+        "php7.3-fpm",
         "mysql"
     ],
     "arguments": {
@@ -27,19 +31,11 @@
             {
                 "name": "domain",
                 "type": "domain",
-                "ask": {
-                    "en": "Choose a domain for your Webapp",
-                    "fr": "Choisissez un domaine pour votre Webapp"
-                },
                 "example": "domain.org"
             },
             {
                 "name": "path",
                 "type": "path",
-                "ask": {
-                    "en": "Choose a path for your Webapp",
-                    "fr": "Choisissez un chemin pour votre Webapp"
-                },
                 "example": "/site",
                 "default": "/site"
             },
@@ -56,19 +52,11 @@
                 "name": "password",
                 "type": "password",
                 "optional": true,
-                "ask": {
-                    "en": "Set the password for the SFTP access.",
-                    "fr": "Définissez le mot de passe pour l'accès SFTP."
-                },
                 "example": "myreallystrengthpassword"
             },
             {
                 "name": "is_public",
                 "type": "boolean",
-                "ask": {
-                    "en": "Is it a public website?",
-                    "fr": "Est-ce un site public ?"
-                },
                 "default": true
             },
             {

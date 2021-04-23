@@ -48,17 +48,17 @@ ynh_secure_remove --file="$final_path"
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing nginx web server configuration..." --weight=2
+ynh_script_progression --message="Removing NGINX web server configuration..." --weight=2
 
-# Remove the dedicated nginx config
+# Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
 #=================================================
 # REMOVE PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing php-fpm configuration..."
+ynh_script_progression --message="Removing PHP-FPM configuration..."
 
-# Remove the dedicated php-fpm config
+# Remove the dedicated PHP-FPM config
 ynh_remove_fpm_config
 
 #=================================================
@@ -69,7 +69,7 @@ ynh_remove_fpm_config
 
 if [ $with_sftp -eq 1 ]
 then
-    ynh_script_progression --message="Removing the custom ssh config..."
+    ynh_script_progression --message="Removing the custom SSH config..."
     ynh_secure_remove --file="/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
     yunohost tools regen-conf ssh
 fi

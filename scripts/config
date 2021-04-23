@@ -45,20 +45,20 @@ else
 fi
 
 
-# Overwrite nginx configuration
+# Overwrite NGINX configuration
 old_overwrite_nginx="$(ynh_app_setting_get --app=$app --key=overwrite_nginx)"
 overwrite_nginx="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX:-$old_overwrite_nginx}"
 
-# Overwrite php-fpm configuration
+# Overwrite PHP-FPM configuration
 old_overwrite_phpfpm="$(ynh_app_setting_get --app=$app --key=overwrite_phpfpm)"
 overwrite_phpfpm="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_PHPFPM:-$old_overwrite_phpfpm}"
 
 
-# Footprint for php-fpm
+# Footprint for PHP-FPM
 old_fpm_footprint="$(ynh_app_setting_get --app=$app --key=fpm_footprint)"
 fpm_footprint="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FOOTPRINT:-$old_fpm_footprint}"
 
-# Free footprint value for php-fpm
+# Free footprint value for PHP-FPM
 # Check if fpm_footprint is an integer
 if [ "$fpm_footprint" -eq "$fpm_footprint" ] 2> /dev/null
 then
@@ -69,7 +69,7 @@ else
 fi
 free_footprint="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FREE_FOOTPRINT:-$old_free_footprint}"
 
-# Usage for php-fpm
+# Usage for PHP-FPM
 old_fpm_usage="$(ynh_app_setting_get --app=$app --key=fpm_usage)"
 fpm_usage="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_USAGE:-$old_fpm_usage}"
 

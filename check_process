@@ -43,8 +43,6 @@
 		setup_sub_dir=1
 		upgrade=1
 		backup_restore=1
-;;; Levels
-	Level 5=auto
 ;;; Options
 Email=
 Notification=change
