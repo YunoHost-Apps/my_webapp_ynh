@@ -1,11 +1,15 @@
 Changelog
 =========
 
-## [1.0~ynh4]()
+## [1.0~ynh4](https://github.com/YunoHost-Apps/my_webapp_ynh/pull/60) - 2021-04-23
+
+#### Added
+* [Add a README_fr](https://github.com/YunoHost-Apps/my_webapp_ynh/pull/60/commits/c84b7d4e97f00e2c7de10d949891cf660f1d8459)
 
 #### Changed
-* [Use php7.3]
-
+* [Use php7.3](https://github.com/YunoHost-Apps/my_webapp_ynh/pull/60/commits/b324c78780110e8eae05da47f8f151c1d50bf3c7)
+* [New permissions](https://github.com/YunoHost-Apps/my_webapp_ynh/pull/60/commits/a5cc8741477a0f37ffd1b84e08bb3dec8af34a46)
+# [Normalization from example_ynh](https://github.com/YunoHost-Apps/my_webapp_ynh/pull/60/commits/a5cc8741477a0f37ffd1b84e08bb3dec8af34a46)
 
 ## [1.0~ynh3](https://github.com/YunoHost-Apps/my_webapp_ynh/pull/42) - 2020-01-01
 
