@@ -45,8 +45,8 @@ of your custom Web application inside.
 
 #### SFTP port
 
-You may have change the SSH port as described 
-[here section "Modifier le port SSH"](https://yunohost.org/en/security) ; 
+You may have change the SSH port as described here
+[Modify the SSH port](https://yunohost.org/en/security#modify-the-ssh-port) ; 
 then you should use this port to update your website with SFTP.
 
 ## Links
