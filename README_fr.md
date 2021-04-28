@@ -6,7 +6,7 @@
 *[Read this readme in english.](./README.md)* 
 
 > *Ce package vous permet d'installer une Application vide avec accès SFTP au répertoire Web personnalisé rapidement et simplement sur un serveur YunoHost.  
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/fr/install) pour savoir comment l'installer et en profiter.*
+Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/install) pour savoir comment l'installer et en profiter.*
 
 ## Vue d'ensemble
 
