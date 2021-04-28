@@ -10,7 +10,7 @@
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
     "license": "GPL-3.0-only",
     "maintainer": {
-        "name": "None...",
+        "name": "",
         "email": ""
     },
     "previous_maintainers": [{
