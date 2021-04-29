@@ -6,12 +6,12 @@
 *[Lire ce readme en français.](./README_fr.md)*
 
 > *This package allow you to install Custom Webapp quickly and simply on a YunoHost server.  
-If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
+If you don't have YunoHost, please see [here](https://yunohost.org/install) to know how to install and enjoy it.*
 
 ## Overview
 
 This application allows you to easily install a custom Web application,
-providing files access with [SFTP](https://yunohost.org/#/filezilla). It can also create a MySQL database -
+providing files access with [SFTP](https://yunohost.org/en/filezilla). It can also create a MySQL database -
 which will be backed up and restored with your application. The connection
 details will be stored in the file `db_accesss.txt` located in the root
 directory.
@@ -28,7 +28,7 @@ of your custom Web application inside.
 
 ## Documentation
 
- * YunoHost documentation: https://github.com/YunoHost/doc/blob/master/app_my_webapp.md
+ * YunoHost documentation: https://yunohost.org/en/app_my_webapp
 
 ## YunoHost specific features
 
@@ -45,8 +45,8 @@ of your custom Web application inside.
 
 #### SFTP port
 
-You may have change the SSH port as described 
-[here section "Modifier le port SSH"](https://yunohost.org/#/security_fr) ; 
+You may have change the SSH port as described in this section: 
+[Modify the SSH port](https://yunohost.org/en/security#modify-the-ssh-port); 
 then you should use this port to update your website with SFTP.
 
 ## Links
