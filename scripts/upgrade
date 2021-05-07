@@ -145,9 +145,18 @@ fi
 #=================================================
 ynh_script_progression --message="Making sure dedicated system user exists..." --weight=2
 
-ynh_system_user_create --username=$app --home_dir="$final_path"
-
 if [ $with_sftp -eq 1 ]
+then
+    # Add the password to this user
+    chpasswd <<< "${app}:${password}"
+    groups="sftp.app"
+else
+    groups=""
+fi
+
+ynh_system_user_create --username=$app --home_dir="$final_path" --groups="$groups"
+
+if [ -n "$password" ]
 then
     # Add the password to this user
     chpasswd <<< "${app}:${password}"
@@ -173,17 +182,6 @@ fi
 #=================================================
 # SPECIFIC UPGRADE
 #=================================================
-# CONFIGURE SSH
-#=================================================
-
-if [ $with_sftp -eq 1 ]
-then
-    ynh_script_progression --message="Configuring SSH..." --weight=1
-
-	ynh_add_config --template="../conf/ssh_regenconf_hook" --destination="/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
-
-    yunohost tools regen-conf ssh
-fi
 
 #=================================================
 # GENERIC FINALIZATION
@@ -194,7 +192,8 @@ fi
 chown -R $app: "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-chown root: "$final_path"
+chown root:$app "$final_path"
+chmod o-rwx "$final_path"
 
 #=================================================
 # RELOAD NGINX

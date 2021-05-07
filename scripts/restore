@@ -51,13 +51,6 @@ test ! -d $final_path \
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
-# RESTORE THE APP MAIN DIR
-#=================================================
-ynh_script_progression --message="Restoring the app main directory..."
-
-ynh_restore_file --origin_path="$final_path"
-
-#=================================================
 # RESTORE THE MYSQL DATABASE
 #=================================================
 
@@ -74,7 +67,14 @@ fi
 #=================================================
 ynh_script_progression --message="Recreating the dedicated system user..." --weight=2
 
-ynh_system_user_create --username=$app --home_dir="$final_path"
+if [ $with_sftp -eq 1 ]
+then
+    groups="sftp.app"
+else
+    groups=""
+fi
+
+ynh_system_user_create --username=$app --home_dir="$final_path" --groups="$groups"
 
 if [ -n "$password" ]
 then
@@ -83,14 +83,18 @@ then
 fi
 
 #=================================================
-# RESTORE USER RIGHTS
+# RESTORE THE APP MAIN DIR
 #=================================================
+ynh_script_progression --message="Restoring the app main directory..."
+
+ynh_restore_file --origin_path="$final_path"
 
 # Restore permissions on app files
 chown -R $app: "$final_path"
 # Home directory of the user need to be owned by root to allow
 # SFTP connections
-chown root: "$final_path"
+chown root:$app "$final_path"
+chmod o-rwx "$final_path"
 
 #=================================================
 # RESTORE THE PHP-FPM CONFIGURATION
@@ -101,17 +105,6 @@ ynh_restore_file --origin_path="/etc/php/$phpversion/fpm/pool.d/$app.conf"
 #=================================================
 # SPECIFIC RESTORATION
 #=================================================
-# CONFIGURE SSH
-#=================================================
-
-if [ $with_sftp -eq 1 ]
-then
-    ynh_script_progression --message="Configuring SSH..."
-
-    ynh_restore_file "/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
-
-    yunohost tools regen-conf ssh
-fi
 
 #=================================================
 # GENERIC FINALIZATION
