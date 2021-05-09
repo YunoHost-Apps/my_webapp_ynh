@@ -192,7 +192,9 @@ fi
 chown -R $app: "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-chown root:$app "$final_path"
+chown root:root "$final_path"
+setfacl -m g:$app:r-x "$final_path"
+setfacl -m g:www-data:r-x "$final_path"
 chmod o-rwx "$final_path"
 
 #=================================================
