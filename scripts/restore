@@ -90,7 +90,7 @@ ynh_script_progression --message="Restoring the app main directory..."
 ynh_restore_file --origin_path="$final_path"
 
 # Restore permissions on app files
-chown -R $app: "$final_path"
+chown -R $app:www-data "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
 chown root:root "$final_path"

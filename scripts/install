@@ -128,7 +128,7 @@ name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
     cp -r "../sources/db_access.txt" "$final_path/db_access.txt"
 fi
 
-chown -R $app: "$final_path"
+chown -R $app:www-data "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
 chown root:root "$final_path"

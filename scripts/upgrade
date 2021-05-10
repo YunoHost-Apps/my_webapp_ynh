@@ -147,8 +147,6 @@ ynh_script_progression --message="Making sure dedicated system user exists..." -
 
 if [ $with_sftp -eq 1 ]
 then
-    # Add the password to this user
-    chpasswd <<< "${app}:${password}"
     groups="sftp.app"
 else
     groups=""
@@ -189,7 +187,7 @@ fi
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-chown -R $app: "$final_path"
+chown -R $app:www-data "$final_path"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
 chown root:root "$final_path"
