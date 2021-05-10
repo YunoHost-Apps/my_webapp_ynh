@@ -64,17 +64,6 @@ then
 fi
 
 #=================================================
-# BACKUP SPECIFIC FILES
-#=================================================
-
-if [ $with_sftp -eq 1 ]
-then
-    ynh_print_info --message="Backup specific files..."
-
-    ynh_backup "/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
-fi
-
-#=================================================
 # END OF SCRIPT
 #=================================================
 

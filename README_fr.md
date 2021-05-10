@@ -6,12 +6,12 @@
 *[Read this readme in english.](./README.md)* 
 
 > *Ce package vous permet d'installer une Application vide avec accès SFTP au répertoire Web personnalisé rapidement et simplement sur un serveur YunoHost.  
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/install) pour savoir comment l'installer et en profiter.*
 
 ## Vue d'ensemble
 
 Cette application vous permet d'installer facilement une application vide personnalisée,
-fourni un accès aux fichiers avec [SFTP](https://yunohost.org/#/filezilla). Elle peut également créer une base de données MySQL -
+fourni un accès aux fichiers avec [SFTP](https://yunohost.org/fr/filezilla). Elle peut également créer une base de données MySQL -
 qui sera sauvegardée et restaurée avec votre application. Les détails de connexion
 seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire racine.
 
@@ -21,7 +21,7 @@ seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire raci
 
 ## Documentation
 
- * Documentation YunoHost : https://yunohost.org/#/app_my_webapp
+ * Documentation YunoHost : https://yunohost.org/fr/app_my_webapp
 
 ## Caractéristiques spécifiques YunoHost
 
@@ -35,6 +35,12 @@ seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire raci
 ## Limitations
 
 ## Informations additionnelles
+
+#### Port SFTP
+
+Vous avez peut-être changé le port SSH comme décrit dans cette section : 
+[Modifier le port SSH](https://yunohost.org/fr/security#modify-the-ssh-port) ;
+alors vous devriez utiliser ce port pour mettre à jour votre site Web avec SFTP. 
 
 ## Liens
 

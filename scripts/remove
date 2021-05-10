@@ -64,15 +64,6 @@ ynh_remove_fpm_config
 #=================================================
 # SPECIFIC REMOVE
 #=================================================
-# REMOVE THE CUSTOM SSH CONFIG
-#=================================================
-
-if [ $with_sftp -eq 1 ]
-then
-    ynh_script_progression --message="Removing the custom SSH config..."
-    ynh_secure_remove --file="/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
-    yunohost tools regen-conf ssh
-fi
 
 #=================================================
 # GENERIC FINALIZATION

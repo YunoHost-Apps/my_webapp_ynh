@@ -85,7 +85,14 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Configuring system user..."
 
-ynh_system_user_create --username=$app --home_dir="$final_path"
+if [ $with_sftp -eq 1 ]
+then
+    groups="sftp.app"
+else
+    groups=""
+fi
+
+ynh_system_user_create --username=$app --home_dir="$final_path" --groups="$groups"
 
 if [ $with_sftp -eq 1 ]
 then
@@ -96,18 +103,6 @@ fi
 
 #=================================================
 # SPECIFIC SETUP
-#=================================================
-# CONFIGURE SSH
-#=================================================
-if [ $with_sftp -eq 1 ]
-then
-    ynh_script_progression --message="Configuring SSH..."
-
-    ynh_add_config --template="../conf/ssh_regenconf_hook" --destination="/usr/share/yunohost/hooks/conf_regen/90-ssh_$app"
-
-    yunohost tools regen-conf ssh
-fi
-
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
@@ -133,6 +128,14 @@ name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
     cp -r "../sources/db_access.txt" "$final_path/db_access.txt"
 fi
 
+chown -R $app:www-data "$final_path"
+# Home directory of the user needs to be owned by root to allow
+# SFTP connections
+chown root:root "$final_path"
+setfacl -m g:$app:r-x "$final_path"
+setfacl -m g:www-data:r-x "$final_path"
+chmod o-rwx "$final_path"
+
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
@@ -144,15 +147,6 @@ phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
 #=================================================
 # GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-chown -R $app: "$final_path"
-# Home directory of the user needs to be owned by root to allow
-# SFTP connections
-chown root: "$final_path"
-
 #=================================================
 # SETUP SSOWAT
 #=================================================
