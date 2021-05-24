@@ -53,8 +53,6 @@ ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 
-ynh_app_setting_set --app=$app --key=overwrite_nginx --value=0
-ynh_app_setting_set --app=$app --key=overwrite_phpfpm --value=1
 ynh_app_setting_set --app=$app --key=admin_mail_html --value=1
 
 #=================================================

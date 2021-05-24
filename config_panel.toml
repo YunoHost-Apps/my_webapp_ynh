@@ -18,22 +18,6 @@ name = "My webapp configuration"
         optional = true
         help = "If a password already exist, it will not be replaced."
 
-    [main.overwrite_files]
-    name = "Overwriting config files"
-
-        [main.overwrite_files.overwrite_nginx]
-        ask = "Overwrite the NGINX config file?"
-        type = "boolean"
-        default = false
-        help = "If the file is overwritten, a backup will be created."
-
-        [main.overwrite_files.overwrite_phpfpm]
-        ask = "Overwrite the PHP-FPM config file?"
-        type = "boolean"
-        default = true
-        help = "If the file is overwritten, a backup will be created."
-
-
     [main.php_fpm_config]
     name = "PHP-FPM configuration"
 

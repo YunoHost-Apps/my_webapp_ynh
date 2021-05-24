@@ -24,8 +24,6 @@ with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 password=$(ynh_app_setting_get --app=$app --key=password)
 
-overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
-overwrite_phpfpm=$(ynh_app_setting_get --app=$app --key=overwrite_phpfpm)
 admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
 
 fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
@@ -59,18 +57,6 @@ fi
 if [ -z "$final_path" ]; then
 	final_path=/var/www/$app
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-fi
-
-# If overwrite_nginx doesn't exist, create it
-if [ -z "$overwrite_nginx" ]; then
-	overwrite_nginx=0
-	ynh_app_setting_set --app=$app --key=overwrite_nginx --value=$overwrite_nginx
-fi
-
-# If overwrite_phpfpm doesn't exist, create it
-if [ -z "$overwrite_phpfpm" ]; then
-	overwrite_phpfpm=1
-	ynh_app_setting_set --app=$app --key=overwrite_phpfpm --value=$overwrite_phpfpm
 fi
 
 # If admin_mail_html doesn't exist, create it
@@ -131,14 +117,10 @@ ynh_maintenance_mode_ON
 # NGINX CONFIGURATION
 #=================================================
 
-# Overwrite the NGINX configuration only if it's allowed
-if [ $overwrite_nginx -eq 1 ]
-then
-    ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
+ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
 
-    # Create a dedicated NGINX config
-    ynh_add_nginx_config
-fi
+# Create a dedicated NGINX config
+ynh_add_nginx_config
 
 #=================================================
 # CREATE DEDICATED USER
@@ -168,14 +150,10 @@ usermod -g "$app" "$app"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-# Overwrite the PHP-FPM configuration only if it's allowed
-if [ $overwrite_phpfpm -eq 1 ]
-then
-    ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
+ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
 
-    # Create a dedicated PHP-FPM config
-    ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
-fi
+# Create a dedicated PHP-FPM config
+ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
 
 #=================================================
 # SPECIFIC UPGRADE
