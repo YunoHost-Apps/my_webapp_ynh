@@ -30,8 +30,7 @@
         "install" : [
             {
                 "name": "domain",
-                "type": "domain",
-                "example": "domain.org"
+                "type": "domain"
             },
             {
                 "name": "path",
@@ -51,8 +50,7 @@
             {
                 "name": "password",
                 "type": "password",
-                "optional": true,
-                "example": "myreallystrengthpassword"
+                "optional": true
             },
             {
                 "name": "is_public",
