@@ -160,7 +160,7 @@ usermod -g "$app" "$app"
 ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
 
 # Create a dedicated PHP-FPM config
-ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
+ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$YNH_PHP_VERSION
 
 #=================================================
 # SPECIFIC UPGRADE
