@@ -23,6 +23,7 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 password=$(ynh_app_setting_get --app=$app --key=password)
+php_custom=$(ynh_app_setting_get --app=$app --key=php_custom)
 
 admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
 
@@ -81,6 +82,12 @@ fi
 if [ -z "$with_sftp" ]; then
 	with_sftp=1
 	ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
+fi
+
+# If with_sftp doesn't exist, create it
+if [ -z "$php_custom" ]; then
+	php_custom="7.3"
+	ynh_app_setting_set --app=$app --key=php_custom --value=$php_custom
 fi
 
 # Cleaning legacy permissions

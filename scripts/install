@@ -25,6 +25,7 @@ path_url=$YNH_APP_ARG_PATH
 with_sftp=$YNH_APP_ARG_WITH_SFTP
 password=$YNH_APP_ARG_PASSWORD
 is_public=$YNH_APP_ARG_IS_PUBLIC
+php_custom=$YNH_APP_ARG_PHP_CUSTOM
 
 with_mysql=$YNH_APP_ARG_WITH_MYSQL
 
@@ -52,6 +53,7 @@ ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+ynh_app_setting_set --app=$app --key=php_custom --value=$php_custom
 
 ynh_app_setting_set --app=$app --key=admin_mail_html --value=1
 
