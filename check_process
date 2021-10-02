@@ -5,7 +5,7 @@
 		with_sftp=1
 		password="myreallystrengthpassword"
 		is_public=1
-		php_custom="7.3"
+		phpversion="7.3"
 		with_mysql=1
 	; Checks
 		pkg_linter=1
@@ -27,7 +27,7 @@
 		with_sftp=0
 		password=""
 		is_public=1
-		php_custom="7.3"
+		phpversion="7.3"
 		with_mysql=1
 	; Checks
 		setup_sub_dir=1
@@ -40,7 +40,7 @@
 		with_sftp=1
 		password="myreallystrengthpassword"
 		is_public=1
-		php_custom="7.3"
+		phpversion="7.3"
 		with_mysql=0
 	; Checks
 		setup_sub_dir=1
@@ -53,7 +53,7 @@
 		with_sftp=0
 		password="myreallystrengthpassword"
 		is_public=1
-		php_custom="8.0"
+		phpversion="8.0"
 		with_mysql=0
 	; Checks
 		setup_sub_dir=1
