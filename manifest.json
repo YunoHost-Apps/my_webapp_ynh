@@ -58,7 +58,7 @@
                 "default": true
             },
             {
-                "name": "php_custom",
+                "name": "phpversion",
                 "type": "string",
                 "ask": {
                     "en": "Choose a PHP version you want to use for your app",
