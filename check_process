@@ -46,6 +46,19 @@
 		setup_sub_dir=1
 		upgrade=1
 		backup_restore=1
+;; Test with PHP7.4
+	; Manifest
+		domain="domain.tld"
+		path="/path"
+		with_sftp=0
+		password="myreallystrengthpassword"
+		is_public=1
+		phpversion="7.4"
+		with_mysql=0
+	; Checks
+		setup_sub_dir=1
+		upgrade=1
+		backup_restore=1
 ;; Test with PHP8.0
 	; Manifest
 		domain="domain.tld"
