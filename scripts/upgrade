@@ -98,6 +98,12 @@ if [ -z "$with_sftp" ]; then
 	ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 fi
 
+# If phpversion doesn't exist, create it
+if [ -z "$phpversion" ]; then
+	phpversion=$YNH_PHP_VERSION
+	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
+fi
+
 # Cleaning legacy permissions
 if ynh_legacy_permissions_exists; then
 	ynh_legacy_permissions_delete_all
@@ -114,6 +120,13 @@ ynh_maintenance_mode_ON
 
 #=================================================
 # STANDARD UPGRADE STEPS
+#=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Installing dependencies..." --weight=1
+
+ynh_install_app_dependencies "php${phpversion}-fpm"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
