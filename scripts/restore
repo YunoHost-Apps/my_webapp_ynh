@@ -43,6 +43,13 @@ test ! -d $final_path \
 #=================================================
 # STANDARD RESTORATION STEPS
 #=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Reinstalling dependencies..." --weight=2
+
+ynh_install_app_dependencies "php${phpversion}-fpm"
+
+#=================================================
 # RESTORE THE NGINX CONFIGURATION
 #=================================================
 
