@@ -123,7 +123,7 @@ ynh_maintenance_mode_ON
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=1
+ynh_script_progression --message="Installing dependencies..." --weight=2
 
 ynh_install_app_dependencies "php${phpversion}-fpm"
 
