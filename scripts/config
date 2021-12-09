@@ -64,7 +64,9 @@ show_config() {
 # MODIFY THE CONFIGURATION
 #=================================================
 
-apply_config() {
+ynh_app_config_apply() {
+    _ynh_app_config_apply
+    
     #=================================================
     # REMOVE OR ADD SFTP ACCESS
     #=================================================
