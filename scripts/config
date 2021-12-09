@@ -9,11 +9,15 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+ynh_abort_if_errors
+
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
 
 app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
+current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
 
 #=================================================
 # SPECIFIC CODE
@@ -44,26 +48,6 @@ else
     password="$YNH_CONFIG_MAIN_SFTP_PASSWORD"
 fi
 
-
-# Footprint for PHP-FPM
-old_fpm_footprint="$(ynh_app_setting_get --app=$app --key=fpm_footprint)"
-fpm_footprint="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FOOTPRINT:-$old_fpm_footprint}"
-
-# Free footprint value for PHP-FPM
-# Check if fpm_footprint is an integer
-if [ "$fpm_footprint" -eq "$fpm_footprint" ] 2> /dev/null
-then
-    # If fpm_footprint is an integer, that's a numeric value for the footprint
-    old_free_footprint=$fpm_footprint
-else
-    old_free_footprint=0
-fi
-free_footprint="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FREE_FOOTPRINT:-$old_free_footprint}"
-
-# Usage for PHP-FPM
-old_fpm_usage="$(ynh_app_setting_get --app=$app --key=fpm_usage)"
-fpm_usage="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_USAGE:-$old_fpm_usage}"
-
 #=================================================
 # SHOW_CONFIG FUNCTION FOR 'SHOW' COMMAND
 #=================================================
@@ -72,11 +56,8 @@ show_config() {
 	# here you are supposed to read some config file/database/other then print the values
 	# ynh_return "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
 	ynh_return "YNH_CONFIG_MAIN_SFTP_SFTP=$with_sftp"
-# 	ynh_return "YNH_CONFIG_MAIN_SFTP_PASSWORD=$password"
+    # ynh_return "YNH_CONFIG_MAIN_SFTP_PASSWORD=$password"
 
-	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FOOTPRINT=$fpm_footprint"
-	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FREE_FOOTPRINT=$free_footprint"
-	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_USAGE=$fpm_usage"
 }
 
 #=================================================
@@ -100,24 +81,80 @@ apply_config() {
             ynh_app_setting_set --app=$app --key=password --value="$password"
         fi
     fi
+}
 
-    #=================================================
-    # RECONFIGURE PHP-FPM
-    #=================================================
+#=================================================
+# SPECIFIC GETTERS FOR TOML SHORT KEY
+#=================================================
 
-    if [ "$fpm_usage" != "$old_fpm_usage" ] || [ "$fpm_footprint" != "$old_fpm_footprint" ]
+get__fpm_footprint() {
+    # Free footprint value for php-fpm
+    # Check if current_fpm_footprint is an integer
+    if [ "$current_fpm_footprint" -eq "$current_fpm_footprint" ] 2> /dev/null
     then
-        ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
+        echo "specific"
+    else
+        echo "$current_fpm_footprint"
+    fi
+}
+
+get__free_footprint() {
+    # Free footprint value for php-fpm
+    # Check if current_fpm_footprint is an integer
+    if [ "$current_fpm_footprint" -eq "$current_fpm_footprint" ] 2> /dev/null
+    then
+        # If current_fpm_footprint is an integer, that's a numeric value for the footprint
+        echo "$current_fpm_footprint"
+    else
+        echo "0"
+    fi
+}
+
+#=================================================
+# SPECIFIC SETTERS FOR TOML SHORT KEYS
+#=================================================
+
+set__fpm_footprint() {
+    if [ "$fpm_footprint" != "specific" ]
+    then
+        ynh_app_setting_set --app=$app --key=fpm_footprint --value="$fpm_footprint"
+    fi
+}
+
+set__free_footprint() {
+    if [ "$fpm_footprint" = "specific" ]
+    then
+        ynh_app_setting_set --app=$app --key=fpm_footprint --value="$free_footprint"
     fi
 }
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# SELECT THE ACTION FOLLOWING THE GIVEN ARGUMENT
-#=================================================
 
-case $1 in
-  show) show_config;;
-  apply) apply_config;;
-esac
+ynh_app_config_validate() {
+    _ynh_app_config_validate
+
+    if [ "${changed[fpm_usage]}" == "true" ] || [ "${changed[fpm_footprint]}" == "true" ] || [ "${changed[free_footprint]}" == "true" ]; then
+        # If fpm_footprint is set to 'specific', use $free_footprint value.
+        if [ "$fpm_footprint" = "specific" ]
+        then
+            fpm_footprint=$free_footprint
+        fi
+
+        if [ "$fpm_footprint" == "0" ]
+        then
+            ynh_print_err --message="When selecting 'specific', you have to set a footprint value into the field below."
+
+            exit 0
+        fi
+    fi
+}
+
+ynh_app_config_apply() {
+    _ynh_app_config_apply
+
+    ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+}
+
+ynh_app_config_run $1
