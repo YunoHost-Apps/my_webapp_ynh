@@ -3,8 +3,8 @@
     "name": "Custom Webapp",
     "packaging_format": 1,
     "description": {
-        "en": "Custom Web app with SFTP access",
-        "fr": "Application Web personnalisée avec accès SFTP"
+        "en": "Custom Web app with SFTP access to serve static and PHP files",
+        "fr": "Application Web personnalisée avec accès SFTP pour servir des fichiers statiques et PHP"
     },
     "version": "1.0~ynh5",
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
