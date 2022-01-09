@@ -64,7 +64,7 @@
                     "en": "Choose a PHP version you want to use for your app",
                     "fr": "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
                 },
-                "choices" : ["7.3", "7.4", "8.0"],
+                "choices" : ["none", "7.3", "7.4", "8.0"],
                 "default" : "7.3"
             },
             {

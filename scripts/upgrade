@@ -124,15 +124,27 @@ ynh_maintenance_mode_ON
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=2
 
-ynh_install_app_dependencies "php${phpversion}-fpm"
+if [ $phpversion != "none" ]
+then
+    ynh_script_progression --message="Installing dependencies..." --weight=2
+
+    ynh_install_app_dependencies "php${phpversion}-fpm"
+fi
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 
 ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
+
+# Prepare nginx.conf
+if [ $phpversion != "none" ]
+then
+    cp ../conf/nginx{_with_php,}.conf
+else
+    cp ../conf/nginx{_no_php,}.conf
+fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
@@ -165,10 +177,13 @@ usermod -g "$app" "$app"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
+if [ $phpversion != "none" ]
+then
+    ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
 
-# Create a dedicated PHP-FPM config
-ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+    # Create a dedicated PHP-FPM config
+    ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+fi
 
 #=================================================
 # SPECIFIC UPGRADE

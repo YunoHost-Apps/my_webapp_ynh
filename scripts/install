@@ -62,9 +62,13 @@ ynh_app_setting_set --app=$app --key=admin_mail_html --value=1
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=2
 
-ynh_install_app_dependencies "php${phpversion}-fpm"
+if [ $phpversion != "none" ]
+then
+    ynh_script_progression --message="Installing dependencies..." --weight=2
+
+    ynh_install_app_dependencies "php${phpversion}-fpm"
+fi
 
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -83,6 +87,14 @@ fi
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
+
+# Prepare nginx.conf
+if [ $phpversion != "none" ]
+then
+    cp ../conf/nginx{_with_php,}.conf
+else
+    cp ../conf/nginx{_no_php,}.conf
+fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
@@ -146,10 +158,14 @@ chmod o-rwx "$final_path"
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
-# Create a dedicatedPHP-FPM config
-ynh_add_fpm_config --usage=low --footprint=low --phpversion=$phpversion
+if [ $phpversion != "none" ]
+then
+    ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
+
+    # Create a dedicatedPHP-FPM config
+    ynh_add_fpm_config --usage=low --footprint=low --phpversion=$phpversion
+fi
 
 #=================================================
 # GENERIC FINALIZATION
