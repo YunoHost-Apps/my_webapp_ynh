@@ -28,6 +28,7 @@ ynh_script_progression --message="Loading installation settings..."
 
 # Needed for helper "ynh_add_nginx_config"
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
@@ -79,6 +80,14 @@ fi
 ynh_script_progression --message="Updating NGINX web server configuration..." --weight=2
 
 nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
+
+# Prepare nginx.conf
+if [ $phpversion != "none" ]
+then
+    cp ../conf/nginx{_with_php,}.conf
+else
+    cp ../conf/nginx{_no_php,}.conf
+fi
 
 # Change the path in the NGINX config file
 if [ $change_path -eq 1 ]
