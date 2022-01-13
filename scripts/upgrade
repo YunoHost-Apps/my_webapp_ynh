@@ -23,6 +23,7 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 password=$(ynh_app_setting_get --app=$app --key=password)
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
 admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
 
@@ -36,16 +37,23 @@ fpm_usage=$(ynh_app_setting_get --app=$app --key=fpm_usage)
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=3
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
-
-# Delete old user
-if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
-then
-    ynh_system_user_delete --username="$(ynh_app_setting_get --app=$app --key=user)"
-    ynh_app_setting_delete --app=$app --key=user
-fi
 
 # If db_name doesn't exist, create it
 if [ -z "$db_name" ]; then
@@ -83,26 +91,26 @@ if [ -z "$with_sftp" ]; then
 	ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 fi
 
+# If phpversion doesn't exist, create it
+if [ -z "$phpversion" ]; then
+	phpversion=$YNH_PHP_VERSION
+	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
+fi
+
+# Delete old user
+if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
+then
+    ynh_systemd_action --service_name=php${phpversion}-fpm --action=stop
+    ynh_system_user_delete --username="$(ynh_app_setting_get --app=$app --key=user)"
+    ynh_app_setting_delete --app=$app --key=user
+fi
+
 # Cleaning legacy permissions
 if ynh_legacy_permissions_exists; then
 	ynh_legacy_permissions_delete_all
 
 	ynh_app_setting_delete --app=$app --key=is_public
 fi
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=3
-
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	# restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
 
 #=================================================
 # ACTIVATE MAINTENANCE MODE
@@ -114,10 +122,29 @@ ynh_maintenance_mode_ON
 #=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+
+if [ $phpversion != "none" ]
+then
+    ynh_script_progression --message="Installing dependencies..." --weight=2
+
+    ynh_install_app_dependencies "php${phpversion}-fpm"
+fi
+
+#=================================================
 # NGINX CONFIGURATION
 #=================================================
 
 ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
+
+# Prepare nginx.conf
+if [ $phpversion != "none" ]
+then
+    cp ../conf/nginx{_with_php,}.conf
+else
+    cp ../conf/nginx{_no_php,}.conf
+fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
@@ -150,10 +177,13 @@ usermod -g "$app" "$app"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
+if [ $phpversion != "none" ]
+then
+    ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
 
-# Create a dedicated PHP-FPM config
-ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
+    # Create a dedicated PHP-FPM config
+    ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+fi
 
 #=================================================
 # SPECIFIC UPGRADE

@@ -3,8 +3,8 @@
     "name": "Custom Webapp",
     "packaging_format": 1,
     "description": {
-        "en": "Custom Web app with SFTP access",
-        "fr": "Application Web personnalisée avec accès SFTP"
+        "en": "Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files",
+        "fr": "Application Web personnalisée avec accès SFTP pour servir des fichiers statiques (HTML, CSS, JS) et PHP"
     },
     "version": "1.0~ynh5",
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
@@ -18,7 +18,7 @@
         "email": "maniackc_dev@crudelis.fr"
     }],
     "requirements": {
-        "yunohost": ">= 4.2.3"
+        "yunohost": ">= 4.3.3"
     },
     "multi_instance": true,
     "services": [
@@ -30,8 +30,7 @@
         "install" : [
             {
                 "name": "domain",
-                "type": "domain",
-                "example": "domain.org"
+                "type": "domain"
             },
             {
                 "name": "path",
@@ -51,13 +50,22 @@
             {
                 "name": "password",
                 "type": "password",
-                "optional": true,
-                "example": "myreallystrengthpassword"
+                "optional": true
             },
             {
                 "name": "is_public",
                 "type": "boolean",
                 "default": true
+            },
+            {
+                "name": "phpversion",
+                "type": "string",
+                "ask": {
+                    "en": "Choose a PHP version you want to use for your app",
+                    "fr": "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
+                },
+                "choices" : ["none", "7.3", "7.4", "8.0"],
+                "default" : "7.3"
             },
             {
                 "name": "with_mysql",
