@@ -15,6 +15,8 @@ fourni un accès aux fichiers avec [SFTP](https://yunohost.org/fr/filezilla). El
 qui sera sauvegardée et restaurée avec votre application. Les détails de connexion
 seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire racine.
 
+La version de PHP-FPM peut aussi être choisie, parmi 7.3, 7.4, et 8.0.
+
 **Version incluse :** 1.0
 
 ## Configuration

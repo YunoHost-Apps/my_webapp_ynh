@@ -1,10 +1,11 @@
 ;; Test complet
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/path"	(PATH)
+		domain="domain.tld"
+		path="/path"
 		with_sftp=1
 		password="myreallystrengthpassword"
-		is_public=1	(PUBLIC|public=1|private=0)
+		is_public=1
+		phpversion="7.3"
 		with_mysql=1
 	; Checks
 		pkg_linter=1
@@ -21,11 +22,12 @@
 		change_url=1
 ;; Test without sftp
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/path"	(PATH)
+		domain="domain.tld"
+		path="/path"
 		with_sftp=0
 		password=""
-		is_public=1	(PUBLIC|public=1|private=0)
+		is_public=1
+		phpversion="7.3"
 		with_mysql=1
 	; Checks
 		setup_sub_dir=1
@@ -33,11 +35,51 @@
 		backup_restore=1
 ;; Test without mysql
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/path"	(PATH)
+		domain="domain.tld"
+		path="/path"
 		with_sftp=1
 		password="myreallystrengthpassword"
-		is_public=1	(PUBLIC|public=1|private=0)
+		is_public=1
+		phpversion="7.3"
+		with_mysql=0
+	; Checks
+		setup_sub_dir=1
+		upgrade=1
+		backup_restore=1
+;; Test without PHP
+	; Manifest
+		domain="domain.tld"
+		path="/path"
+		with_sftp=0
+		password="myreallystrengthpassword"
+		is_public=1
+		phpversion="none"
+		with_mysql=0
+	; Checks
+		setup_sub_dir=1
+		upgrade=1
+		backup_restore=1
+;; Test with PHP7.4
+	; Manifest
+		domain="domain.tld"
+		path="/path"
+		with_sftp=0
+		password="myreallystrengthpassword"
+		is_public=1
+		phpversion="7.4"
+		with_mysql=0
+	; Checks
+		setup_sub_dir=1
+		upgrade=1
+		backup_restore=1
+;; Test with PHP8.0
+	; Manifest
+		domain="domain.tld"
+		path="/path"
+		with_sftp=0
+		password="myreallystrengthpassword"
+		is_public=1
+		phpversion="8.0"
 		with_mysql=0
 	; Checks
 		setup_sub_dir=1
