@@ -26,23 +26,6 @@ of your custom Web application inside.
 
 **Shipped version:** 1.0
 
-## Configuration
-
-## Documentation
-
- * YunoHost documentation: https://yunohost.org/en/app_my_webapp
-
-## YunoHost specific features
-
-#### Multi-users support
-
-#### Supported architectures
-
-* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/my_webapp.svg)](https://ci-apps-arm.yunohost.org/ci/apps/my_webapp/)
-
-## Limitations
-
 ## Additional information
 
 #### SFTP port
@@ -53,6 +36,7 @@ then you should use this port to update your website with SFTP.
 
 ## Links
 
+ * YunoHost documentation for this app: https://yunohost.org/en/app_my_webapp
  * Report a bug: https://github.com/YunoHost-Apps/my_webapp_ynh/issues
  * YunoHost website: https://yunohost.org/
 
