@@ -19,23 +19,6 @@ La version de PHP-FPM peut aussi être choisie, parmi 7.3, 7.4, et 8.0.
 
 **Version incluse :** 1.0
 
-## Configuration
-
-## Documentation
-
- * Documentation YunoHost : https://yunohost.org/fr/app_my_webapp
-
-## Caractéristiques spécifiques YunoHost
-
-#### Support multi-utilisateurs
-
-#### Architectures supportées
-
-* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/my_webapp.svg)](https://ci-apps-arm.yunohost.org/ci/apps/my_webapp/)
-
-## Limitations
-
 ## Informations additionnelles
 
 #### Port SFTP
@@ -46,6 +29,7 @@ alors vous devriez utiliser ce port pour mettre à jour votre site Web avec SFTP
 
 ## Liens
 
+ * Documentation YunoHost pour cette app : https://yunohost.org/fr/app_my_webapp
  * Signaler un bug : https://github.com/YunoHost-Apps/my_webapp_ynh/issues
  * Site web YunoHost : https://yunohost.org/
 
