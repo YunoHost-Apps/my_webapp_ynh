@@ -16,6 +16,7 @@ ynh_abort_if_errors
 #=================================================
 
 final_path=$(ynh_app_setting_get $app final_path)
+current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
 
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
