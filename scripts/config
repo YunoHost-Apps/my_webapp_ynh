@@ -68,7 +68,7 @@ set__free_footprint() {
 }
 
 set__password() {
-    if [ $password -eq "" ]
+    if [ "$password" == "" ]
     then
         ynh_app_setting_set --app=$app --key=password --value="$password"
     fi
@@ -104,12 +104,12 @@ ynh_app_config_apply() {
     if [ "${changed[phpversion]}" == "true" ] || "${changed[fpm_usage]}" == "true" ] || [ "${changed[fpm_footprint]}" == "true" ] || [ "${changed[free_footprint]}" == "true" ]; then
         ynh_remove_fpm_config
 
-        if [[ ! "$phpversion" == "none" ]]; then
+        if [ ! "$phpversion" == "none" ]; then
             ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
         fi
     fi
 
-    if [[ ! $phpversion == "none" ]]
+    if [ ! "$phpversion" == "none" ]
     then
         ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
     fi
@@ -118,7 +118,7 @@ ynh_app_config_apply() {
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
-        if [[ ! $password == "" ]]
+        if [ ! "$password" == "" ]
         then
             chpasswd <<< "${app}:${password}"
         fi
