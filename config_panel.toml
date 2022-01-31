@@ -7,7 +7,7 @@ name = "My webapp configuration"
     [main.sftp]
     name = "SFTP access"
 
-        [main.sftp.sftp]
+        [main.sftp.with_sftp]
         ask = "Do you need a SFTP access?"
         type = "boolean"
         default = true
@@ -16,7 +16,8 @@ name = "My webapp configuration"
         ask = "Set a password for the SFTP access"
         type = "password"
         optional = true
-        help = "If a password already exist, it will not be replaced."
+        visible = "stfp"
+        help = "If a password already exist, leave blank and it will not be replaced."
 
     [main.php_fpm_config]
     name = "PHP-FPM configuration"

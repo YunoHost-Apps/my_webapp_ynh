@@ -20,6 +20,13 @@ final_path=$(ynh_app_setting_get $app final_path)
 phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
 
+is_password_exist=0
+current_password=$(ynh_app_setting_get --app=$app --key=password)
+if [ -n "$current_password" ]
+then
+    is_password_exist=1
+fi
+
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
@@ -47,7 +54,6 @@ get__free_footprint() {
     fi
 }
 
-
 #=================================================
 # SPECIFIC VALIDATORS FOR TOML SHORT KEYS
 #=================================================
@@ -67,6 +73,13 @@ set__free_footprint() {
     if [ "$fpm_footprint" == "specific" ]
     then
         ynh_app_setting_set --app=$app --key=fpm_footprint --value="$free_footprint"
+    fi
+}
+
+set__password() {
+    if [ ! $is_password_exist -eq 1 ]
+    then
+        ynh_app_setting_set --app=$app --key=password --value="$password"
     fi
 }
 
@@ -97,6 +110,21 @@ ynh_app_config_apply() {
     _ynh_app_config_apply
 
     ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+
+    if [ $with_sftp -eq 1 ]
+    then
+        ynh_system_user_add_group --username=$app --groups="sftp.app"
+
+        if [ $is_password_exist -eq 1 ]
+        then
+            ynh_print_warn --message="A password already exist, it will not be replaced."
+        else
+            # Add the password to the user
+            chpasswd <<< "${app}:${password}"
+        fi
+    else
+        ynh_system_user_del_group --username=$app --groups="sftp.app"
+    fi
 }
 
 ynh_app_config_run $1
