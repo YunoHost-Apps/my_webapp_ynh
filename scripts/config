@@ -17,16 +17,6 @@ ynh_abort_if_errors
 
 final_path=$(ynh_app_setting_get $app final_path)
 
-phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
-current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
-
-is_password_exist=0
-current_password=$(ynh_app_setting_get --app=$app --key=password)
-if [ -n "$current_password" ]
-then
-    is_password_exist=1
-fi
-
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
@@ -109,13 +99,25 @@ ynh_app_config_validate() {
 ynh_app_config_apply() {
     _ynh_app_config_apply
 
-    ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+    # If there's any change to the php config, remove the old one and add a new one if applicable
+    if [ "${changed[phpversion]}" == "true" ] || "${changed[fpm_usage]}" == "true" ] || [ "${changed[fpm_footprint]}" == "true" ] || [ "${changed[free_footprint]}" == "true" ]; then
+        ynh_remove_fpm_config
+
+        if [[ ! "$phpversion" == "none" ]]; then
+            ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+        fi
+    fi
+
+    if [[ ! $phpversion == "none" ]]
+    then
+        ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+    fi
 
     if [ $with_sftp -eq 1 ]
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
-        if [ ! $password -eq "" ]
+        if [[ ! $password == "" ]]
         then
             chpasswd <<< "${app}:${password}"
         fi
