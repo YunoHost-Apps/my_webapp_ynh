@@ -1,5 +1,4 @@
 version = "1.0"
-name = "My webapp configuration panel"
 
 [main]
 name = "My webapp configuration"
@@ -16,7 +15,7 @@ name = "My webapp configuration"
         ask = "Set a password for the SFTP access"
         type = "password"
         optional = true
-        visible = "stfp"
+        visible = "with_sftp"
         help = "If a password already exist, leave blank and it will not be replaced."
 
     [main.php_fpm_config]
