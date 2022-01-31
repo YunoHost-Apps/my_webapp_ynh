@@ -77,7 +77,7 @@ set__free_footprint() {
 }
 
 set__password() {
-    if [ ! $is_password_exist -eq 1 ]
+    if [ $password -eq "" ]
     then
         ynh_app_setting_set --app=$app --key=password --value="$password"
     fi
@@ -115,11 +115,8 @@ ynh_app_config_apply() {
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
-        if [ $is_password_exist -eq 1 ]
+        if [ ! $password -eq "" ]
         then
-            ynh_print_warn --message="A password already exist, it will not be replaced."
-        else
-            # Add the password to the user
             chpasswd <<< "${app}:${password}"
         fi
     else
