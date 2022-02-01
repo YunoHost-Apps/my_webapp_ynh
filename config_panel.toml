@@ -27,29 +27,6 @@ name = "My webapp configuration"
         choices = ["none", "7.3", "7.4", "8.0"]
         default = "none"
 
-        [main.php_fpm_config.fpm_footprint]
-        ask = "Memory footprint of the service?"
-        type = "select"
-        choices = ["low", "medium", "high", "specific"]
-        default = "low"
-        visible = '! match(phpversion, "none")'
-        help = "low <= 20Mb per pool. medium between 20Mb and 40Mb per pool. high > 40Mb per pool.<br>Use specific to set a value with the following option."
-
-        [main.php_fpm_config.free_footprint]
-        ask = "Memory footprint of the service?"
-        type = "number"
-        default = "0"
-        visible = 'match(fpm_footprint, "specific") && ! match(phpversion, "none")'
-        help = "Free field to specify exactly the footprint in Mb if you don't want to use one of the three previous values."
-
-        [main.php_fpm_config.fpm_usage]
-        type = "select"
-        ask = "Expected usage of the service?"
-        choices = ["low", "medium", "high"]
-        default = "low"
-        visible = '! match(phpversion, "none")'
-        help = "low: Personal usage, behind the SSO. No RAM footprint when not used, but the impact on the processor can be high if many users are using the service.<br>medium: Low usage, few people or/and publicly accessible. Low RAM footprint, medium processor footprint when used.<br>high: High usage, frequently visited website. High RAM footprint, but lower on processor usage and quickly responding."
-
 # TODO: Add protected_path as tags, which are created as permission "label (path)", so admin can protect a specific path
 #    [main.permissions]
 #        [main.permissions.proteced_path]

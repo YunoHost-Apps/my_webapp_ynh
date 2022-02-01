@@ -22,29 +22,6 @@ current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
 
-get__fpm_footprint() {
-    # Free footprint value for php-fpm
-    # Check if current_fpm_footprint is an integer
-    if [ "$current_fpm_footprint" -eq "$current_fpm_footprint" ] 2> /dev/null
-    then
-        echo "specific"
-    else
-        echo "$current_fpm_footprint"
-    fi
-}
-
-get__free_footprint() {
-    # Free footprint value for php-fpm
-    # Check if current_fpm_footprint is an integer
-    if [ "$current_fpm_footprint" -eq "$current_fpm_footprint" ] 2> /dev/null
-    then
-        # If current_fpm_footprint is an integer, that's a numeric value for the footprint
-        echo "$current_fpm_footprint"
-    else
-        echo "0"
-    fi
-}
-
 #=================================================
 # SPECIFIC VALIDATORS FOR TOML SHORT KEYS
 #=================================================
@@ -52,20 +29,6 @@ get__free_footprint() {
 #=================================================
 # SPECIFIC SETTERS FOR TOML SHORT KEYS
 #=================================================
-
-set__fpm_footprint() {
-    if [ "$fpm_footprint" != "specific" ]
-    then
-        ynh_app_setting_set --app=$app --key=fpm_footprint --value="$fpm_footprint"
-    fi
-}
-
-set__free_footprint() {
-    if [ "$fpm_footprint" == "specific" ]
-    then
-        ynh_app_setting_set --app=$app --key=fpm_footprint --value="$free_footprint"
-    fi
-}
 
 set__password() {
     if [ "$password" == "" ]
@@ -81,40 +44,25 @@ set__password() {
 ynh_app_config_validate() {
     _ynh_app_config_validate
 
-    if [ "${changed[fpm_usage]}" == "true" ] || [ "${changed[fpm_footprint]}" == "true" ] || [ "${changed[free_footprint]}" == "true" ]; then
-        # If fpm_footprint is set to 'specific', use $free_footprint value.
-        if [ "$fpm_footprint" = "specific" ]
-        then
-            fpm_footprint=$free_footprint
-        fi
-
-        if [ "$fpm_footprint" == "0" ]
-        then
-            ynh_print_err --message="When selecting 'specific', you have to set a footprint value into the field below."
-
-            exit 0
-        fi
+    if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ "$password" == "" ]
+    then
+        ynh_die --message="You need to set a password to enable SFTP"
     fi
 }
 
 ynh_app_config_apply() {
     _ynh_app_config_apply
 
-    # If there's any change to the php config, remove the old one and add a new one if applicable
-    if [ "${changed[phpversion]}" == "true" ] || "${changed[fpm_usage]}" == "true" ] || [ "${changed[fpm_footprint]}" == "true" ] || [ "${changed[free_footprint]}" == "true" ]; then
-        ynh_remove_fpm_config
 
-        if [ ! "$phpversion" == "none" ]; then
-            ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
-        fi
-    fi
-
-    if [ ! "$phpversion" == "none" ]
+    if [ "${changed[phpversion]}" == "true" ] && [ "$phpversion" == "none" ]
     then
-        ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+        ynh_remove_fpm_config
+    elif [ "${changed[phpversion]}" == "true" ]
+    then
+        ynh_add_fpm_config --usage=low --footprint=low --phpversion=$phpversion
     fi
 
-    if [ $with_sftp -eq 1 ]
+    if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ]
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
@@ -122,7 +70,8 @@ ynh_app_config_apply() {
         then
             chpasswd <<< "${app}:${password}"
         fi
-    else
+    elif [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 0 ]
+    then
         ynh_system_user_del_group --username=$app --groups="sftp.app"
     fi
 }
