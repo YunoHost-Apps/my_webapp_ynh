@@ -52,6 +52,7 @@ ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
+ynh_app_setting_set --app=$app --key=password --value="$password"
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 
@@ -117,7 +118,6 @@ if [ $with_sftp -eq 1 ]
 then
     # Add the password to this user
     chpasswd <<< "${app}:${password}"
-    ynh_app_setting_set --app=$app --key=password --value="$password"
 fi
 
 #=================================================

@@ -112,6 +112,9 @@ if ynh_legacy_permissions_exists; then
 	ynh_app_setting_delete --app=$app --key=is_public
 fi
 
+# Ensure password is a setting even if empty, for the config panel
+ynh_app_setting_set --app=$app --key=password --value="$password"
+
 #=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
