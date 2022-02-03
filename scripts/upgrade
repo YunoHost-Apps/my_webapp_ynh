@@ -201,7 +201,7 @@ chown -R $app:www-data "$final_path"
 chown root:root "$final_path"
 setfacl -m g:$app:r-x "$final_path"
 setfacl -m g:www-data:r-x "$final_path"
-chmod o-rwx "$final_path"
+chmod 750 "$final_path"
 
 #=================================================
 # RELOAD NGINX
