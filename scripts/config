@@ -56,6 +56,9 @@ ynh_app_config_apply() {
 
     if [ "${changed[phpversion]}" == "true" ] && [ "$phpversion" == "none" ]
     then
+        # FIXME: This miserably fails because the setting phpversion get his 
+        # new value before ynh_app_config_apply gets called, so 
+        # ynh_remove_fpm_config try to remove the new not-yet-existent version.
         ynh_remove_fpm_config
     elif [ "${changed[phpversion]}" == "true" ]
     then
