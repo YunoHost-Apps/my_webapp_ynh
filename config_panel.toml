@@ -28,6 +28,7 @@ name = "My Webapp configuration"
         default = "none"
 
         [main.php_fpm_config.fpm_footprint]
+        visible = "phpversion != 'none'"
         ask = "Memory footprint of the service?"
         type = "select"
         choices.low = "Low, <= 20Mb per pool"
@@ -37,13 +38,14 @@ name = "My Webapp configuration"
         default = "low"
 
         [main.php_fpm_config.fpm_free_footprint]
-        visible = "fpm_footprint == 'specific'"
+        visible = "fpm_footprint == 'specific' && phpversion != 'none'"
         ask = "Memory footprint of the service?"
         type = "number"
         default = "0"
         help = "Free field to specify exactly the footprint in Mb if you don't want to use one of the three previous values."
 
         [main.php_fpm_config.fpm_usage]
+        visible = "phpversion != 'none'"
         ask = "Expected usage of the service?"
         type = "select"
         choices = ["low", "medium", "high"]
