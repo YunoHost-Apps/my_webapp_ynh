@@ -16,7 +16,11 @@ ynh_abort_if_errors
 #=================================================
 
 final_path=$(ynh_app_setting_get $app final_path)
-current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+
+fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
+fpm_usage=$(ynh_app_setting_get --app=$app --key=fpm_usage)
 
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
@@ -53,16 +57,26 @@ ynh_app_config_validate() {
 ynh_app_config_apply() {
     _ynh_app_config_apply
 
-
-    if [ "${changed[phpversion]}" == "true" ] && [ "$phpversion" == "none" ]
+    if [ "${changed[phpversion]}" == "true" ]
     then
-        # FIXME: This miserably fails because the setting phpversion get his 
-        # new value before ynh_app_config_apply gets called, so 
-        # ynh_remove_fpm_config try to remove the new not-yet-existent version.
+        ynh_app_setting_set --app=$app --key=phpversion --value="${old[phpversion]}"
         ynh_remove_fpm_config
-    elif [ "${changed[phpversion]}" == "true" ]
-    then
-        ynh_add_fpm_config --usage=low --footprint=low --phpversion=$phpversion
+        # ^ the helper includes ynh_remove_app_dependencies
+        YNH_PHP_VERSION=$phpversion
+        # ^ ynh_add_config replaces __PHPVERSION__ by __PHP_YNH_VERSION__...
+        ynh_app_setting_set --app=$app --key=phpversion --value="$phpversion"
+
+        if [ "$phpversion" == "none" ]
+        then
+            cp ../conf/nginx{_no_php,}.conf
+        else
+            cp ../conf/nginx{_with_php,}.conf
+            ynh_install_app_dependencies "php${phpversion}-fpm"
+            ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+            # ^ the helper takes care of ynh_app_setting_set the phpversion
+        fi
+
+        ynh_add_nginx_config
     fi
 
     if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ]

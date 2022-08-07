@@ -91,9 +91,9 @@ if [ -z "$with_sftp" ]; then
 	ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 fi
 
-# If phpversion doesn't exist, create it
+# If phpversion doesn't exist, create it. We assume it is the default system one.
 if [ -z "$phpversion" ]; then
-	phpversion=$YNH_PHP_VERSION
+	phpversion=$YNH_DEFAULT_PHP_VERSION
 	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 fi
 
@@ -145,6 +145,7 @@ ynh_script_progression --message="Upgrading NGINX web server configuration..." -
 if [ $phpversion != "none" ]
 then
     cp ../conf/nginx{_with_php,}.conf
+    YNH_PHP_VERSION="$phpversion"
 else
     cp ../conf/nginx{_no_php,}.conf
 fi
