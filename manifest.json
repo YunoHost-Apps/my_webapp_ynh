@@ -18,12 +18,12 @@
         "email": "maniackc_dev@crudelis.fr"
     }],
     "requirements": {
-        "yunohost": ">= 4.3.3"
+        "yunohost": ">= 11.0.9"
     },
     "multi_instance": true,
     "services": [
         "nginx",
-        "php7.3-fpm",
+        "php7.4-fpm",
         "mysql"
     ],
     "arguments": {
@@ -65,7 +65,7 @@
                     "fr": "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
                 },
                 "choices" : ["none", "7.3", "7.4", "8.0"],
-                "default" : "7.3"
+                "default" : "7.4"
             },
             {
                 "name": "with_mysql",
