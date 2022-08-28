@@ -132,6 +132,11 @@ then
     ynh_install_app_dependencies "php${phpversion}-fpm"
 fi
 
+if [ $with_mysql -eq 1 ]
+then
+    ynh_install_app_dependencies "php${phpversion}-mysql"
+fi
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
