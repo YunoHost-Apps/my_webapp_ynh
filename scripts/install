@@ -78,6 +78,8 @@ if [ $with_mysql -eq 1 ]
 then
     ynh_script_progression --message="Creating a MySQL database..." --weight=2
 
+    ynh_install_app_dependencies "php${phpversion}-mysql"
+
     db_name=$(ynh_sanitize_dbid --db_name=$app)
     ynh_app_setting_set --app=$app --key=db_name --value=$db_name
     ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name
