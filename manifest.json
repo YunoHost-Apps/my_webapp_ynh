@@ -18,7 +18,7 @@
         "email": "maniackc_dev@crudelis.fr"
     }],
     "requirements": {
-        "yunohost": ">= 11.0.9"
+        "yunohost": ">= 11.0.10"
     },
     "multi_instance": true,
     "services": [
