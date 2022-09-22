@@ -28,6 +28,7 @@ phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
 
 fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
+fpm_free_footprint=$(ynh_app_setting_get --app=$app --key=fpm_free_footprint)
 fpm_usage=$(ynh_app_setting_get --app=$app --key=fpm_usage)
 
 #=================================================
@@ -79,6 +80,12 @@ if [ -z "$fpm_footprint" ]; then
 	ynh_app_setting_set --app=$app --key=fpm_footprint --value=$fpm_footprint
 fi
 
+# If fpm_free_footprint doesn't exist, create it
+if [ -z "$fpm_free_footprint" ]; then
+	fpm_free_footprint=0
+	ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=$fpm_free_footprint
+fi
+
 # If fpm_usage doesn't exist, create it
 if [ -z "$fpm_usage" ]; then
 	fpm_usage=low
@@ -91,9 +98,9 @@ if [ -z "$with_sftp" ]; then
 	ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 fi
 
-# If phpversion doesn't exist, create it
+# If phpversion doesn't exist, create it. We assume it is the default system one.
 if [ -z "$phpversion" ]; then
-	phpversion=$YNH_PHP_VERSION
+	phpversion=$YNH_DEFAULT_PHP_VERSION
 	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 fi
 
@@ -111,6 +118,9 @@ if ynh_legacy_permissions_exists; then
 
 	ynh_app_setting_delete --app=$app --key=is_public
 fi
+
+# Ensure password is a setting even if empty, for the config panel
+ynh_app_setting_set --app=$app --key=password --value="$password"
 
 #=================================================
 # ACTIVATE MAINTENANCE MODE
@@ -147,6 +157,7 @@ ynh_script_progression --message="Upgrading NGINX web server configuration..." -
 if [ $phpversion != "none" ]
 then
     cp ../conf/nginx{_with_php,}.conf
+    YNH_PHP_VERSION="$phpversion"
 else
     cp ../conf/nginx{_no_php,}.conf
 fi

@@ -9,115 +9,143 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+ynh_abort_if_errors
+
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
 
-app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+final_path=$(ynh_app_setting_get $app final_path)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+
+current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
+fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
+fpm_usage=$(ynh_app_setting_get --app=$app --key=fpm_usage)
 
 #=================================================
-# SPECIFIC CODE
-#=================================================
-# LOAD VALUES
+# SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
 
-# Load the real value from the app config or elsewhere.
-# Then get the value from the form.
-# If the form has a value for a variable, take the value from the form,
-# Otherwise, keep the value from the app config.
+get__fpm_footprint() {
+    # Free footprint value for php-fpm
+    # Check if current_fpm_footprint is an integer
+    if [ "$current_fpm_footprint" -eq "$current_fpm_footprint" ] 2> /dev/null
+    then
+        echo "specific"
+    else
+        echo "$current_fpm_footprint"
+    fi
+}
 
-# with_sftp
-old_with_sftp="$(ynh_app_setting_get --app=$app --key=with_sftp)"
-with_sftp="${YNH_CONFIG_MAIN_SFTP_SFTP:-$old_with_sftp}"
-
-# sftp password
-is_password_exist=0
-password=$(ynh_app_setting_get --app=$app --key=password)
-if [ -n "$password" ]
-then
-    ynh_print_warn --message="A password already exist, it will not be replaced."
-    # If a password already exist, unset the variable password and to not change it.
-    unset password
-    is_password_exist=1
-else
-    # Otherwise, get the new password
-    password="$YNH_CONFIG_MAIN_SFTP_PASSWORD"
-fi
-
-
-# Footprint for PHP-FPM
-old_fpm_footprint="$(ynh_app_setting_get --app=$app --key=fpm_footprint)"
-fpm_footprint="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FOOTPRINT:-$old_fpm_footprint}"
-
-# Free footprint value for PHP-FPM
-# Check if fpm_footprint is an integer
-if [ "$fpm_footprint" -eq "$fpm_footprint" ] 2> /dev/null
-then
-    # If fpm_footprint is an integer, that's a numeric value for the footprint
-    old_free_footprint=$fpm_footprint
-else
-    old_free_footprint=0
-fi
-free_footprint="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FREE_FOOTPRINT:-$old_free_footprint}"
-
-# Usage for PHP-FPM
-old_fpm_usage="$(ynh_app_setting_get --app=$app --key=fpm_usage)"
-fpm_usage="${YNH_CONFIG_MAIN_PHP_FPM_CONFIG_USAGE:-$old_fpm_usage}"
-
-#=================================================
-# SHOW_CONFIG FUNCTION FOR 'SHOW' COMMAND
-#=================================================
-
-show_config() {
-	# here you are supposed to read some config file/database/other then print the values
-	# ynh_return "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
-	ynh_return "YNH_CONFIG_MAIN_SFTP_SFTP=$with_sftp"
-# 	ynh_return "YNH_CONFIG_MAIN_SFTP_PASSWORD=$password"
-
-	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FOOTPRINT=$fpm_footprint"
-	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_FREE_FOOTPRINT=$free_footprint"
-	ynh_return "YNH_CONFIG_MAIN_PHP_FPM_CONFIG_USAGE=$fpm_usage"
+get__free_footprint() {
+    # Free footprint value for php-fpm
+    # Check if current_fpm_footprint is an integer
+    if [ "$current_fpm_footprint" -eq "$current_fpm_footprint" ] 2> /dev/null
+    then
+        # If current_fpm_footprint is an integer, that's a numeric value for the footprint
+        echo "$current_fpm_footprint"
+    else
+        echo "0"
+    fi
 }
 
 #=================================================
-# MODIFY THE CONFIGURATION
+# SPECIFIC VALIDATORS FOR TOML SHORT KEYS
 #=================================================
 
-apply_config() {
-    #=================================================
-    # REMOVE OR ADD SFTP ACCESS
-    #=================================================
+#=================================================
+# SPECIFIC SETTERS FOR TOML SHORT KEYS
+#=================================================
 
-    if [ "$with_sftp" != "$old_with_sftp" ]
+set__password() {
+    if [ "$password" == "" ]
     then
-        yunohost app action run $app sftp --args with_sftp=$with_sftp
-
-        # Change the password only if none was already set for the user
-        if [ $is_password_exist -eq 0 ] && [ $with_sftp -eq 1 ]
-        then
-            # Add the password to the user
-            chpasswd <<< "${app}:${password}"
-            ynh_app_setting_set --app=$app --key=password --value="$password"
-        fi
+        ynh_app_setting_set --app=$app --key=password --value="$password"
     fi
+}
 
-    #=================================================
-    # RECONFIGURE PHP-FPM
-    #=================================================
-
-    if [ "$fpm_usage" != "$old_fpm_usage" ] || [ "$fpm_footprint" != "$old_fpm_footprint" ]
+set__fpm_footprint() {
+    if [ "$fpm_footprint" != "specific" ]
     then
-        ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
+        ynh_app_setting_set --app=$app --key=fpm_footprint --value="$fpm_footprint"
+    fi
+}
+
+set__fpm_free_footprint() {
+    if [ "$fpm_footprint" = "specific" ]
+    then
+        ynh_app_setting_set --app=$app --key=fpm_footprint --value="$fpm_free_footprint"
     fi
 }
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# SELECT THE ACTION FOLLOWING THE GIVEN ARGUMENT
-#=================================================
 
-case $1 in
-  show) show_config;;
-  apply) apply_config;;
-esac
+ynh_app_config_validate() {
+    _ynh_app_config_validate
+
+    if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ "$password" == "" ]
+    then
+        ynh_die --message="You need to set a password to enable SFTP"
+    fi
+
+    if [ "${changed[fpm_usage]}" == "true" ] || [ "${changed[fpm_footprint]}" == "true" ] || [ "${changed[fpm_free_footprint]}" == "true" ]; then
+        # If fpm_footprint is set to 'specific', use $fpm_free_footprint value.
+        if [ "$fpm_footprint" = "specific" ]
+        then
+            fpm_footprint=$fpm_free_footprint
+        fi
+
+        if [ "$fpm_footprint" == "0" ]
+        then
+            ynh_print_err --message="When selecting 'specific', you have to set a footprint value into the field below."
+
+            exit 0
+        fi
+    fi
+}
+
+ynh_app_config_apply() {
+    _ynh_app_config_apply
+
+    if [ "${changed[phpversion]}" == "true" ]
+    then
+        ynh_app_setting_set --app=$app --key=phpversion --value="${old[phpversion]}"
+        ynh_remove_fpm_config
+        # ^ the helper includes ynh_remove_app_dependencies
+        YNH_PHP_VERSION=$phpversion
+        # ^ ynh_add_config replaces __PHPVERSION__ by __PHP_YNH_VERSION__...
+        ynh_app_setting_set --app=$app --key=phpversion --value="$phpversion"
+
+        if [ "$phpversion" == "none" ]
+        then
+            cp ../conf/nginx{_no_php,}.conf
+        else
+            cp ../conf/nginx{_with_php,}.conf
+            ynh_install_app_dependencies "php${phpversion}-fpm"
+            ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+            # ^ the helper takes care of ynh_app_setting_set the phpversion
+        fi
+
+        ynh_add_nginx_config
+    fi
+
+    if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ]
+    then
+        ynh_system_user_add_group --username=$app --groups="sftp.app"
+
+        if [ ! "$password" == "" ]
+        then
+            chpasswd <<< "${app}:${password}"
+        fi
+    elif [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 0 ]
+    then
+        ynh_system_user_del_group --username=$app --groups="sftp.app"
+    fi
+
+    ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+}
+
+ynh_app_config_run $1
