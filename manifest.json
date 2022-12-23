@@ -6,7 +6,7 @@
         "en": "Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files",
         "fr": "Application Web personnalisée avec accès SFTP pour servir des fichiers statiques (HTML, CSS, JS) et PHP"
     },
-    "version": "1.0~ynh11",
+    "version": "1.0~ynh12",
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
     "license": "GPL-3.0-only",
     "maintainer": {
