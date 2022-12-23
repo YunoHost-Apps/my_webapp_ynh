@@ -145,7 +145,10 @@ ynh_app_config_apply() {
         ynh_system_user_del_group --username=$app --groups="sftp.app"
     fi
 
-    ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+    if [ "$phpversion" != "none" ]
+    then
+        ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+    fi
 }
 
 ynh_app_config_run $1
