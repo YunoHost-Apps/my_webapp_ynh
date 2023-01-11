@@ -93,13 +93,14 @@ fi
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
-# Prepare nginx.conf
+nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+mkdir -p "$nginx_extra_conf_dir"
+
+# Prepare nginx extra conf
 if [ $phpversion != "none" ]
 then
-    cp ../conf/nginx{_with_php,}.conf
+    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
     YNH_PHP_VERSION="$phpversion"
-else
-    cp ../conf/nginx{_no_php,}.conf
 fi
 
 # Create a dedicated NGINX config

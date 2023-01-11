@@ -159,7 +159,7 @@ ynh_maintenance_mode_ON () {
 	fi
 
 	mkdir -p /var/www/html/
-	
+
 	# Create an html to serve as maintenance notice
 	echo "<!DOCTYPE html>
 <html>
