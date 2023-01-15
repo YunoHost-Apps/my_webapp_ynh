@@ -85,6 +85,32 @@
 		setup_sub_dir=1
 		upgrade=1
 		backup_restore=1
+;; Test with PHP8.1
+	; Manifest
+		domain="domain.tld"
+		path="/path"
+		with_sftp=0
+		password="myreallystrengthpassword"
+		is_public=1
+		phpversion="8.1"
+		with_mysql=0
+	; Checks
+		setup_sub_dir=1
+		upgrade=1
+		backup_restore=1
+;; Test with PHP8.2
+	; Manifest
+		domain="domain.tld"
+		path="/path"
+		with_sftp=0
+		password="myreallystrengthpassword"
+		is_public=1
+		phpversion="8.2"
+		with_mysql=0
+	; Checks
+		setup_sub_dir=1
+		upgrade=1
+		backup_restore=1
 ;;; Options
 Email=
 Notification=change
