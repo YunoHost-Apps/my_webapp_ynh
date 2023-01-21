@@ -9,6 +9,10 @@
     "version": "1.0~ynh12",
     "url": "https://github.com/YunoHost-Apps/my_webapp_ynh",
     "license": "GPL-3.0-only",
+    "upstream": {
+        "license": "GPL-3.0-only",
+        "code": "https://github.com/YunoHost-Apps/my_webapp_ynh"
+    },
     "maintainer": {
         "name": "",
         "email": ""
