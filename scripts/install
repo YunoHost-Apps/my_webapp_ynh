@@ -170,6 +170,11 @@ then
 
     # Create a dedicatedPHP-FPM config
     ynh_add_fpm_config --usage=low --footprint=low --phpversion=$phpversion
+else
+    # This is needed for the config panel to work even though PHP is not actually used
+    ynh_app_setting_set --app=$app --key=fpm_footprint --value=low
+    ynh_app_setting_set --app=$app --key=fpm_usage --value=low
+    ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=0
 fi
 
 #=================================================
