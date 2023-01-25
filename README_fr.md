@@ -5,7 +5,7 @@ It shall NOT be edited by hand.
 
 # My Webapp pour YunoHost
 
-[![Niveau d’intégration](https://dash.yunohost.org/integration/my_webapp.svg)](https://dash.yunohost.org/appci/app/my_webapp) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)  
+[![Niveau d’intégration](https://dash.yunohost.org/integration/my_webapp.svg)](https://dash.yunohost.org/appci/app/my_webapp) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
 [![Installer My Webapp avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
 *[Read this readme in english.](./README.md)*
@@ -15,12 +15,9 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 ## Vue d’ensemble
 
-Cette application vous permet d'installer facilement une application vide personnalisée,
-fourni un accès aux fichiers avec [SFTP](https://yunohost.org/fr/filezilla).
+Cette application vous permet d'installer facilement une application vide personnalisée, fourni un accès aux fichiers avec [SFTP](https://yunohost.org/fr/filezilla).
 
-Elle peut également créer une base de données MySQL - qui sera sauvegardée et
-restaurée avec votre application. Les détails de connexion seront stockés dans
-le fichier `db_accesss.txt` situé dans le répertoire racine.
+Elle peut également créer une base de données MySQL - qui sera sauvegardée et restaurée avec votre application. Les détails de connexion seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire racine.
 
 La version de PHP-FPM peut aussi être choisie, parmi 7.3, 7.4, et 8.0.
 
@@ -30,9 +27,7 @@ La version de PHP-FPM peut aussi être choisie, parmi 7.3, 7.4, et 8.0.
 
 #### Port SFTP
 
-Vous avez peut-être changé le port SSH comme décrit dans cette section : 
-[Modifier le port SSH](https://yunohost.org/fr/security#modify-the-ssh-port) ;
-alors vous devriez utiliser ce port pour mettre à jour votre site Web avec SFTP. 
+Vous avez peut-être changé le port SSH comme décrit dans cette section : [Modifier le port SSH](https://yunohost.org/fr/security#modify-the-ssh-port) ; alors vous devriez utiliser ce port pour mettre à jour votre site Web avec SFTP. 
 
 ## Documentations et ressources
 
