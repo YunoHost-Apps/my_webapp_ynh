@@ -1,5 +1,3 @@
-## Additional information
-
 #### SFTP port
 
 You may have change the SSH port as described in this section: 
