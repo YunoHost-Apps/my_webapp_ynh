@@ -24,6 +24,8 @@ PHP-FPM version can also be selected among 7.3, 7.4, 8.0, 8.1 and 8.2.
 
 **Once installed, go to the chosen URL to know the user, domain and port you will have to use for the SFTP access.** The password is one you chosen during the installation. Under the Web directory, you will see a `www` folder which contains the public files served by this app. You can put all the files of your custom Web application inside.
 
+If you want to add customized nginx configuration, put it in `/etc/nginx/conf.d/YOUR_DOMAIN.d/my_webapp.d/WHATEVER_NAME.conf` (ensure that the file has the `.conf` extension, and change `my_webapp.d` to `my_webapp__xx.d` if you want to change the configuration of the second or more installation of my_webapp).
+
 
 **Shipped version:** 1.0~ynh13
 ## Disclaimers / important information
