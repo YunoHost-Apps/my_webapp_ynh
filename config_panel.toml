@@ -24,7 +24,7 @@ name = "My Webapp configuration"
         [main.php_fpm_config.phpversion]
         ask = "PHP version"
         type = "select"
-        choices = ["none", "7.3", "7.4", "8.0"]
+        choices = ["none", "7.3", "7.4", "8.0", "8.1", "8.2"]
         default = "none"
 
         [main.php_fpm_config.fpm_footprint]
