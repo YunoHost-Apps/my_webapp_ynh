@@ -18,7 +18,7 @@ app_nb=$YNH_APP_INSTANCE_NUMBER
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-REMOVEME? ynh_script_progression --message="Validating installation parameters..." --weight=2
+ynh_script_progression --message="Validating installation parameters..." --weight=2
 
 [ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
 
