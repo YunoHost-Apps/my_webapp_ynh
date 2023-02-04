@@ -31,7 +31,7 @@ ynh_send_readme_to_admin() {
 	type="${type:-install}"
 
 	# Get the value of admin_mail_html
-#REMOVEME? 	admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
+	admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
 	admin_mail_html="${admin_mail_html:-0}"
 
 	# Retrieve the email of users
@@ -152,10 +152,10 @@ __PRE_TAG1__$(yunohost tools diagnosis | grep -B 100 "services:" | sed '/service
 ynh_maintenance_mode_ON () {
 	# Load value of $path and $domain from the config if their not set
 	if [ -z $path ]; then
-#REMOVEME? 		path=$(ynh_app_setting_get $app path)
+		path=$(ynh_app_setting_get $app path)
 	fi
 	if [ -z $domain ]; then
-#REMOVEME? 		domain=$(ynh_app_setting_get $app domain)
+		domain=$(ynh_app_setting_get $app domain)
 	fi
 
 	mkdir -p /var/www/html/
@@ -208,10 +208,10 @@ include conf.d/yunohost_panel.conf.inc;
 ynh_maintenance_mode_OFF () {
 	# Load value of $path and $domain from the config if their not set
 	if [ -z $path ]; then
-#REMOVEME? 		path=$(ynh_app_setting_get $app path)
+		path=$(ynh_app_setting_get $app path)
 	fi
 	if [ -z $domain ]; then
-#REMOVEME? 		domain=$(ynh_app_setting_get $app domain)
+		domain=$(ynh_app_setting_get $app domain)
 	fi
 
 	# Rewrite the nginx config file to redirect from ${path}_maintenance to the real url of the app.

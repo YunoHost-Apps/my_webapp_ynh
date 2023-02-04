@@ -10,25 +10,12 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-# Exit if an error occurs during the execution of the script
-#REMOVEME? ynh_abort_if_errors
-
-#=================================================
 # LOAD SETTINGS
 #=================================================
-#REMOVEME? ynh_print_info --message="Loading installation settings..."
+ynh_print_info --message="Loading installation settings..."
 
-#REMOVEME? app=$YNH_APP_INSTANCE_NAME
-
-#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
-#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
-#REMOVEME? db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-#REMOVEME? with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
-#REMOVEME? with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
-#REMOVEME? phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
+with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
+with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 
 #=================================================
 # DECLARE DATA AND CONF FILES TO BACKUP

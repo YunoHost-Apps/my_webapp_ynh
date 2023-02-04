@@ -21,24 +21,8 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression --message="Loading settings..." --weight=2
 
-#REMOVEME? app=$YNH_APP_INSTANCE_NAME
-
-#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
-#REMOVEME? path=$(ynh_app_setting_get --app=$app --key=path)
-#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
-#REMOVEME? db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-#REMOVEME? with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
-#REMOVEME? with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
-#REMOVEME? password=$(ynh_app_setting_get --app=$app --key=password)
-#REMOVEME? phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
-
-#=================================================
-# CHECK IF THE APP CAN BE RESTORED
-#=================================================
-#REMOVEME? ynh_script_progression --message="Validating restoration parameters..." --weight=2
-
-#REMOVEME? test ! -d $install_dir \
-	|| ynh_die --message="There is already a directory: $install_dir "
+with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
+with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 
 #=================================================
 # STANDARD RESTORATION STEPS
@@ -48,9 +32,9 @@ ynh_script_progression --message="Loading settings..." --weight=2
 
 if [ $phpversion != "none" ]
 then
-#REMOVEME? 	ynh_script_progression --message="Reinstalling dependencies..." --weight=2
+    ynh_script_progression --message="Reinstalling dependencies..." --weight=2
 
-#REMOVEME? 	ynh_install_app_dependencies "php${phpversion}-fpm"
+    ynh_install_app_dependencies "php${phpversion}-fpm"
 fi
 
 #=================================================
@@ -64,19 +48,19 @@ ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 #=================================================
 
 if [ $with_mysql -eq 1 ]; then
-#REMOVEME?     ynh_script_progression --message="Restoring the MySQL database..."
+    ynh_script_progression --message="Restoring the MySQL database..."
 
-#REMOVEME?     ynh_install_app_dependencies "php${phpversion}-mysql"
+    ynh_install_app_dependencies "php${phpversion}-mysql"
 
-#REMOVEME?     db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-#REMOVEME?     ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
+    db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+    ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
     ynh_mysql_connect_as --user=$db_name --password=$db_pwd --database=$db_name < ./db.sql
 fi
 
 #=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
-#REMOVEME? ynh_script_progression --message="Recreating the dedicated system user..." --weight=2
+ynh_script_progression --message="Recreating the dedicated system user..." --weight=2
 
 if [ $with_sftp -eq 1 ]
 then
@@ -85,7 +69,7 @@ else
     groups=""
 fi
 
-#REMOVEME? ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$groups"
+ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$groups"
 
 if [ -n "$password" ]
 then
@@ -117,10 +101,6 @@ if [ $phpversion != "none" ]
 then
 	ynh_restore_file --origin_path="/etc/php/${phpversion}/fpm/pool.d/$app.conf"
 fi
-
-#=================================================
-# SPECIFIC RESTORATION
-#=================================================
 
 #=================================================
 # GENERIC FINALIZATION

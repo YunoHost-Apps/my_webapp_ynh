@@ -12,17 +12,10 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-#REMOVEME? ynh_script_progression --message="Loading installation settings..." --weight=2
+ynh_script_progression --message="Loading installation settings..." --weight=2
 
-#REMOVEME? app=$YNH_APP_INSTANCE_NAME
-
-#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
-#REMOVEME? with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
-#REMOVEME? with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
-
-#REMOVEME? db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-#REMOVEME? db_user=$db_name
-#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
+with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
+with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 
 #=================================================
 # STANDARD REMOVE
@@ -31,19 +24,11 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 if [ $with_mysql -eq 1 ]; then
-#REMOVEME?     ynh_script_progression --message="Removing the MySQL database..." --weight=2
+    ynh_script_progression --message="Removing the MySQL database..." --weight=2
 
     # Remove a database if it exists, along with the associated user
-#REMOVEME?     ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
+    ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
 fi
-
-#=================================================
-# REMOVE APP MAIN DIR
-#=================================================
-#REMOVEME? ynh_script_progression --message="Removing app main directory..."
-
-# Remove the app directory securely
-#REMOVEME? ynh_secure_remove --file="$install_dir"
 
 #=================================================
 # REMOVE NGINX CONFIGURATION
@@ -60,20 +45,6 @@ ynh_script_progression --message="Removing PHP-FPM configuration..."
 
 # Remove the dedicated PHP-FPM config
 ynh_remove_fpm_config
-
-#=================================================
-# SPECIFIC REMOVE
-#=================================================
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# REMOVE DEDICATED USER
-#=================================================
-#REMOVEME? ynh_script_progression --message="Removing the dedicated system user..."
-
-# Delete a system user
-#REMOVEME? ynh_system_user_delete --username=$app
 
 #=================================================
 # END OF SCRIPT
