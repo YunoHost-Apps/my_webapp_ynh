@@ -9,3 +9,23 @@ test_format = 1.0
     args.with_sftp = "1"
 	args.phpversion="7.4"
 	args.with_mysql=1
+
+[some_additional_testsuite]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.phpversion="7.3"
+
+[some_additional_testsuite]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.phpversion="8.0"
+
+[some_additional_testsuite]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.phpversion="8.1"
+
+[some_additional_testsuite]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.phpversion="8.2"
