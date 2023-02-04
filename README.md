@@ -25,12 +25,6 @@ PHP-FPM version can also be selected among 7.3, 7.4, 8.0, 8.1 and 8.2.
 
 
 **Shipped version:** 1.0~ynh12
-## Disclaimers / important information
-
-#### SFTP port
-
-You may have change the SSH port as described in this section: [Modify the SSH port](https://yunohost.org/en/security#modify-the-ssh-port); then you should use this port to update your website with SFTP.
-
 ## Documentation and resources
 
 * Upstream app code repository: <https://github.com/YunoHost-Apps/my_webapp_ynh>
