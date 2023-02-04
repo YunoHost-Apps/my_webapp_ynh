@@ -37,7 +37,7 @@ ynh_script_progression --message="Ensuring downward compatibility..."
 # If admin_mail_html doesn't exist, create it
 if [ -z "$admin_mail_html" ]; then
 	admin_mail_html=1
-	#REMOVEME? 	ynh_app_setting_set --app=$app --key=admin_mail_html --value=$admin_mail_html
+		ynh_app_setting_set --app=$app --key=admin_mail_html --value=$admin_mail_html
 fi
 
 # If fpm_footprint doesn't exist, create it
