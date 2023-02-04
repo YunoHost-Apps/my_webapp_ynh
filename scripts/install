@@ -80,7 +80,7 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-#REMOVEME? ynh_script_progression --message="Configuring system user..."
+ynh_script_progression --message="Configuring system user..."
 
 if [ $with_sftp -eq 1 ]
 then
