@@ -10,22 +10,22 @@ test_format = 1.0
 	args.phpversion = "7.4"
 	args.with_mysql = "1"
 
-[7.3_test]
+[73_test]
 
     only = ["install.subdir", "backup_restore", "upgrade" ]
     args.phpversion = "7.3"
 
-[8.0_test]
+[80_test]
 
     only = ["install.subdir", "backup_restore", "upgrade" ]
     args.phpversion = "8.0"
 
-[8.1_test]
+[81_test]
 
     only = ["install.subdir", "backup_restore", "upgrade" ]
     args.phpversion = "8.1"
 
-[8.2_test]
+[82_test]
 
     only = ["install.subdir", "backup_restore", "upgrade" ]
     args.phpversion = "8.2"
