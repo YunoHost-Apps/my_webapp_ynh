@@ -46,7 +46,7 @@ ynh_script_progression --message="Creating a new database..." --weight=4
 db_name=$(ynh_sanitize_dbid --db_name=$app)
 
 # Reuse the previous password if existing
-db_pwd=$(grep "pass:" "$final_path/db_access.txt" | cut -d' ' -f2 2> /dev/null)
+db_pwd=$(grep "pass:" "$install_dir/db_access.txt" | cut -d' ' -f2 2> /dev/null)
 
 ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
 

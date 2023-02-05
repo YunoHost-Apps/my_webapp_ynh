@@ -15,7 +15,7 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS
 #=================================================
 
-final_path=$(ynh_app_setting_get $app final_path)
+install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 
