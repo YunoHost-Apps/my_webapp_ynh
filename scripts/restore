@@ -10,19 +10,13 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-# Exit if an error occurs during the execution of the script
-#REMOVEME? ynh_abort_if_errors
-
-#=================================================
 # LOAD SETTINGS
 #=================================================
 ynh_script_progression --message="Loading settings..." --weight=2
 
 with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
 with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
+password=$(ynh_app_setting_get --app=$app --key=password)
 
 #=================================================
 # STANDARD RESTORATION STEPS

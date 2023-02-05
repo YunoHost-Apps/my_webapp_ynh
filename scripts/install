@@ -29,6 +29,7 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 #=================================================
 ynh_script_progression --message="Storing installation settings..."
 
+ynh_app_setting_set --app=$app --key=password --value=$password
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
