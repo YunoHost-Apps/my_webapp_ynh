@@ -15,6 +15,7 @@ source /usr/share/yunohost/helpers
 
 password=$YNH_APP_ARG_PASSWORD
 app_nb=$YNH_APP_INSTANCE_NUMBER
+phpversion=$YNH_APP_ARG_PHPVERSION
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
