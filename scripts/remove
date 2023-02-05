@@ -26,6 +26,9 @@ with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 if [ $with_mysql -eq 1 ]; then
     ynh_script_progression --message="Removing the MySQL database..." --weight=2
 
+    db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+    db_user=$db_name
+
     # Remove a database if it exists, along with the associated user
     ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
 fi
