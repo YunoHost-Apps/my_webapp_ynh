@@ -154,9 +154,9 @@ then
     ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
 else
     # This is needed for the config panel to work even though PHP is not actually used
-    ynh_app_setting_set --app=$app --key=fpm_footprint --value=low
-    ynh_app_setting_set --app=$app --key=fpm_usage --value=low
-    ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=0
+    ynh_app_setting_set --app=$app --key=fpm_footprint --value=$fpm_footprint
+    ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=$fpm_free_footprint
+    ynh_app_setting_set --app=$app --key=fpm_usage --value=$fpm_usage
 fi
 
 #=================================================
@@ -169,7 +169,7 @@ admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)
 if [ $with_mysql -eq 1 ]
 then
     sql_infos="
-You've asked for a database, please find here the information about this SQL database.
+You have requested a database, please find information about this SQL database here.
 $(cat "$install_dir/db_access.txt")
 "
 else
