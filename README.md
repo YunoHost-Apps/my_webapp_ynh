@@ -22,7 +22,7 @@ It can also create a MySQL database - which will be backed up and restored with
 your application. The connection details will be stored in the file
 `db_access.txt` located in the root directory.
 
-PHP-FPM version can also be selected among 7.3, 7.4, and 8.0.
+PHP-FPM version can also be selected among none, 7.3, 7.4, and 8.0.
 
 **Once installed, go to the chosen URL to know the user, domain and port 
 you will have to use for the SFTP access.** The password is one you chosen
