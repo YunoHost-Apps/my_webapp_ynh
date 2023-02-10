@@ -167,9 +167,22 @@ chmod 750 "$final_path"
 if [ $phpversion != "none" ]
 then
     ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
+    
+    fpm_footprint="low"
+    fpm_free_footprint=0
+    fpm_usage="low"
+
+    ynh_app_setting_set --app=$app --key=fpm_footprint --value=$fpm_footprint
+    ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=$fpm_free_footprint
+    ynh_app_setting_set --app=$app --key=fpm_usage --value=$fpm_usage
 
     # Create a dedicatedPHP-FPM config
-    ynh_add_fpm_config --usage=low --footprint=low --phpversion=$phpversion
+    ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+else
+    # This is needed for the config panel to work even though PHP is not actually used
+    ynh_app_setting_set --app=$app --key=fpm_footprint --value=low
+    ynh_app_setting_set --app=$app --key=fpm_usage --value=low
+    ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=0
 fi
 
 #=================================================
