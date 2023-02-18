@@ -6,6 +6,7 @@ It shall NOT be edited by hand.
 # My Webapp for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/my_webapp.svg)](https://dash.yunohost.org/appci/app/my_webapp) ![Working status](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
+
 [![Install My Webapp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
 *[Lire ce readme en français.](./README_fr.md)*
