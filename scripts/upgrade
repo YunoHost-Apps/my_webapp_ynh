@@ -166,6 +166,7 @@ fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
 # CREATE DEDICATED USER

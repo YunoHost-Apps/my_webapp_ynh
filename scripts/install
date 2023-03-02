@@ -105,6 +105,7 @@ fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -168,7 +169,7 @@ chmod 750 "$final_path"
 if [ $phpversion != "none" ]
 then
     ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
-    
+
     fpm_footprint="low"
     fpm_free_footprint=0
     fpm_usage="low"
