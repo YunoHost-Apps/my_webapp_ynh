@@ -5,7 +5,8 @@ It shall NOT be edited by hand.
 
 # My Webapp for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/my_webapp.svg)](https://dash.yunohost.org/appci/app/my_webapp) ![Working status](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/my_webapp.svg)](https://dash.yunohost.org/appci/app/my_webapp) ![Working status](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
+
 [![Install My Webapp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -15,30 +16,21 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-This application allows you to easily install a custom Web application,
-providing files access with [SFTP](https://yunohost.org/en/filezilla).
+This application allows you to easily install a custom Web application, providing files access with [SFTP](https://yunohost.org/en/filezilla).
 
-It can also create a MySQL database - which will be backed up and restored with
-your application. The connection details will be stored in the file
-`db_access.txt` located in the root directory.
+It can also create a MySQL database - which will be backed up and restored with your application. The connection details will be stored in the file `db_access.txt` located in the root directory.
 
-PHP-FPM version can also be selected among none, 7.3, 7.4, and 8.0.
+PHP-FPM version can also be selected among none, 7.3, 7.4, 8.0, 8.1 and 8.2.
 
-**Once installed, go to the chosen URL to know the user, domain and port 
-you will have to use for the SFTP access.** The password is one you chosen
-during the installation. Under the Web directory, you will see a `www` folder
-which contains the public files served by this app. You can put all the files
-of your custom Web application inside.
+**Once installed, go to the chosen URL to know the user, domain and port you will have to use for the SFTP access.** The password is one you chosen during the installation. Under the Web directory, you will see a `www` folder which contains the public files served by this app. You can put all the files of your custom Web application inside.
 
 
-**Shipped version:** 1.0~ynh12
+**Shipped version:** 1.0~ynh13
 ## Disclaimers / important information
 
 #### SFTP port
 
-You may have change the SSH port as described in this section: 
-[Modify the SSH port](https://yunohost.org/en/security#modify-the-ssh-port); 
-then you should use this port to update your website with SFTP.
+You may have change the SSH port as described in this section: [Modify the SSH port](https://yunohost.org/en/security#modify-the-ssh-port); then you should use this port to update your website with SFTP.
 
 ## Documentation and resources
 
