@@ -49,8 +49,8 @@ ram.runtime = "50M"
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "string"
-    choices = ["none", "7.3", "7.4", "8.0", "8.1", "8.2"]
-    default = "7.4"
+    choices = ["none", "7.4", "8.0", "8.1", "8.2"]
+    default = "8.0"
 
     [install.with_mysql]
     ask.en = "Do you need a MySQL database?"
@@ -68,13 +68,17 @@ ram.runtime = "50M"
 
     [resources.apt]
     packages_from_raw_bash = """
-          if [[ "$phpversion" == "7.3" || "$phpversion" == "7.4" || "$phpversion" == "8.1" || "$phpversion" == "8.2" ]]
-          then 
-              echo "mariadb-server"
-          elif [[ "$phpversion" == "none" ]]
-          then
-              echo ""
-          fi
+        if [[ "$with_mysql" = 1 ]]
+        then 
+            echo "mariadb-server"
+        else
+            echo ""
+        fi
+
+        if [[ "$phpversion" != none ]]
+        then
+            echo "php${phpversion}-fpm php${phpversion}-mysql"
+        fi
     """
 
     [resources.database]
