@@ -26,7 +26,6 @@ PHP-FPM version can also be selected among 7.3, 7.4, 8.0, 8.1 and 8.2.
 
 
 **Shipped version:** 1.0~ynh12
-
 ## Documentation and resources
 
 * Upstream app code repository: <https://github.com/YunoHost-Apps/my_webapp_ynh>
