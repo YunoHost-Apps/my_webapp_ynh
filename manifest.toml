@@ -71,8 +71,6 @@ ram.runtime = "50M"
         if [[ "$with_mysql" = 1 ]]
         then 
             echo "mariadb-server"
-        else
-            echo ""
         fi
 
         if [[ "$phpversion" != none ]]
