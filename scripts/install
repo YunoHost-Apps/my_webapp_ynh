@@ -36,27 +36,12 @@ ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 ynh_app_setting_set --app=$app --key=admin_mail_html --value=1
 
 #=================================================
-# STANDARD MODIFICATIONS
-#=================================================
-# INSTALL DEPENDENCIES
-#=================================================
-
-if [ $phpversion != "none" ]
-then
-    ynh_script_progression --message="Installing dependencies..." --weight=2
-
-    ynh_install_app_dependencies "php${phpversion}-fpm"
-fi
-
-#=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
 
 if [ $with_mysql -eq 1 ]
 then
     ynh_script_progression --message="Creating a MySQL database..." --weight=2
-
-    ynh_install_app_dependencies "php${phpversion}-mysql"
 
     db_name=$(ynh_sanitize_dbid --db_name=$app)
     db_user=$db_name
