@@ -26,6 +26,7 @@ La version de PHP-FPM peut aussi être choisie, parmi 7.3, 7.4, 8.0, 8.1 et 8.2.
 
 
 **Version incluse :** 1.0~ynh12
+
 ## Documentations et ressources
 
 * Dépôt de code officiel de l’app : <https://github.com/YunoHost-Apps/my_webapp_ynh>
