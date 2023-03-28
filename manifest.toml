@@ -66,5 +66,16 @@ ram.runtime = "50M"
     [resources.permissions]
     main.url = "/"
 
+    [resources.apt]
+    packages_from_raw_bash = """
+          if [[ "$phpversion" == "7.3" || "$phpversion" == "7.4" || "$phpversion" == "8.1" || "$phpversion" == "8.2" ]]
+          then 
+              echo "mariadb-server"
+          elif [[ "$phpversion" == "none" ]]
+          then
+              echo ""
+          fi
+    """
+
     [resources.database]
     type = "mysql"
