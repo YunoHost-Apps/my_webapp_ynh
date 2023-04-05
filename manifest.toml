@@ -79,5 +79,5 @@ ram.runtime = "50M"
         fi
     """
 
-    [resources.database]
-    type = "mysql"
+    #[resources.database]
+    #type = "mysql"
