@@ -49,7 +49,6 @@ then
     db_user=$db_name
     ynh_app_setting_set --app=$app --key=db_name --value=$db_name
     ynh_app_setting_set --app=$app --key=db_user --value=$db_user
-    ynh_app_setting_set --app=$app --key=mysqlpwd --value=$db_pwd
     ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 fi
 
