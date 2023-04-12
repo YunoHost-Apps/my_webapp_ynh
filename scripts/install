@@ -142,44 +142,11 @@ then
 fi
 
 #=================================================
-# SEND A README FOR THE ADMIN
+# SSH PORT
 #=================================================
 
-# Get main domain and buid the URL of the admin panel of the app.
-admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
-
-if [ $with_mysql -eq 1 ]
-then
-    sql_infos="
-You have requested a database, please find information about this SQL database here.
-$(cat "$install_dir/db_access.txt")
-"
-else
-    sql_infos=""
-fi
-
-if [ $with_sftp -eq 1 ]
-then
-    sftp_infos="You can connect to this repository by using SFTP with the following credentials.
-Domain: $domain
-Port: $(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
-User: $app
-Password: The one you set at installation."
-else
-    sftp_infos=""
-fi
-
-echo "This app is simply a blank web app container. You have to put your own app inside.
-$sql_infos
-Please put your files into this directory: $install_dir/www/
-$sftp_infos
-
-You can configure this app easily by using the experimental __URL_TAG1__config-panel feature__URL_TAG2__$admin_panel/config-panel__URL_TAG3__.
-You can also find some specific actions for this app by using the experimental __URL_TAG1__action feature__URL_TAG2__$admin_panel/actions__URL_TAG3__.
-
-If you're facing an issue or want to improve this app, please open a new issue in this __URL_TAG1__project__URL_TAG2__https://github.com/YunoHost-Apps/my_webapp_ynh__URL_TAG3__." > mail_to_send
-
-ynh_send_readme_to_admin --app_message="mail_to_send" --recipients=root --type=install
+ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
+ynh_app_setting_set --app=$app --key=ssh_port --value=$ssh_port
 
 #=================================================
 # END OF SCRIPT
