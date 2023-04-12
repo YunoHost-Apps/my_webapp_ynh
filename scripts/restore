@@ -19,19 +19,6 @@ with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
 password=$(ynh_app_setting_get --app=$app --key=password)
 
 #=================================================
-# STANDARD RESTORATION STEPS
-#=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-
-#if [ $phpversion != "none" ]
-#then
-#    ynh_script_progression --message="Reinstalling dependencies..." --weight=2
-
-#    ynh_install_app_dependencies "php${phpversion}-fpm"
-#fi
-
-#=================================================
 # RESTORE THE NGINX CONFIGURATION
 #=================================================
 
@@ -43,8 +30,6 @@ ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
 if [ $with_mysql -eq 1 ]; then
     ynh_script_progression --message="Restoring the MySQL database..."
-
-    #ynh_install_app_dependencies "php${phpversion}-mysql"
 
     db_name=$(ynh_app_setting_get --app=$app --key=db_name)
     db_user=$db_name

@@ -109,15 +109,6 @@ else
     cp "../sources/www/index_no_sftp.html" "$install_dir/www/index.html"
 fi
 
-#if [ $with_mysql -eq 1 ]; then
-#    # Store the database access
-#    echo -e "# MySQL Database
-#name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
-#
-#    # Copy files to the right place
-#    cp -r "../sources/db_access.txt" "$install_dir/db_access.txt"
-#fi
-
 chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
