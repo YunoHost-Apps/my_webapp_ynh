@@ -114,20 +114,6 @@ fi
 ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
-# SEND A README FOR THE ADMIN
-#=================================================
-
-# Get main domain and buid the url of the admin panel of the app.
-admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
-
-echo "You can configure this app easily by using the experimental __URL_TAG1__config-panel feature__URL_TAG2__$admin_panel/config-panel__URL_TAG3__.
-You can also find some specific actions for this app by using the experimental __URL_TAG1__action feature__URL_TAG2__$admin_panel/actions__URL_TAG3__.
-
-If you're facing an issue or want to improve this app, please open a new issue in this __URL_TAG1__project__URL_TAG2__https://github.com/YunoHost-Apps/my_webapp_ynh__URL_TAG3__." > mail_to_send
-
-ynh_send_readme_to_admin --app_message="mail_to_send" --recipients=root --type=restore
-
-#=================================================
 # END OF SCRIPT
 #=================================================
 
