@@ -70,7 +70,6 @@ ynh_app_setting_set --app=$app --key=password --value="$password"
 #=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
-ynh_script_progression --message="Activating maintenance mode..."
 
 ynh_maintenance_mode_ON
 
@@ -80,17 +79,17 @@ ynh_maintenance_mode_ON
 # INSTALL DEPENDENCIES
 #=================================================
 
-if [ $phpversion != "none" ]
-then
-	ynh_script_progression --message="Installing dependencies..." --weight=2
+#if [ $phpversion != "none" ]
+#then
+#	ynh_script_progression --message="Installing dependencies..." --weight=2
 
-	ynh_install_app_dependencies "php${phpversion}-fpm"
-fi
+#	ynh_install_app_dependencies "php${phpversion}-fpm"
+#fi
 
-if [ $with_mysql -eq 1 ]
-then
-	ynh_install_app_dependencies "php${phpversion}-mysql"
-fi
+#if [ $with_mysql -eq 1 ]
+#then
+#	ynh_install_app_dependencies "php${phpversion}-mysql"
+#fi
 
 #=================================================
 # NGINX CONFIGURATION
@@ -163,7 +162,6 @@ chmod 750 "$install_dir"
 #=================================================
 # DEACTIVE MAINTENANCE MODE
 #=================================================
-ynh_script_progression --message="Disabling maintenance mode..."
 
 ynh_maintenance_mode_OFF
 

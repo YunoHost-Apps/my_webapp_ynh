@@ -1,5 +1,4 @@
-If you have requested a MYSQL database, please find information about this SQL database here.
-`__INSTALL_DIR__/db_access.txt`
+If you have requested a MYSQL database, please find information about this SQL database:
 
 Database user: __DB_USER__
 Database name: __DB_NAME__
