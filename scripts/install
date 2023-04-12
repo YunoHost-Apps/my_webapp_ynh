@@ -16,6 +16,7 @@ source /usr/share/yunohost/helpers
 password=$YNH_APP_ARG_PASSWORD
 app_nb=$YNH_APP_INSTANCE_NUMBER
 phpversion=$YNH_APP_ARG_PHPVERSION
+ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -30,6 +31,7 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=password --value=$password
+ynh_app_setting_set --app=$app --key=ssh_port --value=$ssh_port
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
@@ -104,14 +106,14 @@ else
     cp "../sources/www/index_no_sftp.html" "$install_dir/www/index.html"
 fi
 
-if [ $with_mysql -eq 1 ]; then
-    # Store the database access
-    echo -e "# MySQL Database
-name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
-
-    # Copy files to the right place
-    cp -r "../sources/db_access.txt" "$install_dir/db_access.txt"
-fi
+#if [ $with_mysql -eq 1 ]; then
+#    # Store the database access
+#    echo -e "# MySQL Database
+#name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
+#
+#    # Copy files to the right place
+#    cp -r "../sources/db_access.txt" "$install_dir/db_access.txt"
+#fi
 
 chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
@@ -140,13 +142,6 @@ then
     # Create a dedicatedPHP-FPM config
     ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
 fi
-
-#=================================================
-# SSH PORT
-#=================================================
-
-ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
-ynh_app_setting_set --app=$app --key=ssh_port --value=$ssh_port
 
 #=================================================
 # END OF SCRIPT
