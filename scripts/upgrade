@@ -76,7 +76,6 @@ ynh_maintenance_mode_ON
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-
 ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
 
 # Prepare nginx.conf
@@ -94,7 +93,7 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-#REMOVEME? ynh_script_progression --message="Making sure dedicated system user exists..." --weight=2
+ynh_script_progression --message="Making sure dedicated system user exists..." --weight=2
 
 if [ $with_sftp -eq 1 ]
 then
