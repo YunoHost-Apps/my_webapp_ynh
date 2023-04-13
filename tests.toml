@@ -15,11 +15,6 @@ test_format = 1.0
     only = ["install.subdir", "backup_restore", "upgrade" ]
     args.phpversion = "8.0"
 
-[81_test]
-
-    only = ["install.subdir", "backup_restore", "upgrade" ]
-    args.phpversion = "8.1"
-
 [none_test]
 
     only = ["install.subdir", "backup_restore", "upgrade" ]
