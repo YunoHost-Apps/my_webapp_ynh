@@ -23,6 +23,7 @@ password=$(ynh_app_setting_get --app=$app --key=password)
 #=================================================
 
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.d/"
 
 #=================================================
 # RESTORE THE MYSQL DATABASE
