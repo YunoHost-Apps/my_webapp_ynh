@@ -35,7 +35,6 @@ ynh_app_setting_set --app=$app --key=ssh_port --value=$ssh_port
 ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
-ynh_app_setting_set --app=$app --key=admin_mail_html --value=1
 
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -101,12 +100,9 @@ mkdir -p "$install_dir/www"
 
 if [ $with_sftp -eq 1 ]
 then
-
     ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
-
 else
-    # Copy files to the right place
-    cp "../sources/www/index_no_sftp.html" "$install_dir/www/index.html"
+    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
 fi
 
 chown -R $app:www-data "$install_dir"
