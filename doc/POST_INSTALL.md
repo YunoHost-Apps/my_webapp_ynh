@@ -9,7 +9,7 @@ You can connect to this repository by using SFTP with the following credentials.
 Domain: __DOMAIN__
 Port: __SSH_PORT__
 User: __ID__
-Password: __PASSWORD__
+Password: password chosen during installation
 
 This app is simply a blank web app container. You have to put your own app inside.
 
