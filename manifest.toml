@@ -79,6 +79,3 @@ ram.runtime = "50M"
             echo "php${phpversion}-fpm php${phpversion}-mysql"
         fi
     """
-
-    #[resources.database]
-    #type = "mysql"
