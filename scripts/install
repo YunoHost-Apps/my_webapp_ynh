@@ -15,7 +15,6 @@ source /usr/share/yunohost/helpers
 
 password=$YNH_APP_ARG_PASSWORD
 app_nb=$YNH_APP_INSTANCE_NUMBER
-phpversion=$YNH_APP_ARG_PHPVERSION
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
 #=================================================
@@ -31,10 +30,6 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=password --value=$password
-ynh_app_setting_set --app=$app --key=ssh_port --value=$ssh_port
-ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
-ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
-ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 
 #=================================================
 # CREATE A MYSQL DATABASE
