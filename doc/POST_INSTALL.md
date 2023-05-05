@@ -7,7 +7,7 @@ Password: __DB_PWD__
 You can connect to this repository by using SFTP with the following credentials.
 
 Domain: __DOMAIN__
-Port: __SSH_PORT__
+Port: 22 (unless change to another port)
 User: __ID__
 Password: password chosen during installation
 

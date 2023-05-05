@@ -7,7 +7,7 @@ Mot de passe : __DB_PWD__
 Vous pouvez vous connecter à ce répertoir en utilisant SFTP avec les informations d'identification suivantes :
 
 Domaine : __DOMAIN__
-Port : __SSH_PORT__
+Port : 22 (sauf si modifier pour un autre port)
 ID de l'utilisateur : __ID__
 Mot de passe : mot de passe défini lors de l'installation
 
