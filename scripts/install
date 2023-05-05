@@ -25,6 +25,13 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 [ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
 
 #=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
+ynh_script_progression --message="Storing installation settings..." --weight=1
+
+ynh_app_setting_set --app=$app --key=password --value=$password
+
+#=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
 
