@@ -4,7 +4,7 @@ Once installed, go to the chosen URL to know the username, domain and port you w
 
 - Username: __ID__
 - Password: password chosen during installation
-- Port: __SSH_PORT__
+- Port: 22 (unless change to another port)
 
 To connect, you'll need an SFTP app such as [Filezilla](https://filezilla-project.org/) for Windows, Mac or Linux. You can also use your default file manager on [Mac](https://support.apple.com/guide/mac-help/connect-mac-shared-computers-servers-mchlp1140/mac) or Linux.
 

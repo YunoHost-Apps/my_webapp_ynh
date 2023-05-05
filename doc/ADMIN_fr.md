@@ -4,7 +4,7 @@ Une fois installée, rendez-vous sur l'URL choisie pour connaître le nom d'util
 
 - Nom d'utilisateur: __ID__
 - Mot de passe: mot de passe défini lors de l'installation
-- Port: __SSH_PORT__
+- Port: 22 (sauf si modifier pour un autre port)
 
 Pour vous connectez, vous devrez utiliser une application SFTP tel que [Filezilla](https://filezilla-project.org/) pour Windows, Mac ou Linux. Vous pouvez aussi directement utiliser votre gestionnaire de fichiers sous Linux ou [Mac](https://support.apple.com/guide/mac-help/connect-mac-shared-computers-servers-mchlp1140/mac).
 
