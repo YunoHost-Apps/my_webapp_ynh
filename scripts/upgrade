@@ -60,7 +60,7 @@ fi
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
 then
     ynh_systemd_action --service_name=php${phpversion}-fpm --action=stop
-	ynh_system_user_delete --username="$(ynh_app_setting_get --app=$app --key=user)"
+    ynh_system_user_delete --username="$(ynh_app_setting_get --app=$app --key=user)"
     ynh_app_setting_delete --app=$app --key=user
 fi
 
