@@ -17,7 +17,7 @@ ynh_abort_if_errors
 
 install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
+path=$(ynh_app_setting_get --app=$app --key=path)
 
 current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
 fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
