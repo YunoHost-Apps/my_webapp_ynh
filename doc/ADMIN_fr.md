@@ -1,10 +1,13 @@
+Cette app est uniquement un squelette : il vous appartient d'ajouter vos propre pages HTML, CSS, PHP, ... à l'intérieur de `__INSTALL_DIR__/www/`. Une manière de procéder est d'utiliser SFTP.
+
 ### Connexion avec SFTP
 
 Une fois installée, rendez-vous sur l'URL choisie pour connaître le nom d'utilisateur, le domaine et le port que vous devrez utiliser pour l'accès SFTP. 
 
-- Nom d'utilisateur: __ID__
+- Hôte: `__DOMAIN__`
+- Nom d'utilisateur: `__ID__`
 - Mot de passe: mot de passe défini lors de l'installation
-- Port: 22 (sauf si modifier pour un autre port)
+- Port: 22 (à moins que vous ayez changé le port SSH)
 
 Pour vous connectez, vous devrez utiliser une application SFTP tel que [Filezilla](https://filezilla-project.org/) pour Windows, Mac ou Linux. Vous pouvez aussi directement utiliser votre gestionnaire de fichiers sous Linux ou [Mac](https://support.apple.com/guide/mac-help/connect-mac-shared-computers-servers-mchlp1140/mac).
 
