@@ -1,10 +1,13 @@
+This app is simply a blank web app skeleton : you are expected to add you own content (HTML, CSS, PHP, ...) inside `__INSTALL_DIR__/www/`. One way to do so is by using SFTP.
+
 ### Login using SFTP
 
 Once installed, go to the chosen URL to know the username, domain and port you will have to use for the SFTP access. 
 
-- Username: __ID__
+- Host: `__DOMAIN__`
+- Username: `__ID__`
 - Password: password chosen during installation
-- Port: 22 (unless change to another port)
+- Port: 22 (unless you changed the SSH port)
 
 To connect, you'll need an SFTP app such as [Filezilla](https://filezilla-project.org/) for Windows, Mac or Linux. You can also use your default file manager on [Mac](https://support.apple.com/guide/mac-help/connect-mac-shared-computers-servers-mchlp1140/mac) or Linux.
 
