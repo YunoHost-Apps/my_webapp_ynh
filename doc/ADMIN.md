@@ -18,3 +18,7 @@ Once logged in SFTP, under the Web directory, you will see a `www` folder which 
 ### Forgot your SFTP password?
 
 If you forgot your SFTP password, you can change it in YunoHost's webadmin interface in `Apps > My webapp > My Webapp configuration`.
+
+### Customizing the nginx configuration
+
+If you want to add tweak the nginx configuration for this app, it is recommended to edit `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/WHATEVER_NAME.conf` (ensure that the file has the `.conf` extension) and reload the nginx after making sure that the configuration is valid using `nginx -t`.
