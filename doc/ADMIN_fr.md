@@ -19,3 +19,7 @@ Si vous avez oublié votre mot de passe SFTP, vous pouvez le changer dans la web
 ## Résolution de problèmes
 
 Si vous n'arrivez pas à vous connecter et que vous avez vérifié que le nom d'utilisateur et le mot de passe sont bons, vérifiez si SFTP est activé pour votre app
+
+### Personnaliser la configuration nginx
+
+Si vous souhaitez ajuster la configuration nginx pour cette app, il est recommandé d'éditer `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/WHATEVER_NAME.conf` (assurez-vous que le fichier a l'extension `.conf`) puis rechargez nginx après vous être assuré que la configuration est valide à l'aide de `nginx -t`.
