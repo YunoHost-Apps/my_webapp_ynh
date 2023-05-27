@@ -1,8 +1,8 @@
 Si vous avez demandé une base de données MYSQL, voici les informations de cette base de données SQL :
 
-Utilisateur de la base de données : __DB_USER__
-Nom de la base de données : __DB_NAME__
-Mot de passe : __DB_PWD__
+- Utilisateur de la base de données : __DB_USER__
+- Nom de la base de données : __DB_NAME__
+- Mot de passe : __DB_PWD__
 
 Vous pouvez vous connecter à ce répertoir en utilisant SFTP avec les informations d'identification suivantes :
 
