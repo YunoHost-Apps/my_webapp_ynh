@@ -1,8 +1,8 @@
 If you have requested a MYSQL database, please find information about this SQL database:
 
-Database user: __DB_USER__
-Database name: __DB_NAME__
-Password: __DB_PWD__
+- Database user: __DB_USER__
+- Database name: __DB_NAME__
+- Password: __DB_PWD__
 
 You can connect to this repository by using SFTP with the following credentials.
 
