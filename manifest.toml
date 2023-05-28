@@ -56,7 +56,7 @@ ram.runtime = "50M"
     ask.en = "Do you need a database?"
     ask.fr = "Avez-vous besoin d'une base de données ?"
     type = "select"
-    choices = [ "none", "mysql, 'postgresql" ]
+    choices = [ "none", "mysql", "postgresql" ]
     default = "none"
 
 [resources]
