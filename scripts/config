@@ -15,9 +15,9 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS
 #=================================================
 
-final_path=$(ynh_app_setting_get $app final_path)
+install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
+path=$(ynh_app_setting_get --app=$app --key=path)
 
 current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
 fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
@@ -119,11 +119,14 @@ ynh_app_config_apply() {
         # ^ ynh_add_config replaces __PHPVERSION__ by __PHP_YNH_VERSION__...
         ynh_app_setting_set --app=$app --key=phpversion --value="$phpversion"
 
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+        mkdir -p "$nginx_extra_conf_dir"
         if [ "$phpversion" == "none" ]
         then
-            cp ../conf/nginx{_no_php,}.conf
+            ynh_delete_file_checksum --file="$nginx_extra_conf_dir/php.conf"
+            ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
         else
-            cp ../conf/nginx{_with_php,}.conf
+            ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
             ynh_install_app_dependencies "php${phpversion}-fpm"
             ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
             # ^ the helper takes care of ynh_app_setting_set the phpversion

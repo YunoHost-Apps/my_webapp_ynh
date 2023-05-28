@@ -20,18 +20,12 @@ Cette application vous permet d'installer facilement une application vide person
 
 Elle peut également créer une base de données MySQL - qui sera sauvegardée et restaurée avec votre application. Les détails de connexion seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire racine.
 
-La version de PHP-FPM peut aussi être choisie, parmi 7.3, 7.4, 8.0, 8.1 et 8.2.
+La version de PHP-FPM peut aussi être choisie, parmi `none`, `7.4`, `8.0`, `8.1` et `8.2`.
 
 **Une fois installé, rendez-vous sur l'URL choisie pour connaître l'utilisateur, le domaine et le port que vous devrez utiliser pour l'accès SFTP.** Le mot de passe est celui que vous avez choisi lors de l'installation. Sous le répertoire Web, vous verrez un dossier `www` qui contient les fichiers publics servis par cette application. Vous pouvez mettre tous les fichiers de votre application Web personnalisée à l'intérieur.
 
 
-**Version incluse :** 1.0~ynh13
-## Avertissements / informations importantes
-
-#### Port SFTP
-
-Vous avez peut-être changé le port SSH comme décrit dans cette section : [Modifier le port SSH](https://yunohost.org/fr/security#modify-the-ssh-port) ; alors vous devriez utiliser ce port pour mettre à jour votre site Web avec SFTP. 
-
+**Version incluse :** 1.0~ynh14
 ## Documentations et ressources
 
 * Dépôt de code officiel de l’app : <https://github.com/YunoHost-Apps/my_webapp_ynh>

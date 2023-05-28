@@ -1,0 +1,81 @@
+packaging_format = 2
+
+id = "my_webapp"
+name = "My Webapp"
+description.en = "Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files"
+description.fr = "Application Web personnalisée avec accès SFTP pour servir des fichiers statiques (HTML, CSS, JS) et PHP"
+
+version = "1.0~ynh14"
+
+maintainers = []
+
+[upstream]
+license = "GPL-3.0-only"
+code = "https://github.com/YunoHost-Apps/my_webapp_ynh"
+
+[integration]
+yunohost = ">= 11.1.19"
+architectures = "all"
+multi_instance = true
+ldap = "not_relevant"
+sso = "not_relevant"
+disk = "50M"
+ram.build = "50M"
+ram.runtime = "50M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/site"
+
+    [install.with_sftp]
+    ask.en = "Do you need a SFTP access?"
+    ask.fr = "Avez-vous besoin d'un accès SFTP ?"
+    type = "boolean"
+    default = true
+
+    [install.password]
+    type = "password"
+    optional = true
+
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
+    [install.phpversion]
+    ask.en = "Choose a PHP version you want to use for your app"
+    ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
+    type = "string"
+    choices = ["none", "7.4", "8.0", "8.1", "8.2"]
+    default = "8.0"
+
+    [install.with_mysql]
+    ask.en = "Do you need a MySQL database?"
+    ask.fr = "Avez-vous besoin d'une base de données MySQL ?"
+    type = "boolean"
+    default = false
+
+[resources]
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.apt]
+    packages = "nginx"  # Kind of "dummy" value to be sure to have a non-empty dep list
+    packages_from_raw_bash = """
+        if [[ "$with_mysql" = 1 ]]
+        then 
+            echo "mariadb-server"
+        fi
+
+        if [[ "$phpversion" != none ]]
+        then
+            echo "php${phpversion}-fpm php${phpversion}-mysql"
+        fi
+    """

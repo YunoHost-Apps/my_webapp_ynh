@@ -10,68 +10,26 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
-with_sftp=$YNH_APP_ARG_WITH_SFTP
 password=$YNH_APP_ARG_PASSWORD
-is_public=$YNH_APP_ARG_IS_PUBLIC
-phpversion=$YNH_APP_ARG_PHPVERSION
-
-with_mysql=$YNH_APP_ARG_WITH_MYSQL
-
-app=$YNH_APP_INSTANCE_NAME
 app_nb=$YNH_APP_INSTANCE_NUMBER
+ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=2
 
-final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-
 [ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
-
-# Register (book) web path
-ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..."
+ynh_script_progression --message="Storing installation settings..." --weight=1
 
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=with_mysql --value=$with_mysql
-ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
-ynh_app_setting_set --app=$app --key=password --value="$password"
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
-
-ynh_app_setting_set --app=$app --key=admin_mail_html --value=1
-
-#=================================================
-# STANDARD MODIFICATIONS
-#=================================================
-# INSTALL DEPENDENCIES
-#=================================================
-
-if [ $phpversion != "none" ]
-then
-    ynh_script_progression --message="Installing dependencies..." --weight=2
-
-    ynh_install_app_dependencies "php${phpversion}-fpm"
-fi
+ynh_app_setting_set --app=$app --key=password --value=$password
 
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -81,11 +39,13 @@ if [ $with_mysql -eq 1 ]
 then
     ynh_script_progression --message="Creating a MySQL database..." --weight=2
 
-    ynh_install_app_dependencies "php${phpversion}-mysql"
-
     db_name=$(ynh_sanitize_dbid --db_name=$app)
+    db_user=$db_name
+    db_pwd=$(ynh_string_random --length=30)
     ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-    ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name
+    ynh_app_setting_set --app=$app --key=db_user --value=$db_user
+    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+    ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 fi
 
 #=================================================
@@ -93,17 +53,19 @@ fi
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
-# Prepare nginx.conf
+nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+mkdir -p "$nginx_extra_conf_dir"
+
+# Prepare nginx extra conf
 if [ $phpversion != "none" ]
 then
-    cp ../conf/nginx{_with_php,}.conf
+    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
     YNH_PHP_VERSION="$phpversion"
-else
-    cp ../conf/nginx{_no_php,}.conf
 fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -117,7 +79,7 @@ else
     groups=""
 fi
 
-ynh_system_user_create --username=$app --home_dir="$final_path" --groups="$groups"
+    ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$groups"
 
 if [ $with_sftp -eq 1 ]
 then
@@ -131,119 +93,42 @@ fi
 # MODIFY A CONFIG FILE
 #=================================================
 
-mkdir -p "$final_path/www"
+mkdir -p "$install_dir/www"
 
 if [ $with_sftp -eq 1 ]
 then
-
-    ynh_add_config --template="../sources/www/index.html" --destination="$final_path/www/index.html"
-
+    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
 else
-    # Copy files to the right place
-    cp "../sources/www/index_no_sftp.html" "$final_path/www/index.html"
+    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
 fi
 
-if [ $with_mysql -eq 1 ]; then
-    # Store the database access
-    echo -e "# MySQL Database
-name: ${db_name}\nuser: ${db_name}\npass: ${db_pwd}" > ../sources/db_access.txt
-
-    # Copy files to the right place
-    cp -r "../sources/db_access.txt" "$final_path/db_access.txt"
-fi
-
-chown -R $app:www-data "$final_path"
+chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-chown root:root "$final_path"
-setfacl -m g:$app:r-x "$final_path"
-setfacl -m g:www-data:r-x "$final_path"
-chmod 750 "$final_path"
+chown root:root "$install_dir"
+setfacl -m g:$app:r-x "$install_dir"
+setfacl -m g:www-data:r-x "$install_dir"
+chmod 750 "$install_dir"
 
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
 
+fpm_footprint="low"
+fpm_free_footprint=0
+fpm_usage="low"
+
+ynh_app_setting_set --app=$app --key=fpm_footprint --value=$fpm_footprint
+ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=$fpm_free_footprint
+ynh_app_setting_set --app=$app --key=fpm_usage --value=$fpm_usage
+
 if [ $phpversion != "none" ]
 then
     ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
-    
-    fpm_footprint="low"
-    fpm_free_footprint=0
-    fpm_usage="low"
-
-    ynh_app_setting_set --app=$app --key=fpm_footprint --value=$fpm_footprint
-    ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=$fpm_free_footprint
-    ynh_app_setting_set --app=$app --key=fpm_usage --value=$fpm_usage
 
     # Create a dedicatedPHP-FPM config
     ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
-else
-    # This is needed for the config panel to work even though PHP is not actually used
-    ynh_app_setting_set --app=$app --key=fpm_footprint --value=low
-    ynh_app_setting_set --app=$app --key=fpm_usage --value=low
-    ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=0
 fi
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Configuring permissions..."
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]
-then
-    ynh_permission_update --permission="main" --add="visitors"
-fi
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
-
-ynh_systemd_action --service_name=nginx --action=reload
-
-#=================================================
-# SEND A README FOR THE ADMIN
-#=================================================
-
-# Get main domain and buid the url of the admin panel of the app.
-admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
-
-if [ $with_mysql -eq 1 ]
-then
-    sql_infos="
-You've asked for a database, please find here the information about this SQL database.
-$(cat "$final_path/db_access.txt")
-"
-else
-    sql_infos=""
-fi
-
-if [ $with_sftp -eq 1 ]
-then
-    sftp_infos="You can connect to this repository by using SFTP with the following credentials.
-Domain: $domain
-Port: $(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
-User: $app
-Password: The one you set at installation."
-else
-    sftp_infos=""
-fi
-
-echo "This app is simply a blank web app container. You have to put your own app inside.
-$sql_infos
-Please put your files into this directory: $final_path/www/
-$sftp_infos
-
-You can configure this app easily by using the experimental __URL_TAG1__config-panel feature__URL_TAG2__$admin_panel/config-panel__URL_TAG3__.
-You can also find some specific actions for this app by using the experimental __URL_TAG1__action feature__URL_TAG2__$admin_panel/actions__URL_TAG3__.
-
-If you're facing an issue or want to improve this app, please open a new issue in this __URL_TAG1__project__URL_TAG2__https://github.com/YunoHost-Apps/my_webapp_ynh__URL_TAG3__." > mail_to_send
-
-ynh_send_readme_to_admin --app_message="mail_to_send" --recipients=root --type=install
 
 #=================================================
 # END OF SCRIPT

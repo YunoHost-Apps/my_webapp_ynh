@@ -10,54 +10,11 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading settings..." --weight=2
-
-app=$YNH_APP_INSTANCE_NAME
-
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-with_mysql=$(ynh_app_setting_get --app=$app --key=with_mysql)
-with_sftp=$(ynh_app_setting_get --app=$app --key=with_sftp)
-password=$(ynh_app_setting_get --app=$app --key=password)
-phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
-
-#=================================================
-# CHECK IF THE APP CAN BE RESTORED
-#=================================================
-ynh_script_progression --message="Validating restoration parameters..." --weight=2
-
-test ! -d $final_path \
-	|| ynh_die --message="There is already a directory: $final_path "
-
-#=================================================
-# STANDARD RESTORATION STEPS
-#=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-
-if [ $phpversion != "none" ]
-then
-	ynh_script_progression --message="Reinstalling dependencies..." --weight=2
-
-	ynh_install_app_dependencies "php${phpversion}-fpm"
-fi
-
-#=================================================
 # RESTORE THE NGINX CONFIGURATION
 #=================================================
 
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.d/"
 
 #=================================================
 # RESTORE THE MYSQL DATABASE
@@ -66,11 +23,11 @@ ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 if [ $with_mysql -eq 1 ]; then
     ynh_script_progression --message="Restoring the MySQL database..."
 
-    ynh_install_app_dependencies "php${phpversion}-mysql"
-
-    db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-    ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
-    ynh_mysql_connect_as --user=$db_name --password=$db_pwd --database=$db_name < ./db.sql
+    db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+    db_user=$db_name
+    db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+    ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+    ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./db.sql
 fi
 
 #=================================================
@@ -85,7 +42,7 @@ else
     groups=""
 fi
 
-ynh_system_user_create --username=$app --home_dir="$final_path" --groups="$groups"
+ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$groups"
 
 if [ -n "$password" ]
 then
@@ -98,16 +55,16 @@ fi
 #=================================================
 ynh_script_progression --message="Restoring the app main directory..."
 
-ynh_restore_file --origin_path="$final_path"
+ynh_restore_file --origin_path="$install_dir"
 
 # Restore permissions on app files
-chown -R $app:www-data "$final_path"
+chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-chown root:root "$final_path"
-setfacl -m g:$app:r-x "$final_path"
-setfacl -m g:www-data:r-x "$final_path"
-chmod 750 "$final_path"
+chown root:root "$install_dir"
+setfacl -m g:$app:r-x "$install_dir"
+setfacl -m g:www-data:r-x "$install_dir"
+chmod 750 "$install_dir"
 
 #=================================================
 # RESTORE THE PHP-FPM CONFIGURATION
@@ -117,10 +74,6 @@ if [ $phpversion != "none" ]
 then
 	ynh_restore_file --origin_path="/etc/php/${phpversion}/fpm/pool.d/$app.conf"
 fi
-
-#=================================================
-# SPECIFIC RESTORATION
-#=================================================
 
 #=================================================
 # GENERIC FINALIZATION
@@ -135,20 +88,6 @@ then
 fi
 
 ynh_systemd_action --service_name=nginx --action=reload
-
-#=================================================
-# SEND A README FOR THE ADMIN
-#=================================================
-
-# Get main domain and buid the url of the admin panel of the app.
-admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
-
-echo "You can configure this app easily by using the experimental __URL_TAG1__config-panel feature__URL_TAG2__$admin_panel/config-panel__URL_TAG3__.
-You can also find some specific actions for this app by using the experimental __URL_TAG1__action feature__URL_TAG2__$admin_panel/actions__URL_TAG3__.
-
-If you're facing an issue or want to improve this app, please open a new issue in this __URL_TAG1__project__URL_TAG2__https://github.com/YunoHost-Apps/my_webapp_ynh__URL_TAG3__." > mail_to_send
-
-ynh_send_readme_to_admin --app_message="mail_to_send" --recipients=root --type=restore
 
 #=================================================
 # END OF SCRIPT
