@@ -52,11 +52,12 @@ ram.runtime = "50M"
     choices = ["none", "7.4", "8.0", "8.1", "8.2"]
     default = "8.0"
 
-    [install.with_mysql]
-    ask.en = "Do you need a MySQL database?"
-    ask.fr = "Avez-vous besoin d'une base de données MySQL ?"
-    type = "boolean"
-    default = false
+    [install.database]
+    ask.en = "Do you need a database?"
+    ask.fr = "Avez-vous besoin d'une base de données ?"
+    type = "select"
+    choices = [ "none", "mysql, 'posrgresql" ]
+    default = "none"
 
 [resources]
     [resources.system_user]
@@ -69,9 +70,10 @@ ram.runtime = "50M"
     [resources.apt]
     packages = "nginx"  # Kind of "dummy" value to be sure to have a non-empty dep list
     packages_from_raw_bash = """
-        if [[ "$with_mysql" = 1 ]]
-        then 
+        if [[ "$database" == "mysql" ]]; then 
             echo "mariadb-server"
+        elif [[ "$database" == "postgresql" ]]; then 
+            echo "postgresql postgresql-contrib"
         fi
 
         if [[ "$phpversion" != none ]]
