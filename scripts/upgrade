@@ -21,11 +21,11 @@ upgrade_type=$(ynh_check_app_version_changed)
 ynh_script_progression --message="Ensuring downward compatibility..."
 
 # If database doesn't exist, create it and remove with_mysql setting
-if [ -z "${database:-}" ]; then
+if [ -z "$database" ]; then
     if [ $with_mysql -eq 1 ]; then
-        $database="mysql"
+        database="mysql"
     else
-        $database="none"
+        database="none"
     fi
     
     ynh_app_setting_set --app=$app --key=database --value=$database
