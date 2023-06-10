@@ -72,12 +72,19 @@ ram.runtime = "50M"
     packages_from_raw_bash = """
         if [[ "$database" == "mysql" ]]; then 
             echo "mariadb-server"
-        elif [[ "$database" == "postgresql" ]]; then 
+            
+            if [[ "$phpversion" != none ]]; then
+                echo "php${phpversion}-mysql"
+            fi
+        elif [[ "$database" == "postgresql" ]]; then
             echo "postgresql postgresql-contrib"
+            
+            if [[ "$phpversion" != none ]]; then
+                echo "php${phpversion}-pgsql"
+            fi
         fi
 
-        if [[ "$phpversion" != none ]]
-        then
-            echo "php${phpversion}-fpm php${phpversion}-mysql"
+        if [[ "$phpversion" != none ]]; then
+            echo "php${phpversion}-fpm"
         fi
     """
