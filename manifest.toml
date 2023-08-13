@@ -58,7 +58,7 @@ ram.runtime = "50M"
     type = "boolean"
     default = false
 
-    [install.errorfile]
+    [install.codeerror]
     ask.en = "Define a path about the 404 error page"
     ask.fr = "Definir un chemin pour la page d'erreur 404"
     type = "path"
