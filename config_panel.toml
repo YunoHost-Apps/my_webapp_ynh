@@ -18,6 +18,14 @@ name = "My Webapp configuration"
         visible = "with_sftp"
         help = "If a password already exist, leave blank and it will not be replaced."
 
+    [main.error]
+    name = "Html Custom error"
+
+        [main.error.setting]
+        ask = "HTML Path"
+        type = "string"
+        default = "/404.html"
+
     [main.php_fpm_config]
     name = "PHP-FPM configuration"
 
