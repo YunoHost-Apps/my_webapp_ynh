@@ -21,7 +21,7 @@ name = "My Webapp configuration"
     [main.error]
     name = "Html Custom error"
 
-        [main.error.setting]
+        [main.error.errorfile]
         ask = "HTML Path"
         type = "string"
         default = "/404.html"
