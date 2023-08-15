@@ -57,7 +57,7 @@ if [ -z "$phpversion" ]; then
 fi
 
 # If $codeerror doesn't exist, create it. We assume it is the default system one.
-if [ -z "$codeerror" ]; then
+if [ -n "$(ynh_app_setting_get --app=$app --key=codeerror)" ]; then
 	codeerror=$(ynh_app_setting_get --app=$app --key=codeerror)
 fi
 
@@ -95,7 +95,8 @@ then
     YNH_PHP_VERSION="$phpversion"
 fi
 
-if [ $codeerror ]
+# Add the config error code
+if [ -n "$(ynh_app_setting_get --app=$app --key=codeerror)" ];
 then
     echo add the error config
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error.conf"

@@ -5,3 +5,10 @@ Si vous avez demandé une base de données MYSQL, voici les informations de cett
 - Mot de passe : __DB_PWD__
 
 La documentation ci-dessous contient également les informations pour se connecter en SSH et modifier le contenu du site web.
+
+
+
+Si vous avez activé la gestion du code d'erreur 404, vous pouvez placer un fichier 404.html, à la racine de votre
+répertoire, le fichier sera alors reconnu par Nginx.
+
+Il est sinon possible de modifier le chemin dans l'administration afin de spécifier un repertoire.
