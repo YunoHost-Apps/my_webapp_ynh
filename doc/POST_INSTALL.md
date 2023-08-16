@@ -1,4 +1,4 @@
-{% if database %}
+{% if database != 'none' %}
 
 Here are information to log into the database:
 

@@ -1,4 +1,4 @@
-{% if database %}
+{% if database != 'none' %}
 
 Voici les informations pour se connecter à la base de donnée:
 
