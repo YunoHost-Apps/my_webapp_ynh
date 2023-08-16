@@ -24,7 +24,7 @@ La commande `php` pointera vers la version de PHP installée pour l'app.
 
 ### Ajouter ou modifier les fichiers
 
-Après vous être connecté avec SFTP, sous le répertoire Web, vous verrez un dossier `www` qui contient les fichiers publics servis par cette application. Vous pouvez mettre tous les fichiers de votre application Web personnalisée à l'intérieur.
+Après vous être connecté, sous le répertoire Web vous verrez un dossier `www` qui contient les fichiers publics servis par cette application. Vous pouvez mettre tous les fichiers de votre application Web personnalisée à l'intérieur.
 
 ### Personnaliser la configuration nginx
 
