@@ -46,9 +46,9 @@ if [ $database != "none" ]; then
     ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 
     if [ $database == "mysql" ]; then
-        ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+        ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
     elif [ $database == "postgresql" ]; then
-        ynh_psql_setup_db --db_user=$db_user --db_name=$db_name
+        ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
     fi
 fi
 
