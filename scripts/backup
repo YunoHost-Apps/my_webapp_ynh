@@ -40,10 +40,15 @@ fi
 # BACKUP THE MYSQL DATABASE
 #=================================================
 
-if [ $with_mysql -eq 1 ]
+if [ $database != "none" ]
 then
-    ynh_print_info --message="Backing up the MySQL database..."
-    ynh_mysql_dump_db --database="$db_name" > db.sql
+    ynh_print_info --message="Backing up the database..."
+
+    if [ $database == "mysql" ]; then
+        ynh_mysql_dump_db --database="$db_name" > db.sql*
+    elif [ $database == "postgresql" ]; then
+        ynh_psql_dump_db --database="$db_name" > db.sql
+    fi
 fi
 
 #=================================================

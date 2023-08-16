@@ -20,14 +20,20 @@ ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.d/"
 # RESTORE THE MYSQL DATABASE
 #=================================================
 
-if [ $with_mysql -eq 1 ]; then
-    ynh_script_progression --message="Restoring the MySQL database..."
+if [ $database != "none" ]; then
+    ynh_script_progression --message="Restoring the database..."
 
     db_name=$(ynh_app_setting_get --app=$app --key=db_name)
     db_user=$db_name
     db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-    ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
-    ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./db.sql
+
+    if [ $database == "mysql" ]; then
+        ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+        ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./db.sql
+    elif [ $database == "postgresql" ]; then
+        ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+        ynh_psql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./db.sql
+    fi
 fi
 
 #=================================================

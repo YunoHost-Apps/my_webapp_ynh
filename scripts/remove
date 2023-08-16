@@ -15,14 +15,18 @@ source /usr/share/yunohost/helpers
 # REMOVE THE MYSQL DATABASE
 #=================================================
 
-if [ $with_mysql -eq 1 ]; then
-    ynh_script_progression --message="Removing the MySQL database..." --weight=2
+if [ $database != "none" ]; then
+    ynh_script_progression --message="Removing the database..." --weight=2
 
     db_name=$(ynh_app_setting_get --app=$app --key=db_name)
     db_user=$db_name
 
     # Remove a database if it exists, along with the associated user
-    ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
+    if [ $database == "mysql" ]; then
+        ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
+    elif [ $database == "postgresql" ]; then
+        ynh_psql_remove_db --db_user=$db_user --db_name=$db_name
+    fi
 fi
 
 #=================================================
