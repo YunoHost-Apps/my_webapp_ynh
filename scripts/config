@@ -150,13 +150,18 @@ ynh_app_config_apply() {
 
     if [ "${changed[$custom_error_file]}" == "true" ]
     then
-      echo Update error nginx config
+      CUSTOM_ERROR_FILE=$custom_error_file
       ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
     fi
 
     if [ "$phpversion" != "none" ]
     then
         ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+    fi
+
+    if [ ! $custom_error_file ]
+    then
+        ynh_app_setting_set --app=$app --key=custom_error_file --value="$custom_error_file"
     fi
 }
 
