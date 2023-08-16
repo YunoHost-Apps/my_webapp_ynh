@@ -11,13 +11,20 @@ Once installed, go to the chosen URL to know the username, domain and port you w
 
 To connect, you'll need an SFTP app such as [Filezilla](https://filezilla-project.org/) for Windows, Mac or Linux. You can also use your default file manager on [Mac](https://support.apple.com/guide/mac-help/connect-mac-shared-computers-servers-mchlp1140/mac) or Linux.
 
-### Adding or editing files
-
-Once logged in SFTP, under the Web directory, you will see a `www` folder which contains the public files served by this app. You can put all the files of your custom Web application inside.
-
-### Forgot your SFTP password?
+#### Forgot your SFTP password?
 
 If you forgot your SFTP password, you can change it in YunoHost's webadmin interface in `Apps > My webapp > My Webapp configuration`.
+You can also check there that SFTP is enabled.
+
+### Login using the command line
+
+Starting YunoHost v11.1.21, you can run `sudo yunohost app shell __APP__` in the command line interface to log in as your app user.
+
+The `php` command will point to the PHP version installed for the app.
+
+### Adding or editing files
+
+Once logged in, under the Web directory you will see a `www` folder which contains the public files served by this app. You can put all the files of your custom Web application inside.
 
 ### Customizing the nginx configuration
 
