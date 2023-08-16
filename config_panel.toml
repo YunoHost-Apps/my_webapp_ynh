@@ -25,15 +25,13 @@ name = "My Webapp configuration"
         ask = "Activate the custom error file use"
         type = "boolean"
         default = false
-        # default = "/404.html"
         help = "you enable this, you can create a custom `404.html` file at the root of your app to act as the custom 404 error page"
 
-        [main.code_error.path_folder]
-        ask = "Specifie folder where your error file are sto"
-        type = "string"
-        default = "/"
-        help = "You can set where your error file are store in your www folder."
-
+        # [main.code_error.path_folder]
+        # ask = "Specifie folder where your error file are sto"
+        # type = "string"
+        # default = "/"
+        # help = "You can set where your error file are store in your www folder."
 
     [main.php_fpm_config]
     name = "PHP-FPM configuration"
