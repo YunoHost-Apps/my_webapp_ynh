@@ -25,7 +25,7 @@ PHP-FPM version can also be selected among `none`, `7.4`, `8.0`, `8.1` and `8.2`
 **Once installed, go to the chosen URL to know the user, domain and port you will have to use for the SFTP access.** The password is one you chosen during the installation. Under the Web directory, you will see a `www` folder which contains the public files served by this app. You can put all the files of your custom Web application inside.
 
 
-**Shipped version:** 1.0~ynh14
+**Shipped version:** 1.0~ynh15
 ## Documentation and resources
 
 * Upstream app code repository: <https://github.com/YunoHost-Apps/my_webapp_ynh>
