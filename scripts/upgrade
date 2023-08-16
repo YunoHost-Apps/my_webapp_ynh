@@ -56,10 +56,17 @@ if [ -z "$phpversion" ]; then
 	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 fi
 
-# If custom_error_files doesn't exist, create it. We assume it is the default system one.
+echo Init the custom error variable
+# If custom_error_file doesn't exist, create it. We assume it is the default system one.
 if [ -n "$(ynh_app_setting_get --app=$app --key=custom_error_file)" ]; then
+  echo Variable not existing, create-it
 	custom_error_file=$(ynh_app_setting_get --app=$app --key=custom_error_file)
+else
+  echo The variable exist
 fi
+echo Test a condition
+echo ynh_app_setting_get --app=$app --key=custom_error_file
+echo Value return
 
 # Delete old user
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
@@ -95,6 +102,7 @@ then
     YNH_PHP_VERSION="$phpversion"
 fi
 
+echo call this variable $custom_error_file
 # Add the config error code
 if [ ! $custom_error_file ]
 then
