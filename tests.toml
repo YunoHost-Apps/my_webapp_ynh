@@ -7,8 +7,9 @@ test_format = 1.0
     # -------------------------------
 
     args.with_sftp = "1"
+    args.password = "SuperDuper_StrongPassw0rd"
     args.database = "none"
-	args.phpversion = "8.0"
+    args.phpversion = "8.0"
     test_upgrade_from.bf5d3ed.name = "Upgrade from 1.0~ynh14"
     test_upgrade_from.bf5d3ed.args.with_mysql = "0"
 
