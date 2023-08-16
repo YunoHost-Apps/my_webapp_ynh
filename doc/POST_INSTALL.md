@@ -1,5 +1,6 @@
-If you have requested a MYSQL database, please find information about this SQL database:
+If you have requested a database, here are information to log into it:
 
+- Type: __DATABASE__
 - Database user: __DB_USER__
 - Database name: __DB_NAME__
 - Password: __DB_PWD__
