@@ -56,9 +56,8 @@ if [ -z "$phpversion" ]; then
 	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 fi
 
-echo Init the custom error variable
 # If custom_error_file doesn't exist, create it. We assume it is the default system one.
-if [ -n "$(ynh_app_setting_get --app=$app --key=custom_error_file)" ]; then
+if [ -z "$custom_error_file" ]; then
   echo Variable not existing, create-it
 	custom_error_file=$(ynh_app_setting_get --app=$app --key=custom_error_file)
 else
