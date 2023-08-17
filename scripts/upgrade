@@ -58,7 +58,7 @@ fi
 
 ynh_script_progression --message="Start to init custom error code"
 # If custom_error_file doesn't exist, create it. We assume it is the default system one.
-if [ -z "${custom_error_file}" ]; then
+if [ -z "${custom_error_file:-}" ]; then
   ynh_script_progression --message="Variable not existing, create-it"
 	custom_error_file=$(ynh_app_setting_get --app=$app --key=custom_error_file)
 fi
