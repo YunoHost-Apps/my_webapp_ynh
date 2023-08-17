@@ -61,6 +61,7 @@ ynh_script_progression --message="Start to init custom error code"
 if [ -z "${custom_error_file:-}" ]; then
   ynh_script_progression --message="Variable not existing, create-it"
 	custom_error_file=$(ynh_app_setting_get --app=$app --key=custom_error_file)
+	ynh_app_setting_set --app=$app --key=custom_error_file --value=$custom_error_file
 fi
 
 # Delete old user
