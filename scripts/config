@@ -151,7 +151,8 @@ ynh_app_config_apply() {
     if [ "${changed[custom_error_file]}" == "true" ]
     then
       CUSTOM_ERROR_FILE=$custom_error_file
-      ynh_add_config --template="nginx-code-error.conf" --destination="/etc/nginx/conf.d/$domain.d/$app.d/error-code.conf"
+#      ynh_add_config --template="nginx-code-error.conf" --destination="/etc/nginx/conf.d/$domain.d/$app.d/error-code.conf"
+      ynh_secure_remove --file="/etc/nginx/conf.d/$domain.d/$app.d/error-code.conf"
     else
       ynh_secure_remove --file="/etc/nginx/conf.d/$domain.d/$app.d/error-code.conf"
     fi
