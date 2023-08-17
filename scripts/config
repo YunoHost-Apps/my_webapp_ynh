@@ -148,10 +148,13 @@ ynh_app_config_apply() {
         ynh_system_user_del_group --username=$app --groups="sftp.app"
     fi
 
-    if [ "${changed[$custom_error_file]}" == "true" ]
+    if [ "${changed[custom_error_file]}" == "true" ]
     then
       CUSTOM_ERROR_FILE=$custom_error_file
       ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
+    else
+      # TODO
+      echo remove config file
     fi
 
     if [ "$phpversion" != "none" ]
