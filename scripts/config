@@ -154,11 +154,12 @@ ynh_app_config_apply() {
       nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
       ynh_print_info --message="Update the custom setting $custom_error_file"
 
-      if [ $custom_error_file ]
+      if [ $custom_error_file -eq 1 ]
       then
         ynh_print_info --message="Add the config file"
         ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
-      else
+      elif [ $custom_error_file -eq 0 ]
+      then
         ynh_print_info --message="Remove the config file"
         ynh_secure_remove --file="$nginx_extra_conf_dir/error-code.conf"
       fi
