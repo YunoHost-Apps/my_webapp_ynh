@@ -153,7 +153,7 @@ ynh_app_config_apply() {
       CUSTOM_ERROR_FILE=$custom_error_file
       nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 
-      if [ "$custom_error_file" ]
+      if [ $custom_error_file ]
       then
         ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
       else
