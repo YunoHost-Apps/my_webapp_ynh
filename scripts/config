@@ -163,6 +163,7 @@ ynh_app_config_apply() {
         ynh_print_info --message="Remove the config file"
         ynh_secure_remove --file="$nginx_extra_conf_dir/error-code.conf"
       fi
+      ynh_systemd_action --service_name=nginx --action=restart
     fi
 
     if [ "$phpversion" != "none" ]
