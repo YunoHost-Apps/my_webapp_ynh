@@ -56,11 +56,9 @@ if [ -z "$phpversion" ]; then
 	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 fi
 
-ynh_script_progression --message="Start to init custom error code"
-# If custom_error_file doesn't exist, create it. We assume it is the default system one.
+# If custom_error_file doesn't exist, create it.
 if [ -z "${custom_error_file:-}" ]; then
-  ynh_script_progression --message="Variable not existing, create-it"
-	custom_error_file=$(ynh_app_setting_get --app=$app --key=custom_error_file)
+	custom_error_file=1
 	ynh_app_setting_set --app=$app --key=custom_error_file --value=$custom_error_file
 fi
 
@@ -98,9 +96,8 @@ then
     YNH_PHP_VERSION="$phpversion"
 fi
 
-echo call this variable $custom_error_file
 # Add the config error code
-if [ ! $custom_error_file ]
+if [ $custom_error_file -eq 1 ]
 then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
