@@ -19,6 +19,10 @@ Once logged in SFTP, under the Web directory, you will see a `www` folder which 
 
 If you forgot your SFTP password, you can change it in YunoHost's webadmin interface in `Apps > My webapp > My Webapp configuration`.
 
+### 403 and 404 error handling
+
+The web server configuration supports http error handling `403` and `404` (access denied and resource not found), just add an `error` folder in the `www` directory, then your `403.html` and `404.html` files.
+
 ### Customizing the nginx configuration
 
 If you want to add tweak the nginx configuration for this app, it is recommended to edit `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/WHATEVER_NAME.conf` (ensure that the file has the `.conf` extension) and reload the nginx after making sure that the configuration is valid using `nginx -t`.
