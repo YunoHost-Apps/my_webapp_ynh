@@ -65,7 +65,8 @@ fi
 
 # Add the custom error build with the application
 ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
-CUSTOM_ERROR_FILE="true"
+ynh_app_setting_set --app=$app --key=custom_error_file --value="true"
+
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
