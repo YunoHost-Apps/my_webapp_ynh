@@ -44,6 +44,7 @@ nginx_extra_conf_dir=/etc/nginx/conf.d/$old_domain.d/$app.d
 
 # Change the path in the NGINX config file
 if [ $change_path -eq 1 ]
+ynh_print_info --message="Change the path in the Nginx config file"
 then
 	# Make a backup of the original NGINX config file if modified
 	ynh_backup_if_checksum_is_different --file="$nginx_conf_path"
@@ -53,10 +54,11 @@ then
 	path_url="$new_path"
 
 	# Update custom error file path if needed
-	#if [ $custom_error_file -eq 1 ]
-	#then
-	#	ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
-	#fi
+	if [ $custom_error_file -eq 1 ]
+	ynh_print_info --message="Change the custom error config file"
+	then
+		ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
+	fi
 
 	# Create a dedicated NGINX configssh
 	ynh_add_nginx_config
