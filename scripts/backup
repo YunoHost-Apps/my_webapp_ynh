@@ -40,7 +40,7 @@ fi
 # BACKUP CUSTOM CONF
 #=================================================
 
-if [ $custom_error_file -eq 1 ]
+if [ $custom_error_file == "true"]
 then
     ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.d/nginx-code-error.conf"
 fi
