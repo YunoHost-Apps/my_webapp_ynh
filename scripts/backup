@@ -42,7 +42,7 @@ fi
 
 if [ $custom_error_file ]
 then
-    ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.d/code-error.conf"
+    ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.d/error-code.conf"
 fi
 
 #=================================================
