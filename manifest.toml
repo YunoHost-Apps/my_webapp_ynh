@@ -5,7 +5,7 @@ name = "My Webapp"
 description.en = "Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files"
 description.fr = "Application Web personnalisée avec accès SFTP pour servir des fichiers statiques (HTML, CSS, JS) et PHP"
 
-version = "1.0~ynh14"
+version = "1.0~ynh15"
 
 maintainers = []
 
@@ -14,7 +14,7 @@ license = "GPL-3.0-only"
 code = "https://github.com/YunoHost-Apps/my_webapp_ynh"
 
 [integration]
-yunohost = ">= 11.1.19"
+yunohost = ">= 11.2.4"
 architectures = "all"
 multi_instance = true
 ldap = "not_relevant"
@@ -48,15 +48,16 @@ ram.runtime = "50M"
     [install.phpversion]
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
-    type = "string"
+    type = "select"
     choices = ["none", "7.4", "8.0", "8.1", "8.2"]
     default = "8.0"
 
-    [install.with_mysql]
-    ask.en = "Do you need a MySQL database?"
-    ask.fr = "Avez-vous besoin d'une base de données MySQL ?"
-    type = "boolean"
-    default = false
+    [install.database]
+    ask.en = "Do you need a database?"
+    ask.fr = "Avez-vous besoin d'une base de données ?"
+    type = "select"
+    choices = [ "none", "mysql", "postgresql" ]
+    default = "none"
 
 [resources]
     [resources.system_user]
@@ -69,13 +70,21 @@ ram.runtime = "50M"
     [resources.apt]
     packages = "nginx"  # Kind of "dummy" value to be sure to have a non-empty dep list
     packages_from_raw_bash = """
-        if [[ "$with_mysql" = 1 ]]
-        then 
+        if [[ "$database" == "mysql" ]]; then 
             echo "mariadb-server"
+            
+            if [[ "$phpversion" != none ]]; then
+                echo "php${phpversion}-mysql"
+            fi
+        elif [[ "$database" == "postgresql" ]]; then
+            echo "postgresql postgresql-contrib"
+            
+            if [[ "$phpversion" != none ]]; then
+                echo "php${phpversion}-pgsql"
+            fi
         fi
 
-        if [[ "$phpversion" != none ]]
-        then
-            echo "php${phpversion}-fpm php${phpversion}-mysql"
+        if [[ "$phpversion" != none ]]; then
+            echo "php${phpversion}-fpm"
         fi
     """

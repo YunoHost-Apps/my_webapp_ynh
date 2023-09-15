@@ -1,7 +1,12 @@
-If you have requested a MYSQL database, please find information about this SQL database:
+{% if database != 'none' %}
 
+Here are information to log into the database:
+
+- Type: __DATABASE__
 - Database user: __DB_USER__
 - Database name: __DB_NAME__
 - Password: __DB_PWD__
 
-The admin documentation below also contain information on how to connect using SFTP to edit the website content.
+{% endif %}
+
+The admin documentation below contains information on how to connect using SFTP to edit the website content.

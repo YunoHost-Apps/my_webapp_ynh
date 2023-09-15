@@ -9,19 +9,22 @@ Une fois installée, rendez-vous sur l'URL choisie pour connaître le nom d'util
 - Mot de passe: mot de passe défini lors de l'installation
 - Port: 22 (à moins que vous ayez changé le port SSH)
 
-Pour vous connectez, vous devrez utiliser une application SFTP tel que [Filezilla](https://filezilla-project.org/) pour Windows, Mac ou Linux. Vous pouvez aussi directement utiliser votre gestionnaire de fichiers sous Linux ou [Mac](https://support.apple.com/guide/mac-help/connect-mac-shared-computers-servers-mchlp1140/mac).
+Pour vous connecter, vous devrez utiliser une application SFTP tel que [Filezilla](https://filezilla-project.org/) pour Windows, Mac ou Linux. Vous pouvez aussi directement utiliser votre gestionnaire de fichiers sous Linux ou [Mac](https://support.apple.com/guide/mac-help/connect-mac-shared-computers-servers-mchlp1140/mac).
+
+#### Oubli du mot de passe SFTP
+
+Si vous avez oublié votre mot de passe SFTP, vous pouvez le changer dans la webadmin de Yunohost dans `Applications > Votre webapp > My Webapp configuration`.
+Vous pourrez aussi vérifier que SFTP est activé pour votre app.
+
+### Connexion par le terminal
+
+A partir de YunoHost v11.1.21, vous pouvez lancer `sudo yunohost app shell __APP__` dans un terminal pour vous connecter en tant que l'utilisateur gérant l'app.
+
+La commande `php` pointera vers la version de PHP installée pour l'app.
 
 ### Ajouter ou modifier les fichiers
 
-Après vous être connecté avec SFTP, sous le répertoire Web, vous verrez un dossier `www` qui contient les fichiers publics servis par cette application. Vous pouvez mettre tous les fichiers de votre application Web personnalisée à l'intérieur.
-
-### Oubli du mot de passe SFTP
-
-Si vous avez oublié votre mot de passe SFTP, vous pouvez le changer dans la webadmin de Yunohost dans `Applications > Votre webapp > My Webapp configuration`.
-
-## Résolution de problèmes
-
-Si vous n'arrivez pas à vous connecter et que vous avez vérifié que le nom d'utilisateur et le mot de passe sont bons, vérifiez si SFTP est activé pour votre app
+Après vous être connecté, sous le répertoire Web vous verrez un dossier `www` qui contient les fichiers publics servis par cette application. Vous pouvez mettre tous les fichiers de votre application Web personnalisée à l'intérieur.
 
 ### Personnaliser la configuration nginx
 

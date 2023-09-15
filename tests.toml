@@ -7,8 +7,14 @@ test_format = 1.0
     # -------------------------------
 
     args.with_sftp = "1"
-    args.with_mysql = "1"
-	args.phpversion = "8.0"
+    args.password = "SuperDuper_StrongPassw0rd"
+    args.database = "none"
+    args.phpversion = "8.0"
+    test_upgrade_from.bf5d3ed.name = "1.0~ynh14"
+    test_upgrade_from.bf5d3ed.args.with_mysql = "0"
+    test_upgrade_from.bf5d3ed.args.domain = "sub.domain.tld"
+    test_upgrade_from.bf5d3ed.args.path = "/"
+    test_upgrade_from.bf5d3ed.args.password = "SuperDuper_StrongPassw0rd"
 
 [80_test]
 
@@ -19,3 +25,18 @@ test_format = 1.0
 
     only = ["install.subdir", "backup_restore", "upgrade" ]
     args.phpversion = "none"
+
+[mysql_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade", "upgrade.bf5d3ed" ]
+    args.database = "mysql"
+    test_upgrade_from.bf5d3ed.name = "1.0~ynh14"
+    test_upgrade_from.bf5d3ed.args.with_mysql = "1"
+    test_upgrade_from.bf5d3ed.args.domain = "sub.domain.tld"
+    test_upgrade_from.bf5d3ed.args.path = "/"
+    test_upgrade_from.bf5d3ed.args.password = "SuperDuper_StrongPassw0rd"
+
+[postgresql_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.database = "postgresql"

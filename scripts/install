@@ -35,9 +35,8 @@ ynh_app_setting_set --app=$app --key=password --value=$password
 # CREATE A MYSQL DATABASE
 #=================================================
 
-if [ $with_mysql -eq 1 ]
-then
-    ynh_script_progression --message="Creating a MySQL database..." --weight=2
+if [ $database != "none" ]; then
+    ynh_script_progression --message="Creating a database..." --weight=2
 
     db_name=$(ynh_sanitize_dbid --db_name=$app)
     db_user=$db_name
@@ -45,7 +44,12 @@ then
     ynh_app_setting_set --app=$app --key=db_name --value=$db_name
     ynh_app_setting_set --app=$app --key=db_user --value=$db_user
     ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
-    ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+
+    if [ $database == "mysql" ]; then
+        ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+    elif [ $database == "postgresql" ]; then
+        ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+    fi
 fi
 
 #=================================================
