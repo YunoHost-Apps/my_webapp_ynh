@@ -25,7 +25,7 @@ name = "My Webapp configuration"
         ask = "Activate the custom error file use"
         type = "boolean"
         default = false
-        help = "When you enable this, you can add/create a custom `404.html` file in a directory `www\\error`."
+        help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
 
     [main.php_fpm_config]
     name = "PHP-FPM configuration"
