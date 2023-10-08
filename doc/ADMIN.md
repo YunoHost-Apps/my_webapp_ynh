@@ -21,7 +21,7 @@ If you forgot your SFTP password, you can change it in YunoHost's webadmin inter
 
 ### 403 and 404 error handling
 
-The web server configuration supports http error handling `403` and `404` (access denied and resource not found), just add an `error` folder in the `www` directory, then your `403.html` and `404.html` files.
+The web server configuration supports http error handling `403` and `404` (access denied and resource not found). Create an `error` folder at `__INSTALL_DIR__/www/error`, and put your `403.html` and `404.html` files in there.
 
 ### Customizing the nginx configuration
 

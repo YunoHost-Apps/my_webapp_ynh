@@ -25,7 +25,7 @@ Si vous n'arrivez pas à vous connecter et que vous avez vérifié que le nom d'
 
 ### Gestion des erreurs 403 et 404
 
-La configuration du serveur web prend en charge la gestion des erreurs http `403` et `404` (accès refusé et ressource non trouvé), il suffit de d'ajouter un dossier `error` dans le repertoire `www` puis vos fichiers `403.html` et `404.html`.
+La configuration du serveur web prend en charge la gestion des erreurs http `403` et `404` (accès refusé et ressource non trouvée). Ajoutez un dossier `error` à l'emplacement `__INSTALL_DIR__/www/error`, puis ajoutez-y vos fichiers `403.html` et `404.html`.
 
 ### Personnaliser la configuration nginx
 
