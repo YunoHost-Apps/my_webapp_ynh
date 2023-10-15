@@ -127,7 +127,10 @@ ynh_app_config_apply() {
             ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
         else
             ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-            ynh_install_app_dependencies "php${phpversion}-fpm"
+            database=$(ynh_app_setting_get --app=$app --key=database)
+            dependencies="$(ynh_read_manifest -k "resources.apt.packages")"
+            dependencies_from_raw_bash=$(eval "$(ynh_read_manifest -k "resources.apt.packages_from_raw_bash")" | tr "\n" " ")
+            ynh_install_app_dependencies "$dependencies $dependencies_from_raw_bash"
             ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
             # ^ the helper takes care of ynh_app_setting_set the phpversion
         fi

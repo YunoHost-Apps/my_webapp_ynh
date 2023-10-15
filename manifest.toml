@@ -70,15 +70,15 @@ ram.runtime = "50M"
     [resources.apt]
     packages = "nginx"  # Kind of "dummy" value to be sure to have a non-empty dep list
     packages_from_raw_bash = """
-        if [[ "$database" == "mysql" ]]; then 
+        if [[ "$database" == "mysql" ]]; then
             echo "mariadb-server"
-            
+
             if [[ "$phpversion" != none ]]; then
                 echo "php${phpversion}-mysql"
             fi
         elif [[ "$database" == "postgresql" ]]; then
             echo "postgresql postgresql-contrib"
-            
+
             if [[ "$phpversion" != none ]]; then
                 echo "php${phpversion}-pgsql"
             fi
