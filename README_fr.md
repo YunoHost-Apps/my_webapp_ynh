@@ -29,7 +29,7 @@ La version de PHP-FPM peut aussi être choisie, parmi `none`, `7.4`, `8.0`, `8.1
 ## Documentations et ressources
 
 * Dépôt de code officiel de l’app : <https://github.com/YunoHost-Apps/my_webapp_ynh>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_my_webapp>
+* YunoHost Store: <https://apps.yunohost.org/app/my_webapp>
 * Signaler un bug : <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
 
 ## Informations pour les développeurs
