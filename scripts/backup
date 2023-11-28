@@ -54,7 +54,7 @@ then
     ynh_print_info --message="Backing up the database..."
 
     if [ $database == "mysql" ]; then
-        ynh_mysql_dump_db --database="$db_name" > db.sql*
+        ynh_mysql_dump_db --database="$db_name" > db.sql
     elif [ $database == "postgresql" ]; then
         ynh_psql_dump_db --database="$db_name" > db.sql
     fi
