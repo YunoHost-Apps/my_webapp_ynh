@@ -18,6 +18,15 @@ name = "My Webapp configuration"
         visible = "with_sftp"
         help = "If a password already exist, leave blank and it will not be replaced."
 
+    [main.code_error]
+    name = "Html Custom error"
+
+        [main.code_error.custom_error_file]
+        ask = "Activate the custom error file use"
+        type = "boolean"
+        default = false
+        help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
+
     [main.php_fpm_config]
     name = "PHP-FPM configuration"
 
