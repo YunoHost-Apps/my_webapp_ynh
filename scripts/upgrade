@@ -158,34 +158,6 @@ then
 fi
 
 #=================================================
-# NodeJS CONFIGURATION
-#=================================================
-
-if [ $nodeversion != "none" ]
-then
-    ynh_script_progression --message="Updating NodeJS..." --weight=3
-
-    ynh_install_nodejs --nodejs_version=$nodeversion
-    ynh_use_nodejs
-
-    ynh_add_config --template="../sources/www/package.json" --destination="$install_dir/www/package.json"
-    ynh_add_config --template="../sources/www/index.js" --destination="$install_dir/www/index.js"
-
-    ynh_add_systemd_config --service="${app}-nodejs" --template="nodejs.service"
-    ynh_add_systemd_config --service="${app}-nodejs-watcher" --template="nodejs-watcher.service"
-    ynh_add_config --template="nodejs-watcher.path" --destination="/etc/systemd/system/${app}-nodejs-watcher.path"
-
-    systemctl enable "${app}-nodejs-watcher.path" --quiet
-    systemctl daemon-reload
-
-    yunohost service add "${app}-nodejs" --description="$app NodeJS Server" --log="/var/log/$app-nodejs.log"
-    ynh_add_config --template="nginx-nodejs.conf" --destination="$nginx_extra_conf_dir/nodejs.conf"
-    ynh_systemd_action --service_name="${app}-nodejs"
-    ynh_systemd_action --service_name="${app}-nodejs-watcher"
-    ynh_systemd_action --service_name="${app}-nodejs-watcher.path"
-fi
-
-#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
@@ -198,6 +170,22 @@ chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
 chmod 750 "$install_dir"
+
+#=================================================
+# NodeJS CONFIGURATION
+#=================================================
+
+if [ $nodeversion != "none" ]
+then
+    ynh_script_progression --message="Updating NodeJS..." --weight=3
+
+    ynh_install_nodejs --nodejs_version=$nodeversion
+    ynh_use_nodejs
+
+    ynh_add_config --template="../sources/www/package.json" --destination="$install_dir/www/package.json"
+    ynh_add_config --template="../sources/www/index.js" --destination="$install_dir/www/index.js"
+    ynh_setup_my_nodeapp --app=$app --install_dir=$install_dir
+fi
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
