@@ -99,11 +99,16 @@ fi
 #=================================================
 # RELOAD NGINX AND PHP-FPM
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server and PHP-FPM..."
+ynh_script_progression --message="Reloading NGINX and the server..."
 
 if [ $phpversion != "none" ]
 then
 	ynh_systemd_action --service_name=php${phpversion}-fpm --action=reload
+fi
+
+if [ $nodeversion != "none" ]
+then
+	ynh_systemd_action --service_name=$app-nodejs --action=reload
 fi
 
 ynh_systemd_action --service_name=nginx --action=reload

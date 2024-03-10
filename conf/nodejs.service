@@ -11,6 +11,7 @@ StandardOutput=append:/var/log/__APP__-nodejs.log
 StandardError=inherit
 Environment=__YNH_NODE_LOAD_PATH__
 Environment=PORT=__PORT__
+Environment=NODE_ENV=production
 ExecStartPre=__YNH_NPM__ install
 ExecStartPre=__YNH_NPM__ run build
 ExecStart=__YNH_NPM__ run start
