@@ -122,3 +122,53 @@ ynh_system_user_del_group() {
 		gpasswd -d "$username" "$group"
 	done
 }
+
+
+ynh_setup_my_nodeapp() {
+    # Declare an array to define the options of this helper.
+    local legacy_args=ai
+    local -A args_array=([a]=app= [i]=install_dir=)
+    local app
+    local install_dir
+
+    ynh_handle_getopts_args "$@"
+
+    ynh_add_systemd_config --service="${app}-nodejs" --template="nodejs.service"
+    ynh_add_systemd_config --service="${app}-nodejs-watcher" --template="nodejs-watcher.service"
+    ynh_add_config --template="nodejs-watcher.path" --destination="/etc/systemd/system/${app}-nodejs-watcher.path"
+
+    systemctl enable "${app}-nodejs-watcher.path" --quiet
+    systemctl daemon-reload
+
+    yunohost service add "${app}-nodejs" --description="$app NodeJS Server" --log="/var/log/$app-nodejs.log"
+    ynh_systemd_action --service_name="${app}-nodejs"
+    ynh_systemd_action --service_name="${app}-nodejs-watcher"
+    ynh_systemd_action --service_name="${app}-nodejs-watcher.path"
+
+    # Add the config manually because yunohost does not support custom nginx confs
+    ynh_add_config --template="nginx-nodejs.conf" --destination="/etc/nginx/conf.d/$domain.d/$app.conf"
+    ynh_store_file_checksum --file="/etc/nginx/conf.d/$domain.d/$app.conf"
+    ynh_systemd_action --service_name=nginx --action=reload
+
+    # Subsequent npm install will write to this folder (as it is within $app's home)
+    # As such we prepare it with fitting rights
+    mkdir -p "$install_dir/.npm"
+    chown $app:$app "$install_dir/.npm"
+}
+
+ynh_remove_my_nodeapp() {
+    # Declare an array to define the options of this helper.
+    local legacy_args=a
+    local -A args_array=([a]=app=)
+    local app
+
+    ynh_handle_getopts_args "$@"
+
+    yunohost service remove "${app}-nodejs"
+
+    ynh_remove_systemd_config --service="${app}-nodejs"
+    ynh_remove_systemd_config --service="${app}-nodejs-watcher"
+    ynh_secure_remove --file="/etc/systemd/system/${app}-nodejs-watcher.path"
+
+    ynh_remove_nodejs
+}

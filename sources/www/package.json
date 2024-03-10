@@ -1,0 +1,11 @@
+{
+  "name": "www",
+  "version": "1.0.0",
+  "description": "dummy app",
+  "author": "",
+  "scripts": {
+    "start": "node index.js",
+    "build": "exit 0"
+  },
+  "license": "ISC"
+}

@@ -29,3 +29,7 @@ Après vous être connecté, sous le répertoire Web vous verrez un dossier `www
 ### Personnaliser la configuration nginx
 
 Si vous souhaitez ajuster la configuration nginx pour cette app, il est recommandé d'éditer `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/WHATEVER_NAME.conf` (assurez-vous que le fichier a l'extension `.conf`) puis rechargez nginx après vous être assuré que la configuration est valide à l'aide de `nginx -t`.
+
+### Écouter le bon port dans NodeJS
+
+Le port d'écoute est accessible par le processus node au travers de la variable d'environment `PORT`. Veillez à ce que votre fichier `.js` principal le récupère bien avec `process.env.PORT` car sa valeur n'est pas prédictible.

@@ -1,0 +1,8 @@
+[Path]
+Unit=__APP__-nodejs-watcher.service
+
+# Trigger on creation, deletion or change to a file
+PathChanged=__INSTALL_DIR__
+
+[Install]
+WantedBy=multi-user.target
