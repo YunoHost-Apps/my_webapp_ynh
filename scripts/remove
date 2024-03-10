@@ -47,6 +47,17 @@ ynh_script_progression --message="Removing PHP-FPM configuration..."
 ynh_remove_fpm_config
 
 #=================================================
+# REMOVE NodeJS CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing NodeJS configuration..."
+
+yunohost service remove "${app}-nodejs"
+
+ynh_remove_systemd_config --service="${app}-nodejs"
+ynh_remove_systemd_config --service="${app}-nodejs-watcher"
+ynh_secure_remove --file="/etc/systemd/system/${app}-nodejs-watcher.path"
+
+#=================================================
 # END OF SCRIPT
 #=================================================
 

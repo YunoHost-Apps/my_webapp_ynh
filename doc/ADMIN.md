@@ -29,3 +29,7 @@ Once logged in, under the Web directory you will see a `www` folder which contai
 ### Customizing the nginx configuration
 
 If you want to add tweak the nginx configuration for this app, it is recommended to edit `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/WHATEVER_NAME.conf` (ensure that the file has the `.conf` extension) and reload the nginx after making sure that the configuration is valid using `nginx -t`.
+
+### Listening the right port for NodeJS
+
+The listen port is available to the node process throught the environment variable `PORT`. Make sure that your main `.js` file retrieves it with `process.env.PORT` as its value is not predictable.

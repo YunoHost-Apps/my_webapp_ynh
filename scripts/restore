@@ -82,6 +82,17 @@ then
 fi
 
 #=================================================
+# RESTORE THE NodeJS CONFIGURATION
+#=================================================
+
+if [ $nodeversion != "none" ]
+then
+    ynh_restore_file --origin_path="/etc/systemd/system/${app}-nodejs.service"
+    ynh_restore_file --origin_path="/etc/systemd/system/${app}-nodejs-watcher.service"
+    ynh_restore_file --origin_path="/etc/systemd/system/${app}-nodejs-watcher.path"
+fi
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # RELOAD NGINX AND PHP-FPM

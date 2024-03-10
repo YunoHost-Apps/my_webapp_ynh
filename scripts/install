@@ -23,6 +23,7 @@ ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 ynh_script_progression --message="Validating installation parameters..." --weight=2
 
 [ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
+[ $phpversion != "none" ] || [ $nodeversion != "none" ] || ynh_die --message="Either PHP or NodeJS can be used, not both"
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -68,8 +69,17 @@ then
 fi
 
 # Create a dedicated NGINX config
-ynh_add_nginx_config
-ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+# Use a custom nginx config when using nodejs as it is incompatible with the html/php one
+if [ $nodeversion == "none" ]
+then
+    ynh_add_nginx_config
+    ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+else
+    # Add the config manually because yunohost does not support custom nginx confs
+    ynh_add_config --template="nginx-nodejs.conf" --destination="/etc/nginx/conf.d/$domain.d/$app.conf"
+    ynh_store_file_checksum --file="/etc/nginx/conf.d/$domain.d/$app.conf"
+    ynh_systemd_action --service_name=nginx --action=reload
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -132,6 +142,34 @@ then
 
     # Create a dedicatedPHP-FPM config
     ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+fi
+
+#=================================================
+# NodeJS CONFIGURATION
+#=================================================
+
+if [ $nodeversion != "none" ]
+then
+    ynh_script_progression --message="Configuring NodeJS..." --weight=3
+
+    ynh_install_nodejs --nodejs_version=$nodeversion
+    ynh_use_nodejs
+
+    ynh_add_config --template="../sources/www/package.json" --destination="$install_dir/www/package.json"
+    ynh_add_config --template="../sources/www/index.js" --destination="$install_dir/www/index.js"
+
+    ynh_add_systemd_config --service="${app}-nodejs" --template="nodejs.service"
+    ynh_add_systemd_config --service="${app}-nodejs-watcher" --template="nodejs-watcher.service"
+    ynh_add_config --template="nodejs-watcher.path" --destination="/etc/systemd/system/${app}-nodejs-watcher.path"
+
+    systemctl enable "${app}-nodejs-watcher.path" --quiet
+    systemctl daemon-reload
+
+    yunohost service add "${app}-nodejs" --description="$app NodeJS Server" --log="/var/log/$app-nodejs.log"
+    ynh_add_config --template="nginx-nodejs.conf" --destination="$nginx_extra_conf_dir/nodejs.conf"
+    ynh_systemd_action --service_name="${app}-nodejs"
+    ynh_systemd_action --service_name="${app}-nodejs-watcher"
+    ynh_systemd_action --service_name="${app}-nodejs-watcher.path"
 fi
 
 #=================================================
