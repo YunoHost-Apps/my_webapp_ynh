@@ -149,6 +149,11 @@ ynh_setup_my_nodeapp() {
     ynh_add_config --template="nginx-nodejs.conf" --destination="/etc/nginx/conf.d/$domain.d/$app.conf"
     ynh_store_file_checksum --file="/etc/nginx/conf.d/$domain.d/$app.conf"
     ynh_systemd_action --service_name=nginx --action=reload
+
+    # Subsequent npm install will write to this folder (as it is within $app's home)
+    # As such we prepare it with fitting rights
+    mkdir -p "$install_dir/.npm"
+    chown $app:$app "$install_dir/.npm"
 }
 
 ynh_remove_my_nodeapp() {
