@@ -48,9 +48,20 @@ ram.runtime = "50M"
     [install.phpversion]
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
+    help.en = "You can only choose NodeJS or PHP, not both"
+    help.fr = "Vous ne pouvez avoir que NodeJS ou PHP, pas les deux"
     type = "select"
     choices = ["none", "7.4", "8.0", "8.1", "8.2"]
     default = "8.0"
+
+    [install.nodeversion]
+    ask.en = "Choose a NodeJS version you want to use for your app"
+    ask.fr = "Choisissez une version NodeJS que vous souhaitez utiliser pour votre application"
+    help.en = "You can only choose NodeJS or PHP, not both"
+    help.fr = "Vous ne pouvez avoir que NodeJS ou PHP, pas les deux"
+    type = "select"
+    choices = ["none", "18", "20", "21"]
+    default = "none"
 
     [install.database]
     ask.en = "Do you need a database?"
@@ -63,6 +74,9 @@ ram.runtime = "50M"
     [resources.system_user]
 
     [resources.install_dir]
+
+    [resources.ports]
+    main.default = 3000
 
     [resources.permissions]
     main.url = "/"

@@ -68,6 +68,12 @@ if [ -z "$phpversion" ]; then
 	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 fi
 
+# If phpversion doesn't exist, create it. We assume it is the default system one.
+if [ -z "$nodeversion" ]; then
+	nodeversion="none"
+	ynh_app_setting_set --app=$app --key=nodeversion --value=$nodeversion
+fi
+
 # Delete old user
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
 then
@@ -103,8 +109,17 @@ then
 fi
 
 # Create a dedicated NGINX config
-ynh_add_nginx_config
-ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+# Use a custom nginx config when using nodejs as it is incompatible with the html/php one
+if [ $nodeversion == "none" ]
+then
+    ynh_add_nginx_config
+    ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+else
+    # Add the config manually because yunohost does not support custom nginx confs
+    ynh_add_config --template="nginx-nodejs.conf" --destination="/etc/nginx/conf.d/$domain.d/$app.conf"
+    ynh_store_file_checksum --file="/etc/nginx/conf.d/$domain.d/$app.conf"
+    ynh_systemd_action --service_name=nginx --action=reload
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -155,6 +170,22 @@ chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
 chmod 750 "$install_dir"
+
+#=================================================
+# NodeJS CONFIGURATION
+#=================================================
+
+if [ $nodeversion != "none" ]
+then
+    ynh_script_progression --message="Updating NodeJS..." --weight=3
+
+    ynh_install_nodejs --nodejs_version=$nodeversion
+    ynh_use_nodejs
+
+    ynh_add_config --template="../sources/www/package.json" --destination="$install_dir/www/package.json"
+    ynh_add_config --template="../sources/www/index.js" --destination="$install_dir/www/index.js"
+    ynh_setup_my_nodeapp --app=$app --install_dir=$install_dir
+fi
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

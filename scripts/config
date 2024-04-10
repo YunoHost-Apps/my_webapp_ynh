@@ -105,6 +105,11 @@ ynh_app_config_validate() {
             exit 0
         fi
     fi
+
+    if [ "${changed[nodeversion]}" == "true" ] && [ $nodeversion != "none" ] && [ $phpversion != "none" ]
+    then
+        ynh_die --message="You cannot have both PHP and NodeJS, choose only one."
+    fi
 }
 
 ynh_app_config_apply() {
@@ -151,6 +156,19 @@ ynh_app_config_apply() {
     if [ "$phpversion" != "none" ]
     then
         ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+    fi
+
+    if [ "${changed[nodeversion]}" == "true" ]
+    then
+        if [ "$nodeversion" != "none" ]
+        then
+            ynh_install_nodejs --nodejs_version=$nodeversion
+            ynh_use_nodejs
+            export port=$(ynh_app_setting_get $app port)
+            ynh_setup_my_nodeapp --app=$app --install_dir=$install_dir
+        else
+            ynh_remove_my_nodeapp --app=$app
+        fi
     fi
 }
 
