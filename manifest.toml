@@ -50,7 +50,7 @@ ram.runtime = "50M"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
     choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3"]
-    default = "8.1"
+    default = "8.3"
 
     [install.database]
     ask.en = "Do you need a database?"
