@@ -54,8 +54,7 @@ then
 	path_url="$new_path"
 
 	# Update custom error file path if needed
-	if [ $custom_error_file ]
-	ynh_print_info --message="Change the custom error config file"
+	if [ $custom_error_file -eq 1 ]
 	then
 		ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 	fi
