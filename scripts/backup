@@ -37,15 +37,6 @@ then
 fi
 
 #=================================================
-# BACKUP CUSTOM CONF
-#=================================================
-
-if [ $custom_error_file ]
-then
-    ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.d/error-code.conf"
-fi
-
-#=================================================
 # BACKUP THE MYSQL DATABASE
 #=================================================
 
