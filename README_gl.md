@@ -18,6 +18,7 @@ NON debe editarse manualmente.
 
 This application allows you to easily install a custom Web application, providing files access with [SFTP](https://yunohost.org/en/filezilla).
 
+
 It can also create a MySQL or PostgreSQL database - which will be backed up and restored with your application. The connection details will be stored in the file `db_access.txt` located in the root directory.
 
 PHP-FPM version can also be selected among `none`, `7.4`, `8.0`, `8.1` and `8.2`.
@@ -27,6 +28,7 @@ PHP-FPM version can also be selected among `none`, `7.4`, `8.0`, `8.1` and `8.2`
 You can also customize 404 errors - if you enable the option in the config panel. Simply create an`error` folder in the `www` root directory, containing your custom `html` files. 
 
 **Versión proporcionada:** 1.0~ynh17
+
 ## Documentación e recursos
 
 - Repositorio de orixe do código: <https://github.com/YunoHost-Apps/my_webapp_ynh>
