@@ -59,7 +59,7 @@ get__free_footprint() {
 #=================================================
 
 set__password() {
-    if [ "$password" == "" ]
+    if [ ! "$password" == "" ]
     then
         ynh_app_setting_set --app=$app --key=password --value="$password"
     fi
@@ -149,6 +149,11 @@ ynh_app_config_apply() {
     elif [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 0 ]
     then
         ynh_system_user_del_group --username=$app --groups="sftp.app"
+    fi
+    
+    if [ "${changed[password]}" == "true" ] && [ ! "$password" == "" ]
+    then
+        chpasswd <<< "${app}:${password}"
     fi
 
     if [ "${changed[custom_error_file]}" == "true" ]
