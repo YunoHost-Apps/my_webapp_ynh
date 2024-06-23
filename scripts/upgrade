@@ -29,24 +29,6 @@ if [ -z "${admin_mail_html:-}" ]; then
 		ynh_app_setting_set --key=admin_mail_html --value=$admin_mail_html
 fi
 
-# If fpm_footprint doesn't exist, create it
-if [ -z "${fpm_footprint:-}" ]; then
-	fpm_footprint=low
-# REMOVEME ? Everything about fpm_footprint is removed in helpers2.1... | 	ynh_app_setting_set --key=fpm_footprint --value=$fpm_footprint
-fi
-
-# If fpm_free_footprint doesn't exist, create it
-if [ -z "${fpm_free_footprint:-}" ]; then
-	fpm_free_footprint=0
-# REMOVEME ? Everything about fpm_free_footprint is removed in helpers2.1... | 	ynh_app_setting_set --key=fpm_free_footprint --value=$fpm_free_footprint
-fi
-
-# If fpm_usage doesn't exist, create it
-if [ -z "${fpm_usage:-}" ]; then
-	fpm_usage=low
-# REMOVEME ? Everything about fpm_usage is removed in helpers2.1... | 	ynh_app_setting_set --key=fpm_usage --value=$fpm_usage
-fi
-
 # If with_sftp doesn't exist, create it
 # FIXME: maybe replace with: ynh_app_setting_set_default --key=with_sftp --value=1
 if [ -z "${with_sftp:-}" ]; then
@@ -143,7 +125,6 @@ if [ $php_version != "none" ]
 then
     ynh_script_progression "Upgrading PHP-FPM configuration..."
 
-    # Create a dedicated PHP-FPM config
     ynh_config_add_phpfpm
 fi
 

@@ -118,19 +118,10 @@ chmod 750 "$install_dir"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-# REMOVEME ? Everything about fpm_footprint is removed in helpers2.1... | fpm_footprint="low"
-# REMOVEME ? Everything about fpm_free_footprint is removed in helpers2.1... | fpm_free_footprint=0
-# REMOVEME ? Everything about fpm_usage is removed in helpers2.1... | fpm_usage="low"
-
-# REMOVEME ? Everything about fpm_footprint is removed in helpers2.1... | ynh_app_setting_set --key=fpm_footprint --value=$fpm_footprint
-# REMOVEME ? Everything about fpm_free_footprint is removed in helpers2.1... | ynh_app_setting_set --key=fpm_free_footprint --value=$fpm_free_footprint
-# REMOVEME ? Everything about fpm_usage is removed in helpers2.1... | ynh_app_setting_set --key=fpm_usage --value=$fpm_usage
-
 if [ $php_version != "none" ]
 then
     ynh_script_progression "Configuring PHP-FPM..."
 
-    # Create a dedicatedPHP-FPM config
     ynh_config_add_phpfpm
 fi
 
