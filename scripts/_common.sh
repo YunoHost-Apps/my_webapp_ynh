@@ -1,11 +1,7 @@
 #!/bin/bash
 
 #=================================================
-# COMMON VARIABLES
-#=================================================
-
-#=================================================
-# EXPERIMENTAL HELPERS
+# COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
 ynh_maintenance_mode_ON () {
@@ -18,7 +14,7 @@ ynh_maintenance_mode_ON () {
 	fi
 
 	mkdir -p /var/www/html/
-	
+
 	# Create an html to serve as maintenance notice
 	echo "<!DOCTYPE html>
 <html>
@@ -87,7 +83,6 @@ ynh_maintenance_mode_OFF () {
 	systemctl reload nginx
 }
 
-
 ynh_system_user_add_group() {
     # Declare an array to define the options of this helper.
     local legacy_args=uhs
@@ -104,7 +99,6 @@ ynh_system_user_add_group() {
 		usermod -a -G "$group" "$username"
 	done
 }
-
 
 ynh_system_user_del_group() {
     # Declare an array to define the options of this helper.
