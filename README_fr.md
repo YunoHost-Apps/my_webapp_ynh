@@ -5,7 +5,7 @@ Il NE doit PAS être modifié à la main.
 
 # My Webapp pour YunoHost
 
-[![Niveau d’intégration](https://dash.yunohost.org/integration/my_webapp.svg)](https://dash.yunohost.org/appci/app/my_webapp) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
+[![Niveau d’intégration](https://dash.yunohost.org/integration/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
 
 [![Installer My Webapp avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
