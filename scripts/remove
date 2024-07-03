@@ -47,6 +47,16 @@ ynh_script_progression --message="Removing PHP-FPM configuration..."
 ynh_remove_fpm_config
 
 #=================================================
+# REMOVE NodeJS CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing NodeJS configuration..."
+
+if [ $nodeversion != "none" ]
+then
+    ynh_remove_my_nodeapp --app=$app
+fi
+
+#=================================================
 # END OF SCRIPT
 #=================================================
 

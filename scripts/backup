@@ -37,6 +37,17 @@ then
 fi
 
 #=================================================
+# BACKUP THE NodeJS CONFIGURATION
+#=================================================
+
+if [ $nodeversion != "none" ]
+then
+    ynh_backup --src_path="/etc/systemd/system/${app}-nodejs.service"
+    ynh_backup --src_path="/etc/systemd/system/${app}-nodejs-watcher.service"
+    ynh_backup --src_path="/etc/systemd/system/${app}-nodejs-watcher.path"
+fi
+
+#=================================================
 # BACKUP THE MYSQL DATABASE
 #=================================================
 

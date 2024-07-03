@@ -1,0 +1,13 @@
+[Unit]
+Description=__APP__ NodeJS restarter
+After=network.target
+StartLimitIntervalSec=10
+StartLimitBurst=5
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl restart __APP__-nodejs.service
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

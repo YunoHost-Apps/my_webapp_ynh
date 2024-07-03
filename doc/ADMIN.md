@@ -29,3 +29,16 @@ Once logged in, under the Web directory you will see a `www` folder which contai
 ### Customizing the nginx configuration
 
 If you want to add tweak the nginx configuration for this app, it is recommended to edit `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/WHATEVER_NAME.conf` (ensure that the file has the `.conf` extension) and reload the nginx after making sure that the configuration is valid using `nginx -t`.
+
+{% if nodeversion != 'none' %}
+
+### Interfacing with NodeJS
+
+A `package.json` should be available within the `/var/www/__APP__/www`. It is used to `npm install`, `npm run build` then `npm run start`. As such, it should at least define the dependencies and provide the `build` and `install` scripts.
+
+You should then start a server in `/var/www/__APP__/www/index.js`.
+It should listen on the port provided through the `PORT` environment with `process.env.PORT` or statically with __PORT__.
+
+The server should reload its files after they change, but due to systemd's limitations, it only works for top level folders/files.
+If your server does not display the right things, restart the `__APP__-nodejs` service.
+{% endif %}
