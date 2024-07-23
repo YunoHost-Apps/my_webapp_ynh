@@ -159,24 +159,23 @@ ynh_app_config_apply() {
 
     if [ "${changed[custom_error_file]}" == "true" ]
     then
-      CUSTOM_ERROR_FILE=$custom_error_file
-      nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+        CUSTOM_ERROR_FILE=$custom_error_file
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 
-      if [ $custom_error_file -eq 1 ]
-      then
-        ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
-      elif [ $custom_error_file -eq 0 ]
-      then
-        ynh_secure_remove --file="$nginx_extra_conf_dir/error-code.conf"
-      fi
-      ynh_systemd_action --service_name=nginx --action=reload
+        if [ $custom_error_file -eq 1 ]
+        then
+            ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
+        elif [ $custom_error_file -eq 0 ]
+        then
+            ynh_secure_remove --file="$nginx_extra_conf_dir/error-code.conf"
+        fi
+        ynh_systemd_action --service_name=nginx --action=reload
     fi
 
     if [ "$phpversion" != "none" ]
     then
         ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
     fi
-
 }
 
 ynh_app_config_run $1
