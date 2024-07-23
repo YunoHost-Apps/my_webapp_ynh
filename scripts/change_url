@@ -80,8 +80,14 @@ then
 	mv $nginx_extra_conf_dir /etc/nginx/conf.d/$new_domain.d/$app.d
 
 	# Store file checksum for the new config file location
-	ynh_store_file_checksum --file="/etc/nginx/conf.d/$new_domain.d/$app.d/php.conf"
-	ynh_store_file_checksum --file="/etc/nginx/conf.d/$new_domain.d/$app.d/code-error.conf"
+	if [ $phpversion != "none" ]
+	then
+		ynh_store_file_checksum --file="/etc/nginx/conf.d/$new_domain.d/$app.d/php.conf"
+	fi
+	if [ $custom_error_file -eq 1 ]
+	then
+		ynh_store_file_checksum --file="/etc/nginx/conf.d/$new_domain.d/$app.d/code-error.conf"
+	fi
 fi
 
 #=================================================

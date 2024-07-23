@@ -33,7 +33,6 @@ test_format = 1.0
 
 [none_test]
 
-    only = ["install.subdir", "backup_restore", "upgrade" ]
     args.phpversion = "none"
 
 [mysql_test]
