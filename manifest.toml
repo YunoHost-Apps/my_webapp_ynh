@@ -59,6 +59,12 @@ ram.runtime = "50M"
     choices = [ "none", "mysql", "postgresql" ]
     default = "none"
 
+    [install.custom_error_file]
+    ask = "Activate the custom error file use"
+    type = "boolean"
+    default = false
+    help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
+
 [resources]
     [resources.system_user]
 
