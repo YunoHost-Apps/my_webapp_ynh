@@ -7,6 +7,7 @@ test_format = 1.0
     # -------------------------------
 
     args.with_sftp = "1"
+    args.custom_error_file = "0"
     args.password = "SuperDuper_StrongPassw0rd"
     args.database = "none"
     args.phpversion = "8.3"
