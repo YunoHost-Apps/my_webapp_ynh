@@ -27,7 +27,7 @@ PHP-FPM version can also be selected among `none`, `7.4`, `8.0`, `8.1` and `8.2`
 You can also customize 404 errors - if you enable the option in the config panel. Simply create an `error` folder in the `www` root directory, containing your custom `html` files. 
 
 
-**Paketatutako bertsioa:** 1.0~ynh17
+**Paketatutako bertsioa:** 1.0~ynh18
 ## Dokumentazioa eta baliabideak
 
 - Jatorrizko aplikazioaren kode-gordailua: <https://github.com/YunoHost-Apps/my_webapp_ynh>
