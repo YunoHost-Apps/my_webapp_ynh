@@ -30,7 +30,7 @@ You can also customize 404 errors - if you enable the option in the config panel
 **Versi terkirim:** 1.0~ynh17
 ## Dokumentasi dan sumber daya
 
-- Repositori kode aplikasi hulu: <https://github.com/YunoHost-Apps/my_webapp_ynh>
+- Depot kode aplikasi hulu: <https://github.com/YunoHost-Apps/my_webapp_ynh>
 - Gudang YunoHost: <https://apps.yunohost.org/app/my_webapp>
 - Laporkan bug: <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
 
