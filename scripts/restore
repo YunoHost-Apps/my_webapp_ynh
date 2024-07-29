@@ -14,7 +14,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.d/"
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.d"
 
 #=================================================
 # RESTORE THE MYSQL DATABASE

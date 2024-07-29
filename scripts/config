@@ -59,7 +59,7 @@ get__free_footprint() {
 #=================================================
 
 set__password() {
-    if [ "$password" == "" ]
+    if [ ! "$password" == "" ]
     then
         ynh_app_setting_set --app=$app --key=password --value="$password"
     fi
@@ -114,10 +114,15 @@ ynh_app_config_apply() {
     then
         ynh_app_setting_set --app=$app --key=phpversion --value="${old[phpversion]}"
         ynh_remove_fpm_config
-        # ^ the helper includes ynh_remove_app_dependencies
+        ynh_remove_app_dependencies
         YNH_PHP_VERSION=$phpversion
         # ^ ynh_add_config replaces __PHPVERSION__ by __PHP_YNH_VERSION__...
         ynh_app_setting_set --app=$app --key=phpversion --value="$phpversion"
+
+        database=$(ynh_app_setting_get --app=$app --key=database)
+        dependencies="$(ynh_read_manifest -k "resources.apt.packages")"
+        dependencies_from_raw_bash=$(eval "$(ynh_read_manifest -k "resources.apt.packages_from_raw_bash")" | tr "\n" " ")
+        ynh_install_app_dependencies "$dependencies $dependencies_from_raw_bash"
 
         nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
         mkdir -p "$nginx_extra_conf_dir"
@@ -127,7 +132,6 @@ ynh_app_config_apply() {
             ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
         else
             ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-            ynh_install_app_dependencies "php${phpversion}-fpm"
             ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
             # ^ the helper takes care of ynh_app_setting_set the phpversion
         fi
@@ -146,6 +150,26 @@ ynh_app_config_apply() {
     elif [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 0 ]
     then
         ynh_system_user_del_group --username=$app --groups="sftp.app"
+    fi
+    
+    if [ "${changed[password]}" == "true" ] && [ ! "$password" == "" ]
+    then
+        chpasswd <<< "${app}:${password}"
+    fi
+
+    if [ "${changed[custom_error_file]}" == "true" ]
+    then
+        CUSTOM_ERROR_FILE=$custom_error_file
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+
+        if [ $custom_error_file -eq 1 ]
+        then
+            ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
+        elif [ $custom_error_file -eq 0 ]
+        then
+            ynh_secure_remove --file="$nginx_extra_conf_dir/error-code.conf"
+        fi
+        ynh_systemd_action --service_name=nginx --action=reload
     fi
 
     if [ "$phpversion" != "none" ]

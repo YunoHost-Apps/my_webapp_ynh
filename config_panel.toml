@@ -4,19 +4,32 @@ version = "1.0"
 name = "My Webapp configuration"
 
     [main.sftp]
-    name = "SFTP access"
+    name.en = "SFTP access"
+    name.fr = "Accès SFTP"
 
         [main.sftp.with_sftp]
-        ask = "Do you need a SFTP access?"
+        ask.en = "Do you need a SFTP access?"
+        ask.fr = "Avez-vous besoin d'un accès SFTP ?"
         type = "boolean"
         default = true
 
         [main.sftp.password]
-        ask = "Set a password for the SFTP access"
+        ask.en = "Set a password for the SFTP access"
+        ask.fr = "Définir un mot de passe pour l’accès SFTP"
         type = "password"
         optional = true
         visible = "with_sftp"
-        help = "If a password already exist, leave blank and it will not be replaced."
+        help.en = "If a password already exist, leave blank and it will not be replaced."
+        help.fr = "Si un mot de passe existe déjà, laissez vide et il ne sera pas remplacé."
+
+    [main.code_error]
+    name = "Html Custom error"
+
+        [main.code_error.custom_error_file]
+        ask = "Activate the custom error file use"
+        type = "boolean"
+        default = false
+        help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
 
     [main.php_fpm_config]
     name = "PHP-FPM configuration"
@@ -24,7 +37,7 @@ name = "My Webapp configuration"
         [main.php_fpm_config.phpversion]
         ask = "PHP version"
         type = "select"
-        choices = ["none", "7.4", "8.0", "8.1", "8.2"]
+        choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3"]
         default = "none"
 
         [main.php_fpm_config.fpm_footprint]

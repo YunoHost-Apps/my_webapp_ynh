@@ -26,6 +26,10 @@ La commande `php` pointera vers la version de PHP installée pour l'app.
 
 Après vous être connecté, sous le répertoire Web vous verrez un dossier `www` qui contient les fichiers publics servis par cette application. Vous pouvez mettre tous les fichiers de votre application Web personnalisée à l'intérieur.
 
+### Gestion des erreurs 403 et 404
+
+La configuration du serveur web prend en charge la gestion des erreurs http `403` et `404` (accès refusé et ressource non trouvée). Ajoutez un dossier `error` à l'emplacement `__INSTALL_DIR__/www/error`, puis ajoutez-y vos fichiers `403.html` et `404.html`.
+
 ### Personnaliser la configuration nginx
 
 Si vous souhaitez ajuster la configuration nginx pour cette app, il est recommandé d'éditer `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/WHATEVER_NAME.conf` (assurez-vous que le fichier a l'extension `.conf`) puis rechargez nginx après vous être assuré que la configuration est valide à l'aide de `nginx -t`.
