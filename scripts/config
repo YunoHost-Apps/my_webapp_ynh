@@ -112,8 +112,11 @@ ynh_app_config_apply() {
 
     if [ "${changed[phpversion]}" == "true" ]
     then
-        ynh_app_setting_set --app=$app --key=phpversion --value="${old[phpversion]}"
-        ynh_remove_fpm_config
+        if [ "${old[phpversion]}" != "none" ]
+        then
+            ynh_app_setting_set --app=$app --key=phpversion --value="${old[phpversion]}"
+            ynh_remove_fpm_config
+        fi
         ynh_remove_app_dependencies
         YNH_PHP_VERSION=$phpversion
         # ^ ynh_add_config replaces __PHPVERSION__ by __PHP_YNH_VERSION__...
