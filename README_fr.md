@@ -26,7 +26,7 @@ La version de PHP-FPM peut aussi être choisie, parmi `none`, `7.4`, `8.0`, `8.1
 
 L'application vous permet aussi de gérer - si vous activez l'option dans le panneau de configuration - la gestion des erreurs 404, il vous suffit de créer un dossier `error` dans le répertoire racine `www` et d'y placer vos fichiers d'erreur `html` 
 
-**Version incluse :** 1.0~ynh18
+**Version incluse :** 1.0~ynh19
 ## Documentations et ressources
 
 - Dépôt de code officiel de l’app : <https://github.com/YunoHost-Apps/my_webapp_ynh>
