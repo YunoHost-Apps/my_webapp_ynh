@@ -29,7 +29,6 @@ L'application vous permet aussi de gérer - si vous activez l'option dans le pan
 **Version incluse :** 1.0~ynh19
 ## Documentations et ressources
 
-- Dépôt de code officiel de l’app : <https://github.com/YunoHost-Apps/my_webapp_ynh>
 - YunoHost Store : <https://apps.yunohost.org/app/my_webapp>
 - Signaler un bug : <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
 

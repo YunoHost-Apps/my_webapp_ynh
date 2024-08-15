@@ -30,7 +30,6 @@ You can also customize 404 errors - if you enable the option in the config panel
 **分发版本：** 1.0~ynh19
 ## 文档与资源
 
-- 上游应用代码库： <https://github.com/YunoHost-Apps/my_webapp_ynh>
 - YunoHost 商店： <https://apps.yunohost.org/app/my_webapp>
 - 报告 bug： <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
 
