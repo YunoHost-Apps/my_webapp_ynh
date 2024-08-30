@@ -1,24 +1,14 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# CHECK VERSION
-#=================================================
-
-upgrade_type=$(ynh_check_app_version_changed)
+ynh_app_setting_set_default --key=php_upload_max_filesize --value=500M
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..."
+ynh_script_progression "Ensuring downward compatibility..."
 
 # If database doesn't exist, create it and remove with_mysql setting
 if [ -z "${database:-}" ]; then
@@ -27,63 +17,66 @@ if [ -z "${database:-}" ]; then
     else
         database="none"
     fi
-    
-    ynh_app_setting_set --app=$app --key=database --value=$database
-    ynh_app_setting_delete --app=$app --key=with_mysql
+
+    ynh_app_setting_set --key=database --value=$database
+    ynh_app_setting_delete --key=with_mysql
 fi
 
 # If admin_mail_html doesn't exist, create it
+# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=admin_mail_html --value=1
 if [ -z "${admin_mail_html:-}" ]; then
 	admin_mail_html=1
-		ynh_app_setting_set --app=$app --key=admin_mail_html --value=$admin_mail_html
+		ynh_app_setting_set --key=admin_mail_html --value=$admin_mail_html
 fi
 
 # If fpm_footprint doesn't exist, create it
 if [ -z "${fpm_footprint:-}" ]; then
 	fpm_footprint=low
-	ynh_app_setting_set --app=$app --key=fpm_footprint --value=$fpm_footprint
+#REMOVEME? Everything about fpm_footprint is removed in helpers2.1... | 	ynh_app_setting_set --key=fpm_footprint --value=$fpm_footprint
 fi
 
 # If fpm_free_footprint doesn't exist, create it
 if [ -z "${fpm_free_footprint:-}" ]; then
 	fpm_free_footprint=0
-	ynh_app_setting_set --app=$app --key=fpm_free_footprint --value=$fpm_free_footprint
+#REMOVEME? Everything about fpm_free_footprint is removed in helpers2.1... | 	ynh_app_setting_set --key=fpm_free_footprint --value=$fpm_free_footprint
 fi
 
 # If fpm_usage doesn't exist, create it
 if [ -z "${fpm_usage:-}" ]; then
 	fpm_usage=low
-	ynh_app_setting_set --app=$app --key=fpm_usage --value=$fpm_usage
+#REMOVEME? Everything about fpm_usage is removed in helpers2.1... | 	ynh_app_setting_set --key=fpm_usage --value=$fpm_usage
 fi
 
 # If with_sftp doesn't exist, create it
+# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=with_sftp --value=1
 if [ -z "${with_sftp:-}" ]; then
 	with_sftp=1
-	ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
+	ynh_app_setting_set --key=with_sftp --value=$with_sftp
 fi
 
-# If phpversion doesn't exist, create it. We assume it is the default system one.
-if [ -z "$phpversion" ]; then
-	phpversion=$YNH_DEFAULT_PHP_VERSION
-	ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
+# If php_version doesn't exist, create it. We assume it is the default system one.
+if [ -z "$php_version" ]; then
+	php_version=$YNH_DEFAULT_PHP_VERSION
+	ynh_app_setting_set --key=php_version --value=$php_version
 fi
 
 # If custom_error_file doesn't exist, create it.
+# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=custom_error_file --value=0
 if [ -z "${custom_error_file:-}" ]; then
 	custom_error_file=0
-	ynh_app_setting_set --app=$app --key=custom_error_file --value=$custom_error_file
+	ynh_app_setting_set --key=custom_error_file --value=$custom_error_file
 fi
 
 # Delete old user
-if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
+if [ -n "$(ynh_app_setting_get --key=user)" ]
 then
-    ynh_systemd_action --service_name=php${phpversion}-fpm --action=stop
-    ynh_system_user_delete --username="$(ynh_app_setting_get --app=$app --key=user)"
-    ynh_app_setting_delete --app=$app --key=user
+    ynh_systemctl --service=php${php_version}-fpm --action=stop
+    ynh_system_user_delete --username="$(ynh_app_setting_get --key=user)"
+    ynh_app_setting_delete --key=user
 fi
 
 # Ensure password is a setting even if empty, for the config panel
-ynh_app_setting_set --app=$app --key=password --value="$password"
+ynh_app_setting_set --key=password --value="$password"
 
 #=================================================
 # ACTIVATE MAINTENANCE MODE
@@ -94,7 +87,7 @@ ynh_maintenance_mode_ON
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
+ynh_script_progression "Upgrading NGINX web server configuration..."
 
 # Prepare nginx.conf
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
@@ -102,26 +95,26 @@ nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"
 
 # Prepare nginx extra conf
-if [ $phpversion != "none" ]
+if [ $php_version != "none" ]
 then
-    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-    YNH_PHP_VERSION="$phpversion"
+    ynh_config_add --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+    YNH_PHP_VERSION="$php_version"
 fi
 
 # Add the config error code
 if [ $custom_error_file -eq 1 ]
 then
-    ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
+    ynh_config_add --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
 # Create a dedicated NGINX config
-ynh_add_nginx_config
-ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+ynh_config_add_nginx
+ynh_config_add --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..." --weight=2
+ynh_script_progression "Making sure dedicated system user exists..."
 
 if [ $with_sftp -eq 1 ]
 then
@@ -146,28 +139,25 @@ usermod -g "$app" "$app"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-if [ $phpversion != "none" ]
+if [ $php_version != "none" ]
 then
-    ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
+    ynh_script_progression "Upgrading PHP-FPM configuration..."
 
     # Create a dedicated PHP-FPM config
-    ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+    ynh_config_add_phpfpm
 fi
 
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-chown -R $app:www-data "$install_dir"
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-chown root:root "$install_dir"
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
-chmod 750 "$install_dir"
-
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
 #=================================================
 # DEACTIVE MAINTENANCE MODE
 #=================================================
@@ -178,4 +168,4 @@ ynh_maintenance_mode_OFF
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"
