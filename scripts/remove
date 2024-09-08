@@ -4,10 +4,9 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD REMOVE
+# REMOVE SYSTEM CONFIGURATIONS
 #=================================================
-# REMOVE THE MYSQL DATABASE
-#=================================================
+ynh_script_progression "Removing system configurations related to $app..."
 
 if [ $database != "none" ]; then
     ynh_script_progression "Removing the database..."
@@ -17,27 +16,16 @@ if [ $database != "none" ]; then
 
     # Remove a database if it exists, along with the associated user
     if [ $database == "mysql" ]; then
-        # FIXMEhelpers2.1 ynh_mysql_drop_db && ynh_mysql_drop_user --db_user=$db_user --db_name=$db_name
+        ynh_mysql_drop_user --db_user=$db_user --db_name=$db_name
     elif [ $database == "postgresql" ]; then
-        # FIXMEhelpers2.1 ynh_psql_drop_db && ynh_psql_drop_user --db_user=$db_user --db_name=$db_name
+        ynh_psql_drop_db && ynh_psql_drop_user --db_user=$db_user --db_name=$db_name
     fi
 fi
 
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-ynh_script_progression "Removing NGINX web server configuration..."
-
-# Remove the dedicated NGINX config
 ynh_config_remove_nginx
+
 ynh_safe_rm "/etc/nginx/conf.d/$domain.d/$app.d"
 
-#=================================================
-# REMOVE PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression "Removing PHP-FPM configuration..."
-
-# Remove the dedicated PHP-FPM config
 ynh_config_remove_phpfpm
 
 #=================================================
