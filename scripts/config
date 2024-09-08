@@ -14,8 +14,8 @@ domain=$(ynh_app_setting_get --key=domain)
 path=$(ynh_app_setting_get --key=path)
 
 current_fpm_footprint=$(ynh_app_setting_get --key=fpm_footprint)
-#REMOVEME? Everything about fpm_footprint is removed in helpers2.1... | fpm_footprint=$(ynh_app_setting_get --key=fpm_footprint)
-#REMOVEME? Everything about fpm_usage is removed in helpers2.1... | fpm_usage=$(ynh_app_setting_get --key=fpm_usage)
+fpm_footprint=$(ynh_app_setting_get --key=fpm_footprint)
+fpm_usage=$(ynh_app_setting_get --key=fpm_usage)
 
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
@@ -59,17 +59,17 @@ set__password() {
     fi
 }
 
-#REMOVEME? Everything about fpm_footprint is removed in helpers2.1... | set__fpm_footprint() {
-#REMOVEME? Everything about fpm_footprint is removed in helpers2.1... |     if [ "$fpm_footprint" != "specific" ]
+set__fpm_footprint() {
+if [ "$fpm_footprint" != "specific" ]
     then
-#REMOVEME? Everything about fpm_footprint is removed in helpers2.1... |         ynh_app_setting_set --key=fpm_footprint --value="$fpm_footprint"
+        ynh_app_setting_set --key=fpm_footprint --value="$fpm_footprint"
     fi
 }
 
-#REMOVEME? Everything about fpm_free_footprint is removed in helpers2.1... | set__fpm_free_footprint() {
-#REMOVEME? Everything about fpm_footprint is removed in helpers2.1... |     if [ "$fpm_footprint" = "specific" ]
+set__fpm_free_footprint() {
+if [ "$fpm_footprint" = "specific" ]
     then
-#REMOVEME? Everything about fpm_free_footprint is removed in helpers2.1... |         ynh_app_setting_set --key=fpm_footprint --value="$fpm_free_footprint"
+        ynh_app_setting_set --key=fpm_footprint --value="$fpm_free_footprint"
     fi
 }
 
@@ -84,13 +84,13 @@ ynh_app_config_validate() {
     fi
 
     if [ "${changed[fpm_usage]}" == "true" ] || [ "${changed[fpm_footprint]}" == "true" ] || [ "${changed[fpm_free_footprint]}" == "true" ]; then
-#REMOVEME? Everything about fpm_free_footprint is removed in helpers2.1... |         # If fpm_footprint is set to 'specific', use $fpm_free_footprint value.
-#REMOVEME? Everything about fpm_footprint is removed in helpers2.1... |         if [ "$fpm_footprint" = "specific" ]
+# If fpm_footprint is set to 'specific', use $fpm_free_footprint value.
+if [ "$fpm_footprint" = "specific" ]
         then
-#REMOVEME? Everything about fpm_free_footprint is removed in helpers2.1... |             fpm_footprint=$fpm_free_footprint
+            fpm_footprint=$fpm_free_footprint
         fi
 
-#REMOVEME? Everything about fpm_footprint is removed in helpers2.1... |         if [ "$fpm_footprint" == "0" ]
+if [ "$fpm_footprint" == "0" ]
         then
             ynh_print_warn "When selecting 'specific', you have to set a footprint value into the field below."
 
