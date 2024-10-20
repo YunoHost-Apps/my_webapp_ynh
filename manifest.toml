@@ -18,8 +18,8 @@ yunohost = ">= 11.2.30"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
-ldap = "not_relevant"
-sso = "not_relevant"
+ldap = false
+sso = false
 disk = "50M"
 ram.build = "50M"
 ram.runtime = "50M"
