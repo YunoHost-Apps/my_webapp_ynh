@@ -11,7 +11,6 @@ maintainers = []
 
 [upstream]
 license = "GPL-3.0-only"
-code = "https://github.com/YunoHost-Apps/my_webapp_ynh"
 
 [integration]
 yunohost = ">= 11.2.30"
@@ -61,7 +60,8 @@ ram.runtime = "50M"
     default = "none"
 
     [install.custom_error_file]
-    ask = "Activate the custom error file use"
+    ask.en = "Activate the custom error file use"
+    ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
     type = "boolean"
     default = false
     help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."

@@ -1,22 +1,22 @@
 <!--
-注意：此 README 由 <https://github.com/YunoHost/apps/tree/master/tools/readme_generator> 自动生成
-请勿手动编辑。
+NB: Deze README is automatisch gegenereerd door <https://github.com/YunoHost/apps/tree/master/tools/readme_generator>
+Hij mag NIET handmatig aangepast worden.
 -->
 
-# YunoHost 上的 My Webapp
+# My Webapp voor Yunohost
 
-[![集成程度](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
-![工作状态](https://apps.yunohost.org/badge/state/my_webapp)
-![维护状态](https://apps.yunohost.org/badge/maintained/my_webapp)
+[![Integratieniveau](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+![Mate van functioneren](https://apps.yunohost.org/badge/state/my_webapp)
+![Onderhoudsstatus](https://apps.yunohost.org/badge/maintained/my_webapp)
 
-[![使用 YunoHost 安装 My Webapp](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
+[![My Webapp met Yunohost installeren](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
-*[阅读此 README 的其它语言版本。](./ALL_README.md)*
+*[Deze README in een andere taal lezen.](./ALL_README.md)*
 
-> *通过此软件包，您可以在 YunoHost 服务器上快速、简单地安装 My Webapp。*  
-> *如果您还没有 YunoHost，请参阅[指南](https://yunohost.org/install)了解如何安装它。*
+> *Met dit pakket kun je My Webapp snel en eenvoudig op een YunoHost-server installeren.*  
+> *Als je nog geen YunoHost hebt, lees dan [de installatiehandleiding](https://yunohost.org/install), om te zien hoe je 'm installeert.*
 
-## 概况
+## Overzicht
 
 This application allows you to easily install an "empty" web application, in which you deploy your own custom website in the form of "static" HTML/CSS/JS assets or PHP.
 
@@ -31,22 +31,22 @@ PHP-FPM version can also be selected among (none), `7.4`, `8.0`, `8.1`, `8.2` an
 You can also customize 404 errors - if you enable the option in the config panel. Simply create an `error` folder in the `www` root directory, containing your custom `html` files. 
 
 
-**分发版本：** 1.0~ynh19
-## 文档与资源
+**Geleverde versie:** 1.0~ynh19
+## Documentatie en bronnen
 
-- YunoHost 商店： <https://apps.yunohost.org/app/my_webapp>
-- 报告 bug： <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
+- YunoHost-store: <https://apps.yunohost.org/app/my_webapp>
+- Meld een bug: <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
 
-## 开发者信息
+## Ontwikkelaarsinformatie
 
-请向 [`testing` 分支](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing) 发送拉取请求。
+Stuur je pull request alsjeblieft naar de [`testing`-branch](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing).
 
-如要尝试 `testing` 分支，请这样操作：
+Om de `testing`-branch uit te proberen, ga als volgt te werk:
 
 ```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing --debug
-或
+of
 sudo yunohost app upgrade my_webapp -u https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing --debug
 ```
 
-**有关应用打包的更多信息：** <https://yunohost.org/packaging_apps>
+**Verdere informatie over app-packaging:** <https://yunohost.org/packaging_apps>
