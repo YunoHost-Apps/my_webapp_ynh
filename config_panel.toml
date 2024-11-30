@@ -23,13 +23,16 @@ name = "My Webapp configuration"
         help.fr = "Si un mot de passe existe déjà, laissez vide et il ne sera pas remplacé."
 
     [main.code_error]
-    name = "Html Custom error"
+    name.en = "HTML Custom error"
+    name.fr = "Erreur personnalisée HTML"
 
         [main.code_error.custom_error_file]
-        ask = "Activate the custom error file use"
+        ask.en = "Activate the custom error file use"
+        ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
         type = "boolean"
         default = false
-        help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
+        help.en = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
+        help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
 
     [main.php_fpm_config]
     name = "PHP-FPM configuration"
