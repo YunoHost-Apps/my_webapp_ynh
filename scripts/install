@@ -49,9 +49,9 @@ if [ $database != "none" ]; then
 fi
 
 #=================================================
-# NGINX CONFIGURATION
+# SYSTEM CONFIGURATION
 #=================================================
-ynh_script_progression "Configuring NGINX web server..."
+ynh_script_progression "Adding system configurations related to $app..."
 
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"

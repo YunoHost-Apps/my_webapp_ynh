@@ -5,7 +5,7 @@ name = "My Webapp"
 description.en = "Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files"
 description.fr = "Application Web personnalisée avec accès SFTP pour servir des fichiers statiques (HTML, CSS, JS) et PHP"
 
-version = "1.0~ynh19"
+version = "1.1~ynh1"
 
 maintainers = []
 
@@ -17,8 +17,10 @@ yunohost = ">= 11.2.30"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
+
 ldap = false
 sso = false
+
 disk = "50M"
 ram.build = "50M"
 ram.runtime = "50M"

@@ -110,7 +110,6 @@ if [ $php_version != "none" ]
 then
     ynh_script_progression "Upgrading PHP-FPM configuration..."
 
-    # Create a dedicated PHP-FPM config
     ynh_config_add_phpfpm
 fi
 

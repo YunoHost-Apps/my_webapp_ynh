@@ -3,8 +3,6 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#REMOVEME? ynh_abort_if_errors
-
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
