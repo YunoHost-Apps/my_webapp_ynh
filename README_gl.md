@@ -5,7 +5,9 @@ NON debe editarse manualmente.
 
 # My Webapp para YunoHost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/) ![Estado de funcionamento](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Estado de mantemento](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
+[![Nivel de integración](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+![Estado de funcionamento](https://apps.yunohost.org/badge/state/my_webapp)
+![Estado de mantemento](https://apps.yunohost.org/badge/maintained/my_webapp)
 
 [![Instalar My Webapp con YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
