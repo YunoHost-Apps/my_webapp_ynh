@@ -5,7 +5,9 @@ Hij mag NIET handmatig aangepast worden.
 
 # My Webapp voor Yunohost
 
-[![Integratieniveau](https://dash.yunohost.org/integration/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/) ![Mate van functioneren](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Onderhoudsstatus](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
+[![Integratieniveau](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+![Mate van functioneren](https://apps.yunohost.org/badge/state/my_webapp)
+![Onderhoudsstatus](https://apps.yunohost.org/badge/maintained/my_webapp)
 
 [![My Webapp met Yunohost installeren](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 

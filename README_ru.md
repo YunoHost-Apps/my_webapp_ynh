@@ -5,7 +5,9 @@
 
 # My Webapp для YunoHost
 
-[![Уровень интеграции](https://dash.yunohost.org/integration/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/) ![Состояние работы](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Состояние сопровождения](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
+[![Уровень интеграции](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+![Состояние работы](https://apps.yunohost.org/badge/state/my_webapp)
+![Состояние сопровождения](https://apps.yunohost.org/badge/maintained/my_webapp)
 
 [![Установите My Webapp с YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 

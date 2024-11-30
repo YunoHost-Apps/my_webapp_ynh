@@ -5,7 +5,9 @@ Ini TIDAK boleh diedit dengan tangan.
 
 # My Webapp untuk YunoHost
 
-[![Tingkat integrasi](https://dash.yunohost.org/integration/my_webapp.svg)](https://ci-apps.yunohost.org/ci/apps/my_webapp/) ![Status kerja](https://ci-apps.yunohost.org/ci/badges/my_webapp.status.svg) ![Status pemeliharaan](https://ci-apps.yunohost.org/ci/badges/my_webapp.maintain.svg)
+[![Tingkat integrasi](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+![Status kerja](https://apps.yunohost.org/badge/state/my_webapp)
+![Status pemeliharaan](https://apps.yunohost.org/badge/maintained/my_webapp)
 
 [![Pasang My Webapp dengan YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
