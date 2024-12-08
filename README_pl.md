@@ -1,22 +1,22 @@
 <!--
-注意：此 README 由 <https://github.com/YunoHost/apps/tree/master/tools/readme_generator> 自动生成
-请勿手动编辑。
+To README zostało automatycznie wygenerowane przez <https://github.com/YunoHost/apps/tree/master/tools/readme_generator>
+Nie powinno być ono edytowane ręcznie.
 -->
 
-# YunoHost 上的 My Webapp
+# My Webapp dla YunoHost
 
-[![集成程度](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
-![工作状态](https://apps.yunohost.org/badge/state/my_webapp)
-![维护状态](https://apps.yunohost.org/badge/maintained/my_webapp)
+[![Poziom integracji](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+![Status działania](https://apps.yunohost.org/badge/state/my_webapp)
+![Status utrzymania](https://apps.yunohost.org/badge/maintained/my_webapp)
 
-[![使用 YunoHost 安装 My Webapp](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
+[![Zainstaluj My Webapp z YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
-*[阅读此 README 的其它语言版本。](./ALL_README.md)*
+*[Przeczytaj plik README w innym języku.](./ALL_README.md)*
 
-> *通过此软件包，您可以在 YunoHost 服务器上快速、简单地安装 My Webapp。*  
-> *如果您还没有 YunoHost，请参阅[指南](https://yunohost.org/install)了解如何安装它。*
+> *Ta aplikacja pozwala na szybką i prostą instalację My Webapp na serwerze YunoHost.*  
+> *Jeżeli nie masz YunoHost zapoznaj się z [poradnikiem](https://yunohost.org/install) instalacji.*
 
-## 概况
+## Przegląd
 
 This application allows you to easily install an "empty" web application, in which you deploy your own custom website in the form of "static" HTML/CSS/JS assets or PHP.
 
@@ -31,22 +31,22 @@ PHP-FPM version can also be selected among (none), `7.4`, `8.0`, `8.1`, `8.2` an
 You can also customize 404 errors - if you enable the option in the config panel. Simply create an `error` folder in the `www` root directory, containing your custom `html` files. 
 
 
-**分发版本：** 1.0~ynh19
-## 文档与资源
+**Dostarczona wersja:** 1.0~ynh19
+## Dokumentacja i zasoby
 
-- YunoHost 商店： <https://apps.yunohost.org/app/my_webapp>
-- 报告 bug： <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
+- Sklep YunoHost: <https://apps.yunohost.org/app/my_webapp>
+- Zgłaszanie błędów: <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
 
-## 开发者信息
+## Informacje od twórców
 
-请向 [`testing` 分支](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing) 发送拉取请求。
+Wyślij swój pull request do [gałęzi `testing`](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing).
 
-如要尝试 `testing` 分支，请这样操作：
+Aby wypróbować gałąź `testing` postępuj zgodnie z instrukcjami:
 
 ```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing --debug
-或
+lub
 sudo yunohost app upgrade my_webapp -u https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing --debug
 ```
 
-**有关应用打包的更多信息：** <https://yunohost.org/packaging_apps>
+**Więcej informacji o tworzeniu paczek aplikacji:** <https://yunohost.org/packaging_apps>
