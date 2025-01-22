@@ -17,11 +17,6 @@ test_format = 1.0
     test_upgrade_from.bf5d3ed.args.path = "/"
     test_upgrade_from.bf5d3ed.args.password = "SuperDuper_StrongPassw0rd"
 
-[82_test]
-
-    only = ["install.subdir", "backup_restore", "upgrade" ]
-    args.phpversion = "8.2"
-
 [83_test]
 
     only = ["install.subdir", "backup_restore", "upgrade" ]
