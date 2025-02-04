@@ -39,6 +39,8 @@ ram.runtime = "50M"
     [install.password]
     type = "password"
     optional = true
+    help.en = "Optional, this corresponds to the password for SFTP access, if you enabled it"
+    help.fr = "Optionnel, corresponds au mot de passe pour l'accès SFTP, si vous l'avez activé"
 
     [install.init_main_permission]
     type = "group"
