@@ -42,6 +42,8 @@ ram.runtime = "50M"
     [install.password]
     type = "password"
     optional = true
+    help.en = "Optional, this corresponds to the password for SFTP access, if you enabled it"
+    help.fr = "Optionnel, corresponds au mot de passe pour l'accès SFTP, si vous l'avez activé"
 
     [install.init_main_permission]
     type = "group"
@@ -51,8 +53,8 @@ ram.runtime = "50M"
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
-    choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3"]
-    default = "8.3"
+    choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+    default = "8.4"
 
     [install.database]
     ask.en = "Do you need a database?"
