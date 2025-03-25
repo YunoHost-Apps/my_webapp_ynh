@@ -3,7 +3,7 @@ Este archivo README esta generado automaticamente<https://github.com/YunoHost/ap
 No se debe editar a mano.
 -->
 
-# My Webapp para Yunohost
+# My Webapp para YunoHost
 
 [![Nivel de integración](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 ![Estado funcional](https://apps.yunohost.org/badge/state/my_webapp)
