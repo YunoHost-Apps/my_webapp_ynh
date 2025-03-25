@@ -1,22 +1,22 @@
 <!--
-Ohart ongi: README hau automatikoki sortu da <https://github.com/YunoHost/apps/tree/master/tools/readme_generator>ri esker
-EZ editatu eskuz.
+N.B.: Aquest README ha estat generat automàticament per <https://github.com/YunoHost/apps/tree/master/tools/readme_generator>
+NO s'ha de modificar manualment.
 -->
 
-# My Webapp YunoHost-erako
+# My Webapp per YunoHost
 
-[![Integrazio maila](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
-![Funtzionamendu egoera](https://apps.yunohost.org/badge/state/my_webapp)
-![Mantentze egoera](https://apps.yunohost.org/badge/maintained/my_webapp)
+[![Nivell d'integració](https://apps.yunohost.org/badge/integration/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+![Estat de funcionament](https://apps.yunohost.org/badge/state/my_webapp)
+![Estat de manteniment](https://apps.yunohost.org/badge/maintained/my_webapp)
 
-[![Instalatu My Webapp YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
+[![Instal·la My Webapp amb YunoHosth](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=my_webapp)
 
-*[Irakurri README hau beste hizkuntzatan.](./ALL_README.md)*
+*[Llegeix aquest README en altres idiomes.](./ALL_README.md)*
 
-> *Pakete honek My Webapp YunoHost zerbitzari batean azkar eta zailtasunik gabe instalatzea ahalbidetzen dizu.*  
-> *YunoHost ez baduzu, kontsultatu [gida](https://yunohost.org/install) nola instalatu ikasteko.*
+> *Aquest paquet et permet instal·lar My Webapp de forma ràpida i senzilla en un servidor YunoHost.*  
+> *Si no tens YunoHost, consulta [la guia](https://yunohost.org/install) per saber com instal·lar-lo.*
 
-## Aurreikuspena
+## Visió general
 
 This application allows you to easily install an "empty" web application, in which you deploy your own custom website in the form of "static" HTML/CSS/JS assets or PHP.
 
@@ -31,22 +31,22 @@ PHP-FPM version can also be selected among (none), `7.4`, `8.0`, `8.1`, `8.2`, `
 You can also customize 404 errors - if you enable the option in the config panel. Simply create an `error` folder in the `www` root directory, containing your custom `html` files. 
 
 
-**Paketatutako bertsioa:** 1.0~ynh20
-## Dokumentazioa eta baliabideak
+**Versió inclosa:** 1.0~ynh20
+## Documentació i recursos
 
-- YunoHost Denda: <https://apps.yunohost.org/app/my_webapp>
-- Eman errore baten berri: <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
+- Botiga YunoHost: <https://apps.yunohost.org/app/my_webapp>
+- Reportar un error: <https://github.com/YunoHost-Apps/my_webapp_ynh/issues>
 
-## Garatzaileentzako informazioa
+## Informació per a desenvolupadors
 
-Bidali `pull request`a [`testing` abarrera](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing).
+Envieu les pull request a la [branca `testing`](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing).
 
-`testing` abarra probatzeko, honakoa egin:
+Per provar la branca `testing`, procedir com descrit a continuació:
 
 ```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing --debug
-edo
+o
 sudo yunohost app upgrade my_webapp -u https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing --debug
 ```
 
-**Informazio gehiago aplikazioaren paketatzeari buruz:** <https://yunohost.org/packaging_apps>
+**Més informació sobre l'empaquetatge d'aplicacions:** <https://yunohost.org/packaging_apps>
