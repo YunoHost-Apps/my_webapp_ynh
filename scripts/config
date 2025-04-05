@@ -19,36 +19,9 @@ install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path=$(ynh_app_setting_get --app=$app --key=path)
 
-current_fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
-fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
-fpm_usage=$(ynh_app_setting_get --app=$app --key=fpm_usage)
-
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
-
-get__fpm_footprint() {
-    # Free footprint value for php-fpm
-    # Check if current_fpm_footprint is an integer
-    if [ "$current_fpm_footprint" -eq "$current_fpm_footprint" ] 2> /dev/null
-    then
-        echo "specific"
-    else
-        echo "$current_fpm_footprint"
-    fi
-}
-
-get__free_footprint() {
-    # Free footprint value for php-fpm
-    # Check if current_fpm_footprint is an integer
-    if [ "$current_fpm_footprint" -eq "$current_fpm_footprint" ] 2> /dev/null
-    then
-        # If current_fpm_footprint is an integer, that's a numeric value for the footprint
-        echo "$current_fpm_footprint"
-    else
-        echo "0"
-    fi
-}
 
 #=================================================
 # SPECIFIC VALIDATORS FOR TOML SHORT KEYS
@@ -65,20 +38,6 @@ set__password() {
     fi
 }
 
-set__fpm_footprint() {
-    if [ "$fpm_footprint" != "specific" ]
-    then
-        ynh_app_setting_set --app=$app --key=fpm_footprint --value="$fpm_footprint"
-    fi
-}
-
-set__fpm_free_footprint() {
-    if [ "$fpm_footprint" = "specific" ]
-    then
-        ynh_app_setting_set --app=$app --key=fpm_footprint --value="$fpm_free_footprint"
-    fi
-}
-
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
@@ -89,21 +48,6 @@ ynh_app_config_validate() {
     if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ "$password" == "" ]
     then
         ynh_die --message="You need to set a password to enable SFTP"
-    fi
-
-    if [ "${changed[fpm_usage]}" == "true" ] || [ "${changed[fpm_footprint]}" == "true" ] || [ "${changed[fpm_free_footprint]}" == "true" ]; then
-        # If fpm_footprint is set to 'specific', use $fpm_free_footprint value.
-        if [ "$fpm_footprint" = "specific" ]
-        then
-            fpm_footprint=$fpm_free_footprint
-        fi
-
-        if [ "$fpm_footprint" == "0" ]
-        then
-            ynh_print_err --message="When selecting 'specific', you have to set a footprint value into the field below."
-
-            exit 0
-        fi
     fi
 }
 
@@ -135,7 +79,7 @@ ynh_app_config_apply() {
             ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
         else
             ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-            ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint --phpversion=$phpversion
+            ynh_add_fpm_config --phpversion=$phpversion
             # ^ the helper takes care of ynh_app_setting_set the phpversion
         fi
 
@@ -177,7 +121,7 @@ ynh_app_config_apply() {
 
     if [ "$phpversion" != "none" ]
     then
-        ynh_add_fpm_config --phpversion=$phpversion --usage=$fpm_usage --footprint=$fpm_footprint
+        ynh_add_fpm_config --phpversion=$phpversion
     fi
 }
 
