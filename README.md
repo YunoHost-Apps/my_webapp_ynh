@@ -4,13 +4,13 @@ It shall NOT be edited by hand.
 -->
 
 <h1>
-  <img src="https://raw.githubusercontent.com/YunoHost/apps/master/logos/my_webapp.png" width="32px" alt="Logo of My Webapp">
+  <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/my_webapp.png" width="32px" alt="Logo of My Webapp">
   My Webapp, packaged for YunoHost
 </h1>
 
 Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files
 
-![Version: 1.0~ynh20](https://img.shields.io/badge/Version-1.0~ynh20-rgba(0,150,0,1)?style=for-the-badge)
+[![Version: 1.0~ynh22](https://img.shields.io/badge/Version-1.0~ynh22-rgba(0,150,0,1)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 
 <div align="center">
 <a href="https://apps.yunohost.org/app/my_webapp"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
