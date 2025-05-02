@@ -34,3 +34,12 @@ name.fr = "Configuration de My Webapp"
         default = false
         help.en = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
         help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
+
+    [main.php_fpm_config]
+    name = "PHP-FPM configuration"
+
+        [main.php_fpm_config.phpversion]
+        ask = "PHP version"
+        type = "select"
+        choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+        default = "none"
