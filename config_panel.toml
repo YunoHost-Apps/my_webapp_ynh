@@ -39,7 +39,8 @@ name.fr = "Configuration de My Webapp"
     name = "PHP-FPM configuration"
 
         [main.php_fpm_config.phpversion]
-        ask = "PHP version"
+        ask.en = "PHP version"
+        ask.fr = "Version PHP"
         type = "select"
-        choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+        choices = ["none", "8.1", "8.2", "8.3", "8.4"]
         default = "none"
