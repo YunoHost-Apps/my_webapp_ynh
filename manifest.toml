@@ -16,8 +16,10 @@ license = "GPL-3.0-only"
 yunohost = ">= 11.2.4"
 architectures = "all"
 multi_instance = true
+
 ldap = "not_relevant"
 sso = "not_relevant"
+
 disk = "50M"
 ram.build = "50M"
 ram.runtime = "50M"
