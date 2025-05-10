@@ -67,7 +67,8 @@ ram.runtime = "50M"
     ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
     type = "boolean"
     default = false
-    help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
+    help.en = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
+    help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
 
 [resources]
     [resources.system_user]
