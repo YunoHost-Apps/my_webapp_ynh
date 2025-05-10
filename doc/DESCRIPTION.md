@@ -2,7 +2,7 @@ This application allows you to easily install an "empty" web application, in whi
 
 Files can be uploaded [via SFTP](https://yunohost.org/en/filezilla) or any other method of your chosing.
 
-During installation, you can also chose to initialize a MySQL or PostgreSQL database, which will be backed up and restored just like the other files in your application. The connection details will be stored in the file `db_access.txt` located in the root directory of the app.
+During installation, you can also chose to initialize a MySQL or PostgreSQL database, which will be backed up and restored just like the other files in your application. The connection details will be displayed after installation of the app.
 
 PHP-FPM version can also be selected among (none), `7.4`, `8.0`, `8.1`, `8.2`, `8.3` and `8.4`.
 

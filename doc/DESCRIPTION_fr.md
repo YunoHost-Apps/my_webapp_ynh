@@ -2,7 +2,7 @@ Cette application vous permet d'installer facilement une application vide, dans 
 
 Les fichiers être déposé [via SFTP](https://yunohost.org/fr/filezilla) ou toute autre méthode de votre choix.
 
-Lors de l'installation, il est aussi possible d'initialiser une base de données MySQL ou PostgreSQL, qui sera sauvegardée et restaurée avec le reste de l'application. Les détails de connexion seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire racine.
+Lors de l'installation, il est aussi possible d'initialiser une base de données MySQL ou PostgreSQL, qui sera sauvegardée et restaurée avec le reste de l'application. Les détails de connexion seront affichés après l'installation de l'application.
 
 La version de PHP-FPM peut aussi être choisie, parmi (aucune), `7.4`, `8.0`, `8.1`, `8.2`, `8.3` et `8.4`.
 
