@@ -13,12 +13,14 @@ maintainers = []
 license = "GPL-3.0-only"
 
 [integration]
-yunohost = ">= 11.2.18"
+yunohost = ">= 12.0.9"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
+
 ldap = "not_relevant"
 sso = "not_relevant"
+
 disk = "50M"
 ram.build = "50M"
 ram.runtime = "50M"
@@ -51,7 +53,7 @@ ram.runtime = "50M"
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
-    choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+    choices = ["none", "8.1", "8.2", "8.3", "8.4"]
     default = "8.4"
 
     [install.database]
