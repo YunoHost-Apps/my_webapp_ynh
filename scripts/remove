@@ -4,8 +4,6 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD REMOVE
-#=================================================
 # REMOVE THE MYSQL DATABASE
 #=================================================
 
@@ -17,9 +15,9 @@ if [ $database != "none" ]; then
 
     # Remove a database if it exists, along with the associated user
     if [ $database == "mysql" ]; then
-        # FIXMEhelpers2.1 ynh_mysql_drop_db && ynh_mysql_drop_user --db_user=$db_user --db_name=$db_name
+        ynh_mysql_drop_db && ynh_mysql_drop_user --db_user=$db_user --db_name=$db_name
     elif [ $database == "postgresql" ]; then
-        # FIXMEhelpers2.1 ynh_psql_drop_db && ynh_psql_drop_user --db_user=$db_user --db_name=$db_name
+        ynh_psql_drop_db && ynh_psql_drop_user --db_user=$db_user --db_name=$db_name
     fi
 fi
 
