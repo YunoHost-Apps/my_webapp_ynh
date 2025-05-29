@@ -9,21 +9,19 @@ source /usr/share/yunohost/helpers
 ynh_script_progression "Backing up the app before changing its URL (may take a while)..."
 
 # Backup the current version of the app
-#REMOVEME? ynh_clean_setup () {
+ ynh_clean_setup () {
 	# Remove the new domain config file, the remove script won't do it as it doesn't know yet its location.
 	ynh_safe_rm "/etc/nginx/conf.d/$new_domain.d/$app.conf"
 	ynh_safe_rm "/etc/nginx/conf.d/$new_domain.d/$app.d"
 
 	# restore it if the upgrade fails
-	#REMOVEME? ynh_restore_upgradebackup
+	ynh_restore_upgradebackup
 }
 
 #=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
 
-path_url=$old_path
-domain=$old_domain
 ynh_maintenance_mode_ON
 
 #=================================================
