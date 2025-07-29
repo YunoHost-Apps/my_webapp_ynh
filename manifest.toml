@@ -1,4 +1,4 @@
-packaging_format = 2
+packaging_format = 3
 
 id = "my_webapp"
 name = "My Webapp"
@@ -48,7 +48,7 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
-    [install.phpversion]
+    [install.php_version]
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
@@ -72,30 +72,44 @@ ram.runtime = "50M"
 
 [resources]
     [resources.system_user]
+    allow_sftp = "'__WITH_SFTP__' == '1'"
 
     [resources.install_dir]
+    paths_for_www_data = ["www"]
 
     [resources.permissions]
     main.url = "/"
 
     [resources.apt]
     packages = "nginx"  # Kind of "dummy" value to be sure to have a non-empty dep list
+
     packages_from_raw_bash = """
         if [[ "$database" == "mysql" ]]; then
             echo "mariadb-server"
 
-            if [[ "$phpversion" != none ]]; then
-                echo "php${phpversion}-mysql"
+            if [[ "$php_version" != none ]]; then
+                echo "php${php_version}-mysql"
             fi
         elif [[ "$database" == "postgresql" ]]; then
             echo "postgresql postgresql-contrib"
 
-            if [[ "$phpversion" != none ]]; then
-                echo "php${phpversion}-pgsql"
+            if [[ "$php_version" != none ]]; then
+                echo "php${php_version}-pgsql"
             fi
         fi
 
-        if [[ "$phpversion" != none ]]; then
-            echo "php${phpversion}-fpm"
+        if [[ "$php_version" != none ]]; then
+            echo "php${php_version}-fpm"
         fi
     """
+
+    [resources.database]
+    main.if = "'__DATABASE__' != 'none'"
+    main.dbtype = "__DATABASE__"
+    
+[configurations]
+
+    [configurations.nginx]
+
+    [configurations.php]
+    main.if = "'__PHP_VERSION__' != 'none'"

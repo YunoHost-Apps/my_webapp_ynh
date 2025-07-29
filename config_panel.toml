@@ -13,6 +13,7 @@ name.fr = "Configuration de My Webapp"
         ask.fr = "Avez-vous besoin d'un accès SFTP ?"
         type = "boolean"
         default = true
+        # want to : update setting, regen system user resource 
 
         [main.sftp.password]
         ask.en = "Set a password for the SFTP access"
@@ -22,6 +23,7 @@ name.fr = "Configuration de My Webapp"
         visible = "with_sftp"
         help.en = "If a password already exist, leave blank and it will not be replaced."
         help.fr = "Si un mot de passe existe déjà, laissez vide et il ne sera pas remplacé."
+        # want to : "chpasswd << "$app:$password"
 
     [main.code_error]
     name.en = "HTML Custom error"
@@ -34,14 +36,16 @@ name.fr = "Configuration de My Webapp"
         default = false
         help.en = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
         help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
+        # want to : update setting, regen nginx conf
 
     [main.php_fpm_config]
     name.en = "PHP-FPM configuration"
     name.fr = "Configuration PHP-FPM"
 
-        [main.php_fpm_config.phpversion]
+        [main.php_fpm_config.php_version]
         ask.en = "PHP version"
         ask.fr = "Version PHP"
         type = "select"
         choices = ["none", "8.1", "8.2", "8.3", "8.4"]
         default = "none"
+        # want to : update setting, regen apt resource, php conf, 
