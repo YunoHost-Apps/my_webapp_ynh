@@ -21,8 +21,6 @@ Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files
 
 [![Automatic tests level](https://apps.yunohost.org/badge/cilevel/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 
-🛠️ Upstream My Webapp repository: <>
-
 Pull request are welcome and should target the [`testing` branch](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing).
 
 The `testing` branch can be tested using:
