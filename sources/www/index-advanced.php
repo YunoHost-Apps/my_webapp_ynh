@@ -1,88 +1,95 @@
-<?php
-/**
- * Front Controller Avancé - My Webapp
- * 
- * Ce fichier est le point d'entrée principal pour le mode Advanced.
- * Il est placé dans le dossier /www/public et gère toutes les requêtes.
- */
-
-// Configuration de base
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Démarrage de la session si nécessaire
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Définition des constantes de base
-define('APP_ROOT', dirname(__DIR__));
-define('PUBLIC_PATH', __DIR__);
-define('SRC_PATH', APP_ROOT . '/src');
-define('VENDOR_PATH', APP_ROOT . '/vendor');
-
-// Autoloader simple (si Composer n'est pas utilisé)
-if (file_exists(VENDOR_PATH . '/autoload.php')) {
-    require VENDOR_PATH . '/autoload.php';
-} else {
-    // Autoloader basique pour les classes dans src/
-    spl_autoload_register(function ($class) {
-        $file = SRC_PATH . '/' . str_replace('\\', '/', $class) . '.php';
-        if (file_exists($file)) {
-            require $file;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Webapp - Mode Advanced</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
         }
-    });
-}
+        .header {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .nav {
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 My Webapp - Mode Advanced</h1>
+        <p>Application web avec structure public/privé</p>
+    </div>
 
-// Récupération de l'URI demandée
-$request_uri = $_SERVER['REQUEST_URI'];
-$path = parse_url($request_uri, PHP_URL_PATH);
+    <div class="nav">
+        <a href="/">Accueil</a>
+        <a href="/about">À propos</a>
+        <a href="/contact">Contact</a>
+    </div>
 
-// Gestion des routes avec système de routing avancé
-$routes = [
-    '/' => 'views/home.php',
-    '/about' => 'views/about.php',
-    '/contact' => 'views/contact.php',
-    '/api/status' => 'api/status.php',
-    '/admin' => 'admin/dashboard.php'
-];
+    <div class="content">
+        <h2>Bienvenue sur votre application Advanced !</h2>
 
-// Vérification si la route existe
-if (isset($routes[$path])) {
-    $view_file = $routes[$path];
-    if (file_exists($view_file)) {
-        include $view_file;
-    } else {
-        // Vue non trouvée
-        http_response_code(404);
-        include 'views/404.php';
-    }
-} else {
-    // Route non trouvée
-    http_response_code(404);
-    include 'views/404.php';
-}
+        <p>Cette page est servie depuis le dossier <code>/www/public</code> de votre application.</p>
 
-/**
- * Fonction utilitaire pour inclure des vues avec gestion d'erreur
- */
-function safe_include($file_path) {
-    if (file_exists($file_path)) {
-        include $file_path;
-    } else {
-        echo "<h1>Erreur</h1>";
-        echo "<p>La vue demandée n'existe pas : $file_path</p>";
-        echo "<p>Créez ce fichier dans le dossier public/ pour personnaliser votre application.</p>";
-    }
-}
+        <h3>Structure du projet :</h3>
+        <ul>
+            <li><code>/www/public/</code> - Fichiers publics accessibles via le web</li>
+            <li><code>/www/src/</code> - Code source de l'application (privé)</li>
+            <li><code>/www/vendor/</code> - Dépendances (privées)</li>
+            <li><code>/www/admin/</code> - Interface d'administration</li>
+            <li><code>/www/api/</code> - API de l'application</li>
+        </ul>
 
-/**
- * Fonction pour obtenir l'URL de base de l'application
- */
-function base_url($path = '') {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    $base = dirname($_SERVER['SCRIPT_NAME']);
-    return $protocol . '://' . $host . $base . '/' . ltrim($path, '/');
-}
-?>
+        <h3>Avantages de ce mode :</h3>
+        <ul>
+            <li>✅ Séparation claire entre code public et privé</li>
+            <li>✅ Sécurité renforcée (code source non accessible)</li>
+            <li>✅ Compatible avec les frameworks modernes</li>
+            <li>✅ Structure professionnelle</li>
+        </ul>
+
+        <h3>Test PHP :</h3>
+        <ul>
+            <li><strong>URL actuelle :</strong> <?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?></li>
+            <li><strong>Fichier chargé :</strong> <?php echo htmlspecialchars(__FILE__); ?></li>
+            <li><strong>Racine de l'app :</strong> <?php echo htmlspecialchars(dirname(__DIR__)); ?></li>
+            <li><strong>Timestamp :</strong> <?php echo date('Y-m-d H:i:s'); ?></li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>My Webapp - Mode Advanced avec structure public/privé</p>
+    </div>
+</body>
+</html>

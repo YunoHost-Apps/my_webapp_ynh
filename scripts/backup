@@ -27,9 +27,9 @@ ynh_backup --src_path="$install_dir"
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.d"
 
-# Backup rewrite configuration files if they exist
-if [ -f "/etc/nginx/conf.d/$domain.d/$app.d/00-rewrite.conf" ]; then
-    ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.d/00-rewrite.conf"
+# Backup PHP configuration files if they exist
+if [ -f "/etc/nginx/conf.d/$domain.d/$app.d/php.conf" ]; then
+    ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.d/php.conf"
 fi
 
 #=================================================

@@ -37,9 +37,9 @@ ynh_script_progression --message="Removing NGINX web server configuration..." --
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
-# Remove rewrite configuration files if they exist
-if [ -f "/etc/nginx/conf.d/$domain.d/$app.d/00-rewrite.conf" ]; then
-    ynh_secure_remove --file="/etc/nginx/conf.d/$domain.d/$app.d/00-rewrite.conf"
+# Remove PHP configuration files if they exist
+if [ -f "/etc/nginx/conf.d/$domain.d/$app.d/php.conf" ]; then
+    ynh_secure_remove --file="/etc/nginx/conf.d/$domain.d/$app.d/php.conf"
 fi
 
 ynh_secure_remove --file="/etc/nginx/conf.d/$domain.d/$app.d"

@@ -1,58 +1,99 @@
-<?php
-/**
- * Front Controller - My Webapp
- * 
- * Ce fichier est le point d'entrée principal pour le mode Front Controller.
- * Toutes les requêtes passent par ce fichier pour une gestion centralisée.
- */
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Webapp - Mode Front Controller</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .nav {
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 My Webapp - Mode Front Controller</h1>
+        <p>Application web avec système de routing avancé</p>
+    </div>
 
-// Configuration de base
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+    <div class="nav">
+        <a href="/">Accueil</a>
+        <a href="/about">À propos</a>
+        <a href="/contact">Contact</a>
+    </div>
 
-// Démarrage de la session si nécessaire
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+    <div class="content">
+        <h2>Bienvenue sur votre application !</h2>
 
-// Récupération de l'URI demandée
-$request_uri = $_SERVER['REQUEST_URI'];
-$path = parse_url($request_uri, PHP_URL_PATH);
+        <p>Cette page est servie par le <strong>Front Controller</strong> de votre application.</p>
 
-// Gestion des routes de base
-switch ($path) {
-    case '/':
-        // Page d'accueil
-        include 'views/home.php';
-        break;
-        
-    case '/about':
-        // Page à propos
-        include 'views/about.php';
-        break;
-        
-    case '/contact':
-        // Page de contact
-        include 'views/contact.php';
-        break;
-        
-    default:
-        // Page 404 - Route non trouvée
-        http_response_code(404);
-        include 'views/404.php';
-        break;
-}
+        <h3>Fonctionnalités disponibles :</h3>
+        <ul>
+            <li>✅ Système de routing automatique</li>
+            <li>✅ Gestion centralisée des requêtes</li>
+            <li>✅ Structure modulaire avec vues séparées</li>
+            <li>✅ Support PHP-FPM intégré</li>
+            <li>✅ Sécurité renforcée</li>
+        </ul>
 
-/**
- * Fonction utilitaire pour inclure des vues avec gestion d'erreur
- */
-function safe_include($file_path) {
-    if (file_exists($file_path)) {
-        include $file_path;
-    } else {
-        echo "<h1>Erreur</h1>";
-        echo "<p>La vue demandée n'existe pas : $file_path</p>";
-        echo "<p>Créez ce fichier pour personnaliser votre application.</p>";
-    }
-}
-?>
+        <h3>Comment personnaliser :</h3>
+        <p>Modifiez les fichiers dans le dossier <code>/var/www/my_webapp/www/</code> pour personnaliser votre application.</p>
+
+        <p>Vous pouvez également utiliser SFTP pour transférer vos fichiers depuis un client externe.</p>
+
+        <h3>Informations techniques :</h3>
+        <ul>
+            <li><strong>Mode :</strong> Front Controller</li>
+            <li><strong>Point d'entrée :</strong> index.php</li>
+            <li><strong>Serveur :</strong> NGINX + PHP-FPM</li>
+            <li><strong>Architecture :</strong> MVC simple</li>
+        </ul>
+
+        <h3>Test PHP :</h3>
+        <ul>
+            <li><strong>URL actuelle :</strong> <?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?></li>
+            <li><strong>Fichier chargé :</strong> <?php echo htmlspecialchars(__FILE__); ?></li>
+            <li><strong>Timestamp :</strong> <?php echo date('Y-m-d H:i:s'); ?></li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>My Webapp - Propulsé par YunoHost et le mode Front Controller</p>
+    </div>
+</body>
+</html>
