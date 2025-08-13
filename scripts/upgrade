@@ -95,6 +95,8 @@ then
     # Front controller mode - PHP config toujours nécessaire
     if [ $phpversion != "none" ]
     then
+        # Définir php_version pour ynh_replace_vars
+        php_version="$phpversion"
         ynh_add_config --template="php.conf" --destination="$nginx_extra_conf_dir/php.conf"
         YNH_PHP_VERSION="$phpversion"
     fi
@@ -102,6 +104,8 @@ else
     # Standard mode - load PHP config if needed
     if [ $phpversion != "none" ]
     then
+        # Définir php_version pour ynh_replace_vars
+        php_version="$phpversion"
         ynh_add_config --template="php.conf" --destination="$nginx_extra_conf_dir/php.conf"
         YNH_PHP_VERSION="$phpversion"
     fi
