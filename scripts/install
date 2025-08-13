@@ -138,6 +138,7 @@ then
     ynh_add_config --template="../sources/www/views/home.php" --destination="$install_dir/www/public/views/home.php"
     ynh_add_config --template="../sources/www/views/404.php" --destination="$install_dir/www/public/views/404.php"
     ynh_add_config --template="../sources/www/views/about.php" --destination="$install_dir/www/public/views/about.php"
+    ynh_add_config --template="../sources/www/views/contact.php" --destination="$install_dir/www/public/views/contact.php"
     # Copy ads.txt for direct access
     ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/public/ads.txt"
 elif [ "$rewrite_mode" = "front" ]
@@ -151,6 +152,7 @@ then
     ynh_add_config --template="../sources/www/views/home.php" --destination="$install_dir/www/views/home.php"
     ynh_add_config --template="../sources/www/views/404.php" --destination="$install_dir/www/views/404.php"
     ynh_add_config --template="../sources/www/views/about.php" --destination="$install_dir/www/views/about.php"
+    ynh_add_config --template="../sources/www/views/contact.php" --destination="$install_dir/www/views/contact.php"
     # Copy ads.txt for direct access
     ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/ads.txt"
 else
