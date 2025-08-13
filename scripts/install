@@ -126,14 +126,35 @@ if [ "$rewrite_mode" = "advanced" ]
 then
     # Advanced mode: create www/public structure
     mkdir -p "$install_dir/www/public"
-    if [ $with_sftp -eq 1 ]
-    then
-        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/public/index.html"
-    else
-        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/public/index.html"
-    fi
+    # Copy the advanced PHP front controller
+    ynh_add_config --template="../sources/www/index-advanced.php" --destination="$install_dir/www/public/index.php"
+    # Create additional directories for advanced mode
+    mkdir -p "$install_dir/www/src"
+    mkdir -p "$install_dir/www/vendor"
+    mkdir -p "$install_dir/www/public/views"
+    mkdir -p "$install_dir/www/public/admin"
+    mkdir -p "$install_dir/www/public/api"
+    # Copy view files
+    ynh_add_config --template="../sources/www/views/home.php" --destination="$install_dir/www/public/views/home.php"
+    ynh_add_config --template="../sources/www/views/404.php" --destination="$install_dir/www/public/views/404.php"
+    ynh_add_config --template="../sources/www/views/about.php" --destination="$install_dir/www/public/views/about.php"
+    # Copy ads.txt for direct access
+    ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/public/ads.txt"
+elif [ "$rewrite_mode" = "front" ]
+then
+    # Front mode: create www structure with PHP front controller
+    mkdir -p "$install_dir/www"
+    mkdir -p "$install_dir/www/views"
+    # Copy the PHP front controller
+    ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
+    # Copy view files
+    ynh_add_config --template="../sources/www/views/home.php" --destination="$install_dir/www/views/home.php"
+    ynh_add_config --template="../sources/www/views/404.php" --destination="$install_dir/www/views/404.php"
+    ynh_add_config --template="../sources/www/views/about.php" --destination="$install_dir/www/views/about.php"
+    # Copy ads.txt for direct access
+    ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/ads.txt"
 else
-    # Standard and front modes: create www structure
+    # Standard mode: create www structure with HTML files
     mkdir -p "$install_dir/www"
     if [ $with_sftp -eq 1 ]
     then

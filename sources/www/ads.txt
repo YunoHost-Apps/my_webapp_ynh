@@ -1,0 +1,10 @@
+# Fichier ads.txt pour My Webapp
+# Ce fichier est accessible directement via l'URL /ads.txt
+# Format: domain.com, publisher_id, relationship, certification_authority_id
+
+# Exemple de configuration (à personnaliser selon vos besoins)
+example.com, 123456789, DIRECT, abc123def456
+example.org, 987654321, RESELLER, xyz789abc123
+
+# Note: Ce fichier est servi directement par NGINX
+# sans passer par le front controller PHP
