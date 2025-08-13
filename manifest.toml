@@ -67,6 +67,15 @@ ram.runtime = "50M"
     default = false
     help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
 
+    [install.rewrite_mode]
+    ask.en = "Choose the rewrite mode for your application"
+    ask.fr = "Choisissez le mode de réécriture pour votre application"
+    type = "select"
+    choices = ["standard", "front", "advanced"]
+    default = "standard"
+    help.en = "Standard: Basic static file serving, Front: Front controller with rewrite rules, Advanced: Front controller serving from /www/public"
+    help.fr = "Standard: Service de fichiers statiques basique, Front: Contrôleur frontal avec règles de réécriture, Avancé: Contrôleur frontal servant depuis /www/public"
+
 [resources]
     [resources.system_user]
 

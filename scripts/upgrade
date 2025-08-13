@@ -56,6 +56,12 @@ if [ -z "${custom_error_file:-}" ]; then
 	ynh_app_setting_set --app=$app --key=custom_error_file --value=$custom_error_file
 fi
 
+# If rewrite_mode doesn't exist, create it (default to standard for backward compatibility)
+if [ -z "${rewrite_mode:-}" ]; then
+	rewrite_mode="standard"
+	ynh_app_setting_set --app=$app --key=rewrite_mode --value=$rewrite_mode
+fi
+
 # Delete old user
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
 then
@@ -83,11 +89,24 @@ nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 
 mkdir -p "$nginx_extra_conf_dir"
 
-# Prepare nginx extra conf
-if [ $phpversion != "none" ]
+# Prepare nginx extra conf based on rewrite mode
+if [ "$rewrite_mode" = "front" ] || [ "$rewrite_mode" = "advanced" ]
 then
-    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+    # Front controller mode - load rewrite rules
+    if [ "$rewrite_mode" = "front" ]
+    then
+        ynh_add_config --template="rewrite.conf" --destination="$nginx_extra_conf_dir/00-rewrite.conf"
+    else
+        ynh_add_config --template="rewrite-advanced.conf" --destination="$nginx_extra_conf_dir/00-rewrite.conf"
+    fi
     YNH_PHP_VERSION="$phpversion"
+else
+    # Standard mode - load PHP config if needed
+    if [ $phpversion != "none" ]
+    then
+        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+        YNH_PHP_VERSION="$phpversion"
+    fi
 fi
 
 # Add the config error code

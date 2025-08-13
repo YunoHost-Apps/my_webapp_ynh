@@ -60,11 +60,24 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"
 
-# Prepare nginx extra conf
-if [ $phpversion != "none" ]
+# Prepare nginx extra conf based on rewrite mode
+if [ "$rewrite_mode" = "front" ] || [ "$rewrite_mode" = "advanced" ]
 then
-    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+    # Front controller mode - load rewrite rules
+    if [ "$rewrite_mode" = "front" ]
+    then
+        ynh_add_config --template="rewrite.conf" --destination="$nginx_extra_conf_dir/00-rewrite.conf"
+    else
+        ynh_add_config --template="rewrite-advanced.conf" --destination="$nginx_extra_conf_dir/00-rewrite.conf"
+    fi
     YNH_PHP_VERSION="$phpversion"
+else
+    # Standard mode - load PHP config if needed
+    if [ $phpversion != "none" ]
+    then
+        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+        YNH_PHP_VERSION="$phpversion"
+    fi
 fi
 
 if [ $custom_error_file -eq 1 ]
@@ -73,10 +86,14 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-
 # Create a dedicated NGINX config
 ynh_add_nginx_config
-ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+
+# Only add sample config in standard mode
+if [ "$rewrite_mode" = "standard" ]
+then
+    ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -104,13 +121,26 @@ fi
 # MODIFY A CONFIG FILE
 #=================================================
 
-mkdir -p "$install_dir/www"
-
-if [ $with_sftp -eq 1 ]
+# Create directory structure based on rewrite mode
+if [ "$rewrite_mode" = "advanced" ]
 then
-    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    # Advanced mode: create www/public structure
+    mkdir -p "$install_dir/www/public"
+    if [ $with_sftp -eq 1 ]
+    then
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/public/index.html"
+    else
+        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/public/index.html"
+    fi
 else
-    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    # Standard and front modes: create www structure
+    mkdir -p "$install_dir/www"
+    if [ $with_sftp -eq 1 ]
+    then
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    else
+        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    fi
 fi
 
 chown -R $app:www-data "$install_dir"

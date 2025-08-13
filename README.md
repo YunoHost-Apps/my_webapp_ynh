@@ -8,7 +8,7 @@ It shall NOT be edited by hand.
   My Webapp, packaged for YunoHost
 </h1>
 
-Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files
+Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files with advanced rewrite modes support
 
 [![Version: 1.0~ynh21](https://img.shields.io/badge/Version-1.0~ynh21-rgba(0,150,0,1)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 
@@ -33,6 +33,25 @@ sudo yunohost app install https://github.com/YunoHost-Apps/my_webapp_ynh/tree/te
 # upgrade an existing install:
 sudo yunohost app upgrade my_webapp -u https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing
 ```
+
+## 🚀 Features
+
+### Rewrite Modes
+- **Standard Mode**: Basic static file serving (default)
+- **Front Controller Mode**: Advanced rewrite rules with front controller
+- **Advanced Mode**: Front controller serving from `/www/public` subdirectory
+
+### Key Features
+- SFTP access support
+- Multiple PHP versions (7.4 to 8.4)
+- Database support (MySQL/PostgreSQL)
+- Custom error pages
+- Automatic NGINX configuration
+- Security hardening
+
+## 📖 Documentation
+
+For detailed information about rewrite modes and configuration, see [REWRITE_MODES.md](doc/REWRITE_MODES.md).
 
 ### 📚 App packaging documentation
 
