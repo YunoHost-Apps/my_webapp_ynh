@@ -90,8 +90,12 @@ else
     APP_WEBROOT="www"
 fi
 
+# Définir app_webroot pour ynh_replace_vars (avec / au début)
+app_webroot="/$APP_WEBROOT"
+
 # Stocker le webroot pour la configuration NGINX
 ynh_app_setting_set --app=$app --key=webroot --value=$APP_WEBROOT
+ynh_app_setting_set --app=$app --key=app_webroot --value=$app_webroot
 
 if [ $custom_error_file -eq 1 ]
 then
@@ -101,8 +105,6 @@ fi
 
 # Create a dedicated NGINX config with webroot variable
 ynh_add_nginx_config
-# Remplacer la variable __APP_WEBROOT__ dans la configuration NGINX
-sed -i "s|__APP_WEBROOT__|$APP_WEBROOT|g" "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 # Only add sample config in standard mode
 if [ "$rewrite_mode" = "standard" ]
