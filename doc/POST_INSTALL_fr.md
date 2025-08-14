@@ -21,7 +21,9 @@ Vous pouvez accéder aux fichiers de votre application via SFTP :
 - **Mot de passe** : `__PASSWORD__`
 - **Répertoire** : `__INSTALL_DIR__/www`
 
-**Note** : Si aucun mot de passe SFTP n'a été fourni lors de l'installation, le mot de passe est le même que celui de l'utilisateur qui a installé cette application.
+**Note** : Si aucun mot de passe SFTP n'a été fourni lors de l'installation :
+- Si une base de données a été installée, le mot de passe SFTP est le même que celui de la base de données
+- Si aucune base de données n'a été installée, un mot de passe aléatoire a été généré et affiché pendant le processus d'installation
 
 {% endif %}
 

@@ -92,11 +92,20 @@ ynh_app_config_apply() {
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
-        # Use installer user password if not provided
+        # Use MySQL password for SFTP if not provided
         if [ "$password" == "" ]
         then
-            password=$YNH_APP_INSTALL_USER_PASSWORD
-            echo "No SFTP password provided, using installer user password"
+            # Get current database password if database exists
+            current_db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd 2>/dev/null || echo "")
+            if [ -n "$current_db_pwd" ]; then
+                password=$current_db_pwd
+                echo "No SFTP password provided, using MySQL password for SFTP access"
+            else
+                # Generate random password if no database
+                password=$(ynh_string_random --length=12)
+                echo "No SFTP password provided and no database, generating random password: $password"
+                echo "IMPORTANT: Please note this password for SFTP access!"
+            fi
         fi
         
         chpasswd <<< "${app}:${password}"

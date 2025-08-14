@@ -34,11 +34,19 @@ database=${database:-none}
 phpversion=${phpversion:-8.3}
 rewrite_mode=${rewrite_mode:-default}
 
-# Use installer user password for SFTP if not provided but SFTP is enabled
+# Use MySQL password for SFTP if not provided but SFTP is enabled
 if [ $with_sftp -eq 1 ] && [ "$password" = "" ]
 then
-    password=$YNH_APP_INSTALL_USER_PASSWORD
-    echo "No SFTP password provided, using installer user password"
+    if [ "$database" != "none" ]; then
+        # Use the MySQL password for SFTP
+        password=$db_pwd
+        echo "No SFTP password provided, using MySQL password for SFTP access"
+    else
+        # Generate random password if no database
+        password=$(ynh_string_random --length=12)
+        echo "No SFTP password provided and no database, generating random password: $password"
+        echo "IMPORTANT: Please note this password for SFTP access!"
+    fi
 fi
 
 #=================================================
