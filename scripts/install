@@ -14,6 +14,11 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 password=$YNH_APP_ARG_PASSWORD
+with_sftp=$YNH_APP_ARG_WITH_SFTP
+custom_error_file=$YNH_APP_ARG_CUSTOM_ERROR_FILE
+database=$YNH_APP_ARG_DATABASE
+phpversion=$YNH_APP_ARG_PHPVERSION
+rewrite_mode=$YNH_APP_ARG_REWRITE_MODE
 app_nb=$YNH_APP_INSTANCE_NUMBER
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
@@ -21,6 +26,13 @@ ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=2
+
+# Set default values if not provided
+with_sftp=${with_sftp:-1}
+custom_error_file=${custom_error_file:-0}
+database=${database:-none}
+phpversion=${phpversion:-8.3}
+rewrite_mode=${rewrite_mode:-default}
 
 # Generate random password for SFTP if not provided but SFTP is enabled
 if [ $with_sftp -eq 1 ] && [ "$password" = "" ]
