@@ -3,48 +3,8 @@
 Voici les informations pour se connecter à la base de donnée:
 
 - Type : `__DATABASE__`
-- Utilisateur de la base de données : `__DB_USER__`
-- Nom de la base de données : `__DB_NAME__`
-- Mot de passe : `__DB_PWD__`
+- Utilisateur de la base de données : `__DB_USER__`
+- Nom de la base de données : `__DB_NAME__`
+- Mot de passe : `__DB_PWD__`
 
-{% endif %}
-
-{% if with_sftp == 1 %}
-
-## Accès SFTP
-
-Vous pouvez accéder aux fichiers de votre application via SFTP :
-
-- **Hôte** : `__DOMAIN__`
-- **Port** : `22` (port SSH par défaut)
-- **Nom d'utilisateur** : `__NAME__`
-- **Mot de passe** : `__PASSWORD__`
-- **Répertoire** : `__INSTALL_DIR__/www`
-
-**Note** : Si aucun mot de passe SFTP n'a été fourni lors de l'installation :
-- Si une base de données a été installée, le mot de passe SFTP est le même que celui de la base de données
-- Si aucune base de données n'a été installée, un mot de passe aléatoire a été généré et affiché pendant le processus d'installation
-
-**Fichier des Identifiants SFTP** : Un fichier nommé `sftp_password.txt` a été créé dans votre répertoire d'installation (`__INSTALL_DIR__`) contenant tous les détails de connexion SFTP. Ce fichier est automatiquement affiché sur vos pages web et peut être supprimé après avoir noté les informations.
-
-{% endif %}
-
-## Informations de l'Application
-
-- **URL** : `https://__DOMAIN____PATH__`
-- **Mode de Rewrite** : `__REWRITE_MODE__`
-- **Répertoire d'Installation** : `__INSTALL_DIR__`
-
-## Détails du Mode de Rewrite
-
-{% if rewrite_mode == 'default' %}
-**Mode Par Défaut** : Service web standard sans règles de rewrite spéciales. Les fichiers sont servis directement depuis le répertoire `www/`.
-{% endif %}
-
-{% if rewrite_mode == 'front' %}
-**Mode Front** : Application à point d'entrée unique. Toutes les requêtes sont réécrites vers `/index.php` (patron contrôleur frontal).
-{% endif %}
-
-{% if rewrite_mode == 'framework' %}
-**Mode Framework** : Application style framework. Toutes les requêtes sont réécrites vers `/public/index.php` (style Laravel/Symfony).
 {% endif %}

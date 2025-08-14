@@ -43,3 +43,16 @@ name.fr = "Configuration de My Webapp"
         type = "select"
         choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
         default = "none"
+
+    [main.install_mode]
+    name.en = "Installation mode"
+    name.fr = "Mode d'installation"
+
+        [main.install_mode.install_mode]
+        ask.en = "Installation mode"
+        ask.fr = "Mode d'installation"
+        type = "select"
+        choices = ["standard", "front_controller_www", "front_controller_public"]
+        default = "standard"
+        help.en = "standard: static files, front_controller_www: WordPress/Drupal style, front_controller_public: Laravel/Symfony style"
+        help.fr = "standard: fichiers statiques, front_controller_www: style WordPress/Drupal, front_controller_public: style Laravel/Symfony"

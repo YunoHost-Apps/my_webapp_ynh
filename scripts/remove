@@ -47,16 +47,6 @@ ynh_script_progression --message="Removing PHP-FPM configuration..."
 ynh_remove_fpm_config
 
 #=================================================
-# REMOVE SFTP PASSWORD FILE
-#=================================================
-ynh_script_progression --message="Removing SFTP credentials file..." --weight=1
-
-# Remove the SFTP password file if it exists
-if [ -f "$install_dir/sftp_password.txt" ]; then
-    ynh_secure_remove --file="$install_dir/sftp_password.txt"
-fi
-
-#=================================================
 # END OF SCRIPT
 #=================================================
 

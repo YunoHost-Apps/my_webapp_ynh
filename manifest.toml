@@ -28,7 +28,7 @@ ram.runtime = "50M"
 
     [install.path]
     type = "path"
-    default = "/site"
+    default = "/"
 
     [install.with_sftp]
     ask.en = "Do you need a SFTP access?"
@@ -50,7 +50,7 @@ ram.runtime = "50M"
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
-    choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+    choices = ["8.0", "8.1", "8.2", "8.3", "8.4"]
     default = "8.4"
 
     [install.database]
@@ -60,21 +60,21 @@ ram.runtime = "50M"
     choices = [ "none", "mysql", "postgresql" ]
     default = "none"
 
-    [install.custom_error_file]
-    ask.en = "Activate the custom error file use"
-    ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
-    type = "boolean"
-    default = false
-    help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
+    [install.install_mode]
+ask.en = "Installation mode"
+ask.fr = "Mode d'installation"
+type = "select"
+choices = ["standard", "front_controller_www", "front_controller_public"]
+default = "standard"
+help.en = "standard: static files, front_controller_www: WordPress/Drupal style, front_controller_public: Laravel/Symfony style"
+help.fr = "standard: fichiers statiques, front_controller_www: style WordPress/Drupal, front_controller_public: style Laravel/Symfony"
 
-    [install.rewrite_mode]
-    ask.en = "Choose the rewrite mode for your application"
-    ask.fr = "Choisissez le mode de rewrite pour votre application"
-    type = "select"
-    choices = ["default", "front", "framework"]
-    default = "default"
-    help.en = "default: no special rewrite, front: rewrite to /index.php, framework: rewrite to /public/index.php"
-    help.fr = "default: pas de rewrite spécial, front: rewrite vers /index.php, framework: rewrite vers /public/index.php"
+[install.custom_error_file]
+ask.en = "Activate the custom error file use"
+ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
+type = "boolean"
+default = false
+help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
 
 [resources]
     [resources.system_user]

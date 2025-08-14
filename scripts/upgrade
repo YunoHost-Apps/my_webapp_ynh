@@ -56,6 +56,12 @@ if [ -z "${custom_error_file:-}" ]; then
 	ynh_app_setting_set --app=$app --key=custom_error_file --value=$custom_error_file
 fi
 
+# If install_mode doesn't exist, create it (default to standard for backward compatibility)
+if [ -z "${install_mode:-}" ]; then
+	install_mode="standard"
+	ynh_app_setting_set --app=$app --key=install_mode --value=$install_mode
+fi
+
 # Delete old user
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
 then
@@ -86,6 +92,15 @@ mkdir -p "$nginx_extra_conf_dir"
 # Prepare nginx extra conf
 if [ $phpversion != "none" ]
 then
+    # Créer la configuration PHP avec le bon répertoire racine selon le mode
+    if [ "$install_mode" == "front_controller_public" ]; then
+        # Pour le mode public, PHP_ROOT doit pointer vers /www/public
+        YNH_PHP_ROOT="$install_dir/www/public"
+    else
+        # Pour les autres modes, PHP_ROOT pointe vers /www
+        YNH_PHP_ROOT="$install_dir/www"
+    fi
+    
     ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
     YNH_PHP_VERSION="$phpversion"
 fi
@@ -96,8 +111,15 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-# Create a dedicated NGINX config
-ynh_add_nginx_config
+# Configuration NGINX principale selon le mode d'installation
+if [ "$install_mode" == "front_controller_public" ]; then
+    ynh_add_config --template="nginx-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/main.conf"
+elif [ "$install_mode" == "front_controller_www" ]; then
+    ynh_add_config --template="nginx-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/main.conf"
+else
+    ynh_add_nginx_config  # comportement existant (standard)
+fi
+
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
@@ -149,6 +171,16 @@ chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
 chmod 750 "$install_dir"
+
+# Permissions spécifiques pour le mode front_controller_public
+if [ "$install_mode" == "front_controller_public" ]; then
+    # Droits sur www/public pour que le frontend (www-data) serve et écrive si besoin
+    chown -R $app:www-data "$install_dir/www/public"
+    # Créer les répertoires de cache/storage si l'app en a besoin
+    mkdir -p "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
+    chown -R $app:www-data "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
+    chmod -R 750 "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
+fi
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

@@ -14,40 +14,22 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 password=$YNH_APP_ARG_PASSWORD
-with_sftp=$YNH_APP_ARG_WITH_SFTP
-custom_error_file=$YNH_APP_ARG_CUSTOM_ERROR_FILE
-database=$YNH_APP_ARG_DATABASE
-phpversion=$YNH_APP_ARG_PHPVERSION
-rewrite_mode=$YNH_APP_ARG_REWRITE_MODE
 app_nb=$YNH_APP_INSTANCE_NUMBER
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
-
-#=================================================
-# SET INSTALLATION DIRECTORY
-#=================================================
-install_dir="/opt/yunohost/$app"
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=2
 
-# Set default values if not provided
-with_sftp=${with_sftp:-1}
-custom_error_file=${custom_error_file:-0}
-database=${database:-none}
-phpversion=${phpversion:-8.3}
-rewrite_mode=${rewrite_mode:-default}
-
-# SFTP password will be set after database creation if needed
+[ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
 ynh_script_progression --message="Storing installation settings..." --weight=1
 
-# Store SFTP settings
-ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
+ynh_app_setting_set --app=$app --key=password --value=$password
 
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -68,46 +50,7 @@ if [ $database != "none" ]; then
     elif [ $database == "postgresql" ]; then
         ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
     fi
-    
-    # Store database settings for POST_INSTALL
-    ynh_app_setting_set --app=$app --key=database --value=$database
-    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-    ynh_app_setting_set --app=$app --key=db_user --value=$db_user
-    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 fi
-
-#=================================================
-# SET SFTP PASSWORD IF NEEDED
-#=================================================
-# Use MySQL password for SFTP if not provided but SFTP is enabled
-if [ $with_sftp -eq 1 ] && [ "$password" = "" ]
-then
-    if [ "$database" != "none" ]; then
-        # Use the MySQL password for SFTP
-        password=$db_pwd
-        echo "No SFTP password provided, using MySQL password for SFTP access"
-    else
-        # Generate random password if no database
-        password=$(ynh_string_random --length=12)
-        echo "No SFTP password provided and no database, generating random password: $password"
-        echo "IMPORTANT: Please note this password for SFTP access!"
-        
-        # Create a password file for easy access
-        echo "SFTP Password: $password" > "$install_dir/sftp_password.txt"
-        echo "Username: $app" >> "$install_dir/sftp_password.txt"
-        echo "Host: $domain" >> "$install_dir/sftp_password.txt"
-        echo "Port: 22" >> "$install_dir/sftp_password.txt"
-        echo "Directory: $install_dir/www" >> "$install_dir/sftp_password.txt"
-        echo "" >> "$install_dir/sftp_password.txt"
-        echo "This file contains your SFTP credentials." >> "$install_dir/sftp_password.txt"
-        echo "You can delete it after noting the information." >> "$install_dir/sftp_password.txt"
-        chmod 600 "$install_dir/sftp_password.txt"
-        echo "SFTP credentials saved to: $install_dir/sftp_password.txt"
-    fi
-fi
-
-# Store the SFTP password (either provided or generated)
-ynh_app_setting_set --app=$app --key=PASSWORD --value=$password
 
 #=================================================
 # NGINX CONFIGURATION
@@ -120,6 +63,15 @@ mkdir -p "$nginx_extra_conf_dir"
 # Prepare nginx extra conf
 if [ $phpversion != "none" ]
 then
+    # Créer la configuration PHP avec le bon répertoire racine selon le mode
+    if [ "$install_mode" == "front_controller_public" ]; then
+        # Pour le mode public, PHP_ROOT doit pointer vers /www/public
+        YNH_PHP_ROOT="$install_dir/www/public"
+    else
+        # Pour les autres modes, PHP_ROOT pointe vers /www
+        YNH_PHP_ROOT="$install_dir/www"
+    fi
+    
     ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
     YNH_PHP_VERSION="$phpversion"
 fi
@@ -130,26 +82,16 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-# Apply the chosen rewrite mode configuration
-case $rewrite_mode in
-    "front")
-        ynh_add_config --template="rewrite-front.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
-        ;;
-    "framework")
-        ynh_add_config --template="rewrite-framework.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
-        ;;
-    "default"|*)
-        ynh_add_config --template="rewrite-default.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
-        ;;
-esac
 
-# Store the rewrite mode setting
-ynh_app_setting_set --app=$app --key=rewrite_mode --value=$rewrite_mode
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=path --value=$path
+# Configuration NGINX principale selon le mode d'installation
+if [ "$install_mode" == "front_controller_public" ]; then
+    ynh_add_config --template="nginx-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/main.conf"
+elif [ "$install_mode" == "front_controller_www" ]; then
+    ynh_add_config --template="nginx-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/main.conf"
+else
+    ynh_add_nginx_config  # comportement existant (standard)
+fi
 
-# Create a dedicated NGINX config
-ynh_add_nginx_config
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
@@ -180,25 +122,36 @@ fi
 
 mkdir -p "$install_dir/www"
 
-# Copy the appropriate index files based on SFTP choice
-if [ $with_sftp -eq 1 ]
-then
-    cp "../sources/www/index.html" "$install_dir/www/index.html"
-else
-    cp "../sources/www/index_no_sftp.html" "$install_dir/www/index.html"
-fi
+# Gestion des différents modes d'installation
+case "$install_mode" in
+  "standard")
+    # Mode standard: index statique (comportement existant)
+    if [ $with_sftp -eq 1 ]
+    then
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    else
+        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    fi
+    ;;
 
-# Copy PHP test files and ads.txt
-cp "../sources/www/index.php" "$install_dir/www/index.php"
-cp "../sources/www/ads.txt" "$install_dir/www/ads.txt"
-cp "../sources/www/get_sftp_credentials.php" "$install_dir/www/get_sftp_credentials.php"
+  "front_controller_www")
+    # Front controller à la racine /www (index.php reçoit toutes les requêtes)
+    ynh_add_config --template="../sources/www/frontcontroller_index.php" --destination="$install_dir/www/index.php"
+    # Optionnel : fournir un index.html explicatif si besoin
+    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    ;;
 
-# If framework mode is selected, create the public directory structure
-if [ "$rewrite_mode" = "framework" ]
-then
+  "front_controller_public")
+    # Front controller dans /www/public (ex: Laravel / Symfony)
     mkdir -p "$install_dir/www/public"
-    cp "../sources/www/public/index.php" "$install_dir/www/public/index.php"
-fi
+    ynh_add_config --template="../sources/www/public_frontcontroller_index.php" --destination="$install_dir/www/public/index.php"
+    # fichier fallback/README si souhaité
+    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    ;;
+  *)
+    ynh_die --message="Unknown install_mode: $install_mode"
+    ;;
+esac
 
 chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
@@ -207,6 +160,16 @@ chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
 chmod 750 "$install_dir"
+
+# Permissions spécifiques pour le mode front_controller_public
+if [ "$install_mode" == "front_controller_public" ]; then
+    # Droits sur www/public pour que le frontend (www-data) serve et écrive si besoin
+    chown -R $app:www-data "$install_dir/www/public"
+    # Créer les répertoires de cache/storage si l'app en a besoin
+    mkdir -p "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
+    chown -R $app:www-data "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
+    chmod -R 750 "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
+fi
 
 #=================================================
 # PHP-FPM CONFIGURATION
