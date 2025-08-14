@@ -25,6 +25,8 @@ You can access your application files via SFTP:
 - If a database was installed, the SFTP password is the same as the database password
 - If no database was installed, a random password was generated and displayed during the installation process
 
+**SFTP Credentials File**: A file named `sftp_password.txt` has been created in your installation directory (`__INSTALL_DIR__`) containing all the SFTP connection details. This file is automatically displayed on your web pages and can be deleted after you've noted the information.
+
 {% endif %}
 
 ## Application Information

@@ -124,6 +124,50 @@
             line-height: 1.6;
         }
 
+        .sftp-credentials {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .sftp-credentials h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sftp-credentials p {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .credentials-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .credentials-display pre {
+            margin: 0;
+            color: #495057;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .note {
+            font-style: italic;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
         .cat-section {
             text-align: center;
             margin: 30px 0;
@@ -228,6 +272,15 @@
                 <p>SFTP access is not enabled for this installation. To manage files, you can use SSH/SCP or enable SFTP through the YunoHost admin panel. All other features remain fully functional.</p>
             </div>
 
+            <div class="sftp-credentials" id="sftp-credentials" style="display: none;">
+                <h3><i class="fas fa-key"></i> SFTP Credentials Available</h3>
+                <p>Even though SFTP is disabled, credentials were generated and are available in: <code id="sftp-file-path"></code></p>
+                <div class="credentials-display">
+                    <pre id="sftp-content"></pre>
+                </div>
+                <p class="note"><i class="fas fa-info-circle"></i> You can enable SFTP later and use these credentials.</p>
+            </div>
+
             <div class="cat-section">
                 <h3><i class="fas fa-cat"></i> As a reward, here is a random cat picture:</h3>
                 <p>Take a break and enjoy this adorable cat!</p>
@@ -244,5 +297,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Function to check and display SFTP credentials
+        async function checkSftpCredentials() {
+            try {
+                // Try to fetch the SFTP password file
+                const response = await fetch('../sftp_password.txt');
+                if (response.ok) {
+                    const content = await response.text();
+                    if (content.trim()) {
+                        // Show the SFTP credentials section
+                        document.getElementById('sftp-credentials').style.display = 'block';
+                        document.getElementById('sftp-file-path').textContent = '../sftp_password.txt';
+                        document.getElementById('sftp-content').textContent = content;
+                    }
+                }
+            } catch (error) {
+                // File doesn't exist or can't be read, hide the section
+                console.log('SFTP credentials file not found or not accessible');
+            }
+        }
+
+        // Check for SFTP credentials when page loads
+        document.addEventListener('DOMContentLoaded', checkSftpCredentials);
+    </script>
 </body>
 </html>
