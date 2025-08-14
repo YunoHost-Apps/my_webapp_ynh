@@ -23,6 +23,11 @@ app_nb=$YNH_APP_INSTANCE_NUMBER
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
 #=================================================
+# SET INSTALLATION DIRECTORY
+#=================================================
+install_dir="/opt/yunohost/$app"
+
+#=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=2
@@ -186,6 +191,7 @@ fi
 # Copy PHP test files and ads.txt
 ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
 ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/ads.txt"
+ynh_add_config --template="../sources/www/get_sftp_credentials.php" --destination="$install_dir/www/get_sftp_credentials.php"
 
 # If framework mode is selected, create the public directory structure
 if [ "$rewrite_mode" = "framework" ]

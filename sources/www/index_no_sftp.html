@@ -302,20 +302,20 @@
         // Function to check and display SFTP credentials
         async function checkSftpCredentials() {
             try {
-                // Try to fetch the SFTP password file
-                const response = await fetch('../sftp_password.txt');
+                // Try to fetch the SFTP credentials via the secure endpoint
+                const response = await fetch('./get_sftp_credentials.php');
                 if (response.ok) {
-                    const content = await response.text();
-                    if (content.trim()) {
+                    const data = await response.json();
+                    if (data.success && data.content.trim()) {
                         // Show the SFTP credentials section
                         document.getElementById('sftp-credentials').style.display = 'block';
-                        document.getElementById('sftp-file-path').textContent = '../sftp_password.txt';
-                        document.getElementById('sftp-content').textContent = content;
+                        document.getElementById('sftp-file-path').textContent = data.file_path;
+                        document.getElementById('sftp-content').textContent = data.content;
                     }
                 }
             } catch (error) {
-                // File doesn't exist or can't be read, hide the section
-                console.log('SFTP credentials file not found or not accessible');
+                // Endpoint doesn't exist or can't be read, hide the section
+                console.log('SFTP credentials endpoint not accessible:', error);
             }
         }
 
