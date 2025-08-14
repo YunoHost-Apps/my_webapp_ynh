@@ -21,6 +21,8 @@ You can access your application files via SFTP:
 - **Password**: `__PASSWORD__`
 - **Directory**: `__INSTALL_DIR__/www`
 
+**Note**: If no SFTP password was provided during installation, the password is the same as the user who installed this application.
+
 {% endif %}
 
 ## Application Information

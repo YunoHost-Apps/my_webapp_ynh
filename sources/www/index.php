@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Webapp - Rewrite Test</title>
+    <title>My Webapp - PHP Info</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,114 +14,174 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
             padding: 20px;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
         .header {
+            background: #28a745;
+            color: white;
+            padding: 30px;
             text-align: center;
-            margin-bottom: 30px;
         }
 
         .header h1 {
-            color: #2d3748;
             font-size: 2.5rem;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .header .subtitle {
-            color: #718096;
-            font-size: 1.1rem;
-            font-weight: 500;
+            font-size: 1.2rem;
+            opacity: 0.9;
         }
 
-        .info-grid {
-            display: grid;
-            gap: 20px;
-            margin-bottom: 30px;
+        .content {
+            padding: 30px;
         }
 
-        .info-card {
-            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+        .info-message {
+            background: #e8f4fd;
+            border: 1px solid #b3d9ff;
+            border-radius: 6px;
             padding: 20px;
-            border-radius: 15px;
-            border-left: 4px solid #667eea;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
-        .info-card:hover {
+        .info-message h2 {
+            color: #2c5aa0;
+            margin-bottom: 15px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .feature-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        .info-card h3 {
-            color: #2d3748;
+        .feature-card .icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #28a745;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 10px;
             font-size: 1.1rem;
-            margin-bottom: 8px;
-            font-weight: 600;
         }
 
-        .info-card p {
-            color: #4a5568;
-            font-family: 'Courier New', monospace;
-            background: #edf2f7;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            word-break: break-all;
+        .feature-card p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .php-info-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .php-info-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .php-info-section p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 10px;
         }
 
         .status-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #48bb78, #38a169);
+            background: #28a745;
             color: white;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
             text-align: center;
-            width: 100%;
+            margin: 20px 0;
+            font-weight: 600;
         }
 
         .footer {
             text-align: center;
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            color: #718096;
+            border-top: 1px solid #eee;
+            color: #666;
             font-size: 0.9rem;
+        }
+
+        .cat-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 6px;
+        }
+
+        .cat-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cat-section p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .cat-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         @media (max-width: 768px) {
             .container {
-                padding: 30px 20px;
+                margin: 10px;
             }
             
             .header h1 {
                 font-size: 2rem;
             }
             
-            .info-grid {
+            .features-grid {
+                grid-template-columns: 1fr;
                 gap: 15px;
             }
         }
@@ -129,43 +190,64 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 My Webapp</h1>
-            <p class="subtitle">Rewrite Test & Configuration</p>
+            <h1><i class="fas fa-rocket"></i> My Webapp</h1>
+            <p class="subtitle">Your Custom Web Application Skeleton</p>
         </div>
 
-        <div class="info-grid">
-            <div class="info-card">
-                <h3>⏰ Current Time</h3>
-                <p><?php echo date('Y-m-d H:i:s'); ?></p>
+        <div class="content">
+            <div class="info-message">
+                <h2><i class="fas fa-check-circle"></i> Welcome to Your New Web Application!</h2>
+                <p>Your YunoHost web application has been successfully installed and is ready for development. This is a powerful skeleton that supports multiple rewrite modes and modern web technologies.</p>
             </div>
 
-            <div class="info-card">
-                <h3>🌐 Request URI</h3>
-                <p><?php echo $_SERVER['REQUEST_URI'] ?? 'N/A'; ?></p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon"><i class="fas fa-lock"></i></div>
+                    <h3>SFTP Access</h3>
+                    <p>Secure file transfer protocol access for easy file management and deployment.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon"><i class="fab fa-php"></i></div>
+                    <h3>PHP Support</h3>
+                    <p>Multiple PHP versions support with PHP-FPM for optimal performance.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon"><i class="fas fa-database"></i></div>
+                    <h3>Database Ready</h3>
+                    <p>Optional MySQL or PostgreSQL database integration with automatic backups.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon"><i class="fas fa-cogs"></i></div>
+                    <h3>3 Rewrite Modes</h3>
+                    <p>Choose between Default, Front Controller, or Framework patterns for your app.</p>
+                </div>
             </div>
 
-            <div class="info-card">
-                <h3>📝 Script Name</h3>
-                <p><?php echo $_SERVER['SCRIPT_NAME'] ?? 'N/A'; ?></p>
+            <div class="php-info-section">
+                <h3><i class="fas fa-code"></i> PHP Information</h3>
+                <p>This page is generated by PHP and shows that your application is working correctly.</p>
+                <p>Current PHP version: <strong><?php echo phpversion(); ?></strong></p>
+                <p>Server software: <strong><?php echo $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown'; ?></strong></p>
+                <p>Document root: <strong><?php echo $_SERVER['DOCUMENT_ROOT'] ?? 'Unknown'; ?></strong></p>
             </div>
 
-            <div class="info-card">
-                <h3>🐘 PHP Version</h3>
-                <p><?php echo PHP_VERSION; ?></p>
+            <div class="cat-section">
+                <h3><i class="fas fa-cat"></i> As a reward, here is a random cat picture:</h3>
+                <p>Take a break and enjoy this adorable cat!</p>
+                <img src="https://thecatapi.com/api/images/get?format=src&type=gif" alt="Random Cat" class="cat-image">
             </div>
 
-            <div class="info-card">
-                <h3>🖥️ Server Software</h3>
-                <p><?php echo $_SERVER['SERVER_SOFTWARE'] ?? 'N/A'; ?></p>
+            <div class="status-badge">
+                <i class="fas fa-check"></i> Application Successfully Installed and Running
             </div>
-        </div>
 
-        <div class="status-badge">
-            ✅ Application Running Successfully
-        </div>
-
-        <div class="footer">
-            <p>Powered by YunoHost • My Webapp Package</p>
+            <div class="footer">
+                <p><i class="fas fa-rocket"></i> Powered by YunoHost • My Webapp Package v1.0</p>
+                <p><i class="fas fa-lightbulb"></i> Ready to build something amazing!</p>
+            </div>
         </div>
     </div>
 </body>

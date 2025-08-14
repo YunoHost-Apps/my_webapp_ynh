@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Webapp - Welcome (No SFTP)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,65 +14,54 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
             padding: 20px;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             max-width: 700px;
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
         .header {
+            background: #e74c3c;
+            color: white;
+            padding: 30px;
             text-align: center;
-            margin-bottom: 30px;
         }
 
         .header h1 {
-            color: #2d3748;
             font-size: 2.5rem;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 10px;
         }
 
         .header .subtitle {
-            color: #718096;
             font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
         }
 
         .info-message {
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 25px 0;
+            background: #e8f4fd;
+            border: 1px solid #b3d9ff;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 30px;
             text-align: center;
         }
 
         .info-message h2 {
-            font-size: 1.4rem;
+            color: #2c5aa0;
             margin-bottom: 15px;
-        }
-
-        .info-message p {
-            opacity: 0.95;
-            line-height: 1.6;
-            font-size: 1.1rem;
         }
 
         .features-grid {
@@ -82,48 +72,47 @@
         }
 
         .feature-card {
-            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
             padding: 20px;
-            border-radius: 15px;
-            border-left: 4px solid #ff6b6b;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
             text-align: center;
+            transition: transform 0.2s ease;
         }
 
         .feature-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .feature-card .icon {
             font-size: 2rem;
             margin-bottom: 15px;
+            color: #e74c3c;
         }
 
         .feature-card h3 {
-            color: #2d3748;
-            font-size: 1.1rem;
+            color: #333;
             margin-bottom: 10px;
-            font-weight: 600;
+            font-size: 1.1rem;
         }
 
         .feature-card p {
-            color: #4a5568;
+            color: #666;
             line-height: 1.5;
             font-size: 0.9rem;
         }
 
         .note-section {
-            background: linear-gradient(135deg, #fef5e7, #fed7aa);
-            border: 1px solid #f6ad55;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 6px;
             margin: 25px 0;
         }
 
         .note-section h3 {
-            color: #c05621;
-            font-size: 1.2rem;
+            color: #856404;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
@@ -131,35 +120,57 @@
         }
 
         .note-section p {
-            color: #744210;
+            color: #856404;
             line-height: 1.6;
         }
 
-        .status-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 20px 0;
+        .cat-section {
             text-align: center;
-            width: 100%;
+            margin: 30px 0;
+            padding: 20px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+        }
+
+        .cat-section h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .cat-section p {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .cat-image {
+            max-width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: 600;
         }
 
         .footer {
             text-align: center;
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            color: #718096;
+            border-top: 1px solid #eee;
+            color: #666;
             font-size: 0.9rem;
         }
 
         @media (max-width: 768px) {
             .container {
-                padding: 30px 20px;
+                margin: 10px;
             }
             
             .header h1 {
@@ -176,53 +187,61 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 My Webapp</h1>
+            <h1><i class="fas fa-rocket"></i> My Webapp</h1>
             <p class="subtitle">Your Custom Web Application Skeleton</p>
         </div>
 
-        <div class="info-message">
-            <h2>🎉 Welcome to Your New Web Application!</h2>
-            <p>Your YunoHost web application has been successfully installed and is ready for development. This is a powerful skeleton that supports multiple rewrite modes and modern web technologies.</p>
-        </div>
-
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="icon">🐘</div>
-                <h3>PHP Support</h3>
-                <p>Multiple PHP versions support with PHP-FPM for optimal performance.</p>
+        <div class="content">
+            <div class="info-message">
+                <h2><i class="fas fa-check-circle"></i> Welcome to Your New Web Application!</h2>
+                <p>Your YunoHost web application has been successfully installed and is ready for development. This is a powerful skeleton that supports multiple rewrite modes and modern web technologies.</p>
             </div>
 
-            <div class="feature-card">
-                <div class="icon">🗄️</div>
-                <h3>Database Ready</h3>
-                <p>Optional MySQL or PostgreSQL database integration with automatic backups.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon"><i class="fab fa-php"></i></div>
+                    <h3>PHP Support</h3>
+                    <p>Multiple PHP versions support with PHP-FPM for optimal performance.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon"><i class="fas fa-database"></i></div>
+                    <h3>Database Ready</h3>
+                    <p>Optional MySQL or PostgreSQL database integration with automatic backups.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon"><i class="fas fa-cogs"></i></div>
+                    <h3>3 Rewrite Modes</h3>
+                    <p>Choose between Default, Front Controller, or Framework patterns for your app.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h3>Error Handling</h3>
+                    <p>Custom 403 and 404 error pages for better user experience.</p>
+                </div>
             </div>
 
-            <div class="feature-card">
-                <div class="icon">⚙️</div>
-                <h3>3 Rewrite Modes</h3>
-                <p>Choose between Default, Front Controller, or Framework patterns for your app.</p>
+            <div class="note-section">
+                <h3><i class="fas fa-info-circle"></i> Note: SFTP Access Disabled</h3>
+                <p>SFTP access is not enabled for this installation. To manage files, you can use SSH/SCP or enable SFTP through the YunoHost admin panel. All other features remain fully functional.</p>
             </div>
 
-            <div class="feature-card">
-                <div class="icon">🚨</div>
-                <h3>Error Handling</h3>
-                <p>Custom 403 and 404 error pages for better user experience.</p>
+            <div class="cat-section">
+                <h3><i class="fas fa-cat"></i> As a reward, here is a random cat picture:</h3>
+                <p>Take a break and enjoy this adorable cat!</p>
+                <img src="https://thecatapi.com/api/images/get?format=src&type=gif" alt="Random Cat" class="cat-image">
             </div>
-        </div>
 
-        <div class="note-section">
-            <h3>📝 Note: SFTP Access Disabled</h3>
-            <p>SFTP access is not enabled for this installation. To manage files, you can use SSH/SCP or enable SFTP through the YunoHost admin panel. All other features remain fully functional.</p>
-        </div>
+            <div class="status-badge">
+                <i class="fas fa-check"></i> Application Successfully Installed and Running
+            </div>
 
-        <div class="status-badge">
-            ✅ Application Successfully Installed and Running
-        </div>
-
-        <div class="footer">
-            <p>🚀 Powered by YunoHost • My Webapp Package v1.0</p>
-            <p>💡 Ready to build something amazing!</p>
+            <div class="footer">
+                <p><i class="fas fa-rocket"></i> Powered by YunoHost • My Webapp Package v1.0</p>
+                <p><i class="fas fa-lightbulb"></i> Ready to build something amazing!</p>
+            </div>
         </div>
     </div>
 </body>

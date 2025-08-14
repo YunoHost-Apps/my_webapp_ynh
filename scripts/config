@@ -36,7 +36,7 @@ rewrite_mode=$(ynh_app_setting_get --app=$app --key=rewrite_mode)
 set__password() {
     if [ ! "$password" == "" ]
     then
-        ynh_app_setting_set --app=$app --key=password --value="$password"
+        ynh_app_setting_set --app=$app --key=PASSWORD --value="$password"
     fi
 }
 
@@ -92,15 +92,15 @@ ynh_app_config_apply() {
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
-        # Generate random password if not provided
+        # Use installer user password if not provided
         if [ "$password" == "" ]
         then
-            password=$(ynh_string_random --length=12)
-            echo "No SFTP password provided, generating random password: $password"
+            password=$YNH_APP_INSTALL_USER_PASSWORD
+            echo "No SFTP password provided, using installer user password"
         fi
         
         chpasswd <<< "${app}:${password}"
-        ynh_app_setting_set --app=$app --key=password --value="$password"
+        ynh_app_setting_set --app=$app --key=PASSWORD --value="$password"
         
     elif [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 0 ]
     then
