@@ -182,7 +182,7 @@ ynh_app_config_apply() {
         if [ "$rewrite_mode" = "framework" ]
         then
             mkdir -p "$install_dir/www/public"
-            ynh_add_config --template="../sources/www/public/index.php" --destination="$install_dir/www/public/index.php"
+            cp "../sources/www/public/index.php" "$install_dir/www/public/index.php"
         else
             # Remove public directory if switching away from framework mode
             if [ -d "$install_dir/www/public" ]

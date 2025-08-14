@@ -183,21 +183,21 @@ mkdir -p "$install_dir/www"
 # Copy the appropriate index files based on SFTP choice
 if [ $with_sftp -eq 1 ]
 then
-    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    cp "../sources/www/index.html" "$install_dir/www/index.html"
 else
-    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    cp "../sources/www/index_no_sftp.html" "$install_dir/www/index.html"
 fi
 
 # Copy PHP test files and ads.txt
-ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
-ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/ads.txt"
-ynh_add_config --template="../sources/www/get_sftp_credentials.php" --destination="$install_dir/www/get_sftp_credentials.php"
+cp "../sources/www/index.php" "$install_dir/www/index.php"
+cp "../sources/www/ads.txt" "$install_dir/www/ads.txt"
+cp "../sources/www/get_sftp_credentials.php" "$install_dir/www/get_sftp_credentials.php"
 
 # If framework mode is selected, create the public directory structure
 if [ "$rewrite_mode" = "framework" ]
 then
     mkdir -p "$install_dir/www/public"
-    ynh_add_config --template="../sources/www/public/index.php" --destination="$install_dir/www/public/index.php"
+    cp "../sources/www/public/index.php" "$install_dir/www/public/index.php"
 fi
 
 chown -R $app:www-data "$install_dir"
