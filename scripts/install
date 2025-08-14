@@ -34,40 +34,14 @@ database=${database:-none}
 phpversion=${phpversion:-8.3}
 rewrite_mode=${rewrite_mode:-default}
 
-# Use MySQL password for SFTP if not provided but SFTP is enabled
-if [ $with_sftp -eq 1 ] && [ "$password" = "" ]
-then
-    if [ "$database" != "none" ]; then
-        # Use the MySQL password for SFTP
-        password=$db_pwd
-        echo "No SFTP password provided, using MySQL password for SFTP access"
-    else
-        # Generate random password if no database
-        password=$(ynh_string_random --length=12)
-        echo "No SFTP password provided and no database, generating random password: $password"
-        echo "IMPORTANT: Please note this password for SFTP access!"
-        
-        # Create a password file for easy access
-        echo "SFTP Password: $password" > "$install_dir/sftp_password.txt"
-        echo "Username: $app" >> "$install_dir/sftp_password.txt"
-        echo "Host: $domain" >> "$install_dir/sftp_password.txt"
-        echo "Port: 22" >> "$install_dir/sftp_password.txt"
-        echo "Directory: $install_dir/www" >> "$install_dir/sftp_password.txt"
-        echo "" >> "$install_dir/sftp_password.txt"
-        echo "This file contains your SFTP credentials." >> "$install_dir/sftp_password.txt"
-        echo "You can delete it after noting the information." >> "$install_dir/sftp_password.txt"
-        chmod 600 "$install_dir/sftp_password.txt"
-        echo "SFTP credentials saved to: $install_dir/sftp_password.txt"
-    fi
-fi
+# SFTP password will be set after database creation if needed
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
 ynh_script_progression --message="Storing installation settings..." --weight=1
 
-# Store the password (either provided or generated)
-ynh_app_setting_set --app=$app --key=PASSWORD --value=$password
+# Store SFTP settings
 ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 
 #=================================================
@@ -96,6 +70,39 @@ if [ $database != "none" ]; then
     ynh_app_setting_set --app=$app --key=db_user --value=$db_user
     ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 fi
+
+#=================================================
+# SET SFTP PASSWORD IF NEEDED
+#=================================================
+# Use MySQL password for SFTP if not provided but SFTP is enabled
+if [ $with_sftp -eq 1 ] && [ "$password" = "" ]
+then
+    if [ "$database" != "none" ]; then
+        # Use the MySQL password for SFTP
+        password=$db_pwd
+        echo "No SFTP password provided, using MySQL password for SFTP access"
+    else
+        # Generate random password if no database
+        password=$(ynh_string_random --length=12)
+        echo "No SFTP password provided and no database, generating random password: $password"
+        echo "IMPORTANT: Please note this password for SFTP access!"
+        
+        # Create a password file for easy access
+        echo "SFTP Password: $password" > "$install_dir/sftp_password.txt"
+        echo "Username: $app" >> "$install_dir/sftp_password.txt"
+        echo "Host: $domain" >> "$install_dir/sftp_password.txt"
+        echo "Port: 22" >> "$install_dir/sftp_password.txt"
+        echo "Directory: $install_dir/www" >> "$install_dir/sftp_password.txt"
+        echo "" >> "$install_dir/sftp_password.txt"
+        echo "This file contains your SFTP credentials." >> "$install_dir/sftp_password.txt"
+        echo "You can delete it after noting the information." >> "$install_dir/sftp_password.txt"
+        chmod 600 "$install_dir/sftp_password.txt"
+        echo "SFTP credentials saved to: $install_dir/sftp_password.txt"
+    fi
+fi
+
+# Store the SFTP password (either provided or generated)
+ynh_app_setting_set --app=$app --key=PASSWORD --value=$password
 
 #=================================================
 # NGINX CONFIGURATION
