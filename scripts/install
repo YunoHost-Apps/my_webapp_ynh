@@ -22,14 +22,21 @@ ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=2
 
-[ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
+# Generate random password for SFTP if not provided but SFTP is enabled
+if [ $with_sftp -eq 1 ] && [ "$password" = "" ]
+then
+    password=$(ynh_string_random --length=12)
+    echo "No SFTP password provided, generating random password: $password"
+fi
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
 ynh_script_progression --message="Storing installation settings..." --weight=1
 
+# Store the password (either provided or generated)
 ynh_app_setting_set --app=$app --key=password --value=$password
+ynh_app_setting_set --app=$app --key=with_sftp --value=$with_sftp
 
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -50,6 +57,12 @@ if [ $database != "none" ]; then
     elif [ $database == "postgresql" ]; then
         ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
     fi
+    
+    # Store database settings for POST_INSTALL
+    ynh_app_setting_set --app=$app --key=database --value=$database
+    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+    ynh_app_setting_set --app=$app --key=db_user --value=$db_user
+    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 fi
 
 #=================================================
@@ -60,42 +73,12 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"
 
-# Prepare nginx extra conf based on rewrite mode
-if [ "$rewrite_mode" = "front" ] || [ "$rewrite_mode" = "advanced" ]
+# Prepare nginx extra conf
+if [ $phpversion != "none" ]
 then
-    # Front controller mode - PHP config toujours nécessaire
-    if [ $phpversion != "none" ]
-    then
-        # Définir php_version pour ynh_replace_vars
-        php_version="$phpversion"
-        ynh_add_config --template="php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
-else
-    # Standard mode - load PHP config if needed
-    if [ $phpversion != "none" ]
-    then
-        # Définir php_version pour ynh_replace_vars
-        php_version="$phpversion"
-        ynh_add_config --template="php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
+    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+    YNH_PHP_VERSION="$phpversion"
 fi
-
-# Définir le webroot selon le mode choisi
-if [ "$rewrite_mode" = "advanced" ]
-then
-    APP_WEBROOT="www/public"
-else
-    APP_WEBROOT="www"
-fi
-
-# Définir app_webroot pour ynh_replace_vars (avec / au début)
-app_webroot="/$APP_WEBROOT"
-
-# Stocker le webroot pour la configuration NGINX
-ynh_app_setting_set --app=$app --key=webroot --value=$APP_WEBROOT
-ynh_app_setting_set --app=$app --key=app_webroot --value=$app_webroot
 
 if [ $custom_error_file -eq 1 ]
 then
@@ -103,14 +86,27 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-# Create a dedicated NGINX config with webroot variable
-ynh_add_nginx_config
+# Apply the chosen rewrite mode configuration
+case $rewrite_mode in
+    "front")
+        ynh_add_config --template="rewrite-front.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+        ;;
+    "framework")
+        ynh_add_config --template="rewrite-framework.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+        ;;
+    "default"|*)
+        ynh_add_config --template="rewrite-default.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+        ;;
+esac
 
-# Only add sample config in standard mode
-if [ "$rewrite_mode" = "standard" ]
-then
-    ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
-fi
+# Store the rewrite mode setting
+ynh_app_setting_set --app=$app --key=rewrite_mode --value=$rewrite_mode
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
+ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -138,38 +134,25 @@ fi
 # MODIFY A CONFIG FILE
 #=================================================
 
-# Create directory structure based on rewrite mode
-if [ "$rewrite_mode" = "advanced" ]
+mkdir -p "$install_dir/www"
+
+# Copy the appropriate index files based on SFTP choice
+if [ $with_sftp -eq 1 ]
 then
-    # Advanced mode: create www/public structure
-    mkdir -p "$install_dir/www/public"
-    # Copy the advanced PHP front controller
-    ynh_add_config --template="../sources/www/index-advanced.php" --destination="$install_dir/www/public/index.php"
-    # Create additional directories for advanced mode
-    mkdir -p "$install_dir/www/src"
-    mkdir -p "$install_dir/www/vendor"
-    mkdir -p "$install_dir/www/public/views"
-    mkdir -p "$install_dir/www/public/admin"
-    mkdir -p "$install_dir/www/public/api"
-    # Copy ads.txt for direct access
-    ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/public/ads.txt"
-elif [ "$rewrite_mode" = "front" ]
-then
-    # Front mode: create www structure with PHP front controller
-    mkdir -p "$install_dir/www"
-    # Copy the PHP front controller
-    ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
-    # Copy ads.txt for direct access
-    ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/ads.txt"
+    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
 else
-    # Standard mode: create www structure with HTML files
-    mkdir -p "$install_dir/www"
-    if [ $with_sftp -eq 1 ]
-    then
-        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
-    else
-        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
-    fi
+    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+fi
+
+# Copy PHP test files and ads.txt
+ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
+ynh_add_config --template="../sources/www/ads.txt" --destination="$install_dir/www/ads.txt"
+
+# If framework mode is selected, create the public directory structure
+if [ "$rewrite_mode" = "framework" ]
+then
+    mkdir -p "$install_dir/www/public"
+    ynh_add_config --template="../sources/www/public/index.php" --destination="$install_dir/www/public/index.php"
 fi
 
 chown -R $app:www-data "$install_dir"

@@ -8,7 +8,7 @@ It shall NOT be edited by hand.
   My Webapp, packaged for YunoHost
 </h1>
 
-Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files with advanced rewrite modes support (using proper YunoHost alias architecture)
+Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files
 
 [![Version: 1.0~ynh21](https://img.shields.io/badge/Version-1.0~ynh21-rgba(0,150,0,1)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 
@@ -34,25 +34,83 @@ sudo yunohost app install https://github.com/YunoHost-Apps/my_webapp_ynh/tree/te
 sudo yunohost app upgrade my_webapp -u https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing
 ```
 
-## 🚀 Features
-
-### Rewrite Modes
-- **Standard Mode**: Basic static file serving (default)
-- **Front Controller Mode**: Advanced rewrite rules with front controller
-- **Advanced Mode**: Front controller serving from `/www/public` subdirectory
-
-### Key Features
-- SFTP access support
-- Multiple PHP versions (7.4 to 8.4)
-- Database support (MySQL/PostgreSQL)
-- Custom error pages
-- Automatic NGINX configuration
-- Security hardening
-
-## 📖 Documentation
-
-For detailed information about rewrite modes and configuration, see [REWRITE_MODES.md](doc/REWRITE_MODES.md).
-
 ### 📚 App packaging documentation
 
 Please see <https://doc.yunohost.org/packaging_apps> for more information.
+
+---
+
+# My Webapp - YunoHost Package
+
+Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files.
+
+## Features
+
+- **3 Rewrite Modes**: Choose the best configuration for your application
+- **SFTP Access**: Optional SFTP access for file management
+- **PHP Support**: Multiple PHP version support (7.4 to 8.4)
+- **Database Support**: Optional MySQL or PostgreSQL support
+- **Custom Error Pages**: Custom 404 and error pages support
+
+## Rewrite Modes
+
+### 1. Default Mode
+- **Purpose**: Standard web serving without special rewrite rules
+- **Use Case**: Simple static websites, basic PHP applications
+- **Behavior**: Serves files directly from the `www/` directory
+- **Configuration**: Uses `nginx.conf` default behavior
+
+### 2. Front Mode
+- **Purpose**: Single entry point application (like a front controller)
+- **Use Case**: Modern PHP applications, SPA frameworks
+- **Behavior**: All requests are rewritten to `/index.php`
+- **Configuration**: Uses `rewrite-front.conf`
+
+### 3. Framework Mode
+- **Purpose**: Framework-style applications (Laravel, Symfony, etc.)
+- **Use Case**: Modern PHP frameworks with public directory
+- **Behavior**: All requests are rewritten to `/public/index.php`
+- **Configuration**: Uses `rewrite-framework.conf`
+
+## Installation
+
+During installation, you'll be asked to choose:
+- **Domain**: Your domain name
+- **Path**: Installation path (default: `/site`)
+- **SFTP Access**: Whether to enable SFTP access
+- **Password**: SFTP password (if SFTP is enabled)
+- **PHP Version**: PHP version to use (7.4 to 8.4)
+- **Database**: Database type (none, MySQL, PostgreSQL)
+- **Custom Error Files**: Enable custom error pages
+- **Rewrite Mode**: Choose between default, front, or framework
+
+## Configuration
+
+You can change the rewrite mode after installation using:
+```bash
+yunohost app config my_webapp
+```
+
+## File Structure
+
+```
+www/
+├── index.html          # Main HTML file
+├── index.php           # PHP test file
+├── ads.txt            # Ads.txt file (served directly)
+├── public/            # Framework mode directory
+│   └── index.php      # Framework entry point
+└── error/             # Custom error pages (if enabled)
+    └── 404.html       # Custom 404 page
+```
+
+## Security Features
+
+- Hidden files and directories are blocked (except `.well-known`)
+- Sensitive file types (`.json`, `.tpl`, `.ini`, `.env`) are denied
+- Proper file permissions and ownership
+- SFTP access isolation
+
+## Support
+
+For issues and questions, please refer to the YunoHost documentation or create an issue in the package repository.

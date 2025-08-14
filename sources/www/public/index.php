@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Webapp - Rewrite Test</title>
+    <title>My Webapp - Framework Mode</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,7 +27,7 @@
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -41,7 +41,7 @@
             color: #2d3748;
             font-size: 2.5rem;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -51,6 +51,17 @@
             color: #718096;
             font-size: 1.1rem;
             font-weight: 500;
+        }
+
+        .mode-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 15px 0;
         }
 
         .info-grid {
@@ -63,7 +74,7 @@
             background: linear-gradient(135deg, #f7fafc, #edf2f7);
             padding: 20px;
             border-radius: 15px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #ff6b6b;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -87,6 +98,25 @@
             border-radius: 8px;
             font-size: 0.9rem;
             word-break: break-all;
+        }
+
+        .framework-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .framework-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .framework-info p {
+            opacity: 0.9;
+            line-height: 1.6;
         }
 
         .status-badge {
@@ -129,8 +159,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 My Webapp</h1>
-            <p class="subtitle">Rewrite Test & Configuration</p>
+            <h1>🏗️ My Webapp</h1>
+            <p class="subtitle">Framework Mode - Public Entry Point</p>
+            <div class="mode-badge">Framework Mode Active</div>
+        </div>
+
+        <div class="framework-info">
+            <h3>🎯 Framework Mode Information</h3>
+            <p>This is the framework mode entry point. All requests are rewritten to this file, making it perfect for modern PHP frameworks like Laravel, Symfony, or custom MVC applications.</p>
         </div>
 
         <div class="info-grid">
@@ -161,11 +197,11 @@
         </div>
 
         <div class="status-badge">
-            ✅ Application Running Successfully
+            ✅ Framework Mode Running Successfully
         </div>
 
         <div class="footer">
-            <p>Powered by YunoHost • My Webapp Package</p>
+            <p>Powered by YunoHost • My Webapp Package • Framework Mode</p>
         </div>
     </div>
 </body>

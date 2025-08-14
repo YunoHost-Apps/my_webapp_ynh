@@ -11,11 +11,16 @@ test_format = 1.0
     args.password = "SuperDuper_StrongPassw0rd"
     args.database = "none"
     args.phpversion = "8.3"
+    args.rewrite_mode = "default"
     test_upgrade_from.bf5d3ed.name = "1.0~ynh14"
     test_upgrade_from.bf5d3ed.args.with_mysql = "0"
     test_upgrade_from.bf5d3ed.args.domain = "sub.domain.tld"
     test_upgrade_from.bf5d3ed.args.path = "/"
     test_upgrade_from.bf5d3ed.args.password = "SuperDuper_StrongPassw0rd"
+
+# ========================================
+# PHP VERSION TESTS
+# ========================================
 
 [83_test]
 
@@ -30,6 +35,30 @@ test_format = 1.0
 [none_test]
 
     args.phpversion = "none"
+
+[php74_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.phpversion = "7.4"
+
+[php80_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.phpversion = "8.0"
+
+[php81_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.phpversion = "8.1"
+
+[php82_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.phpversion = "8.2"
+
+# ========================================
+# DATABASE TESTS
+# ========================================
 
 [mysql_test]
 
@@ -46,6 +75,45 @@ test_format = 1.0
     only = ["install.subdir", "backup_restore", "upgrade" ]
     args.database = "postgresql"
 
+# ========================================
+# SFTP CONFIGURATION TESTS
+# ========================================
+
+[no_sftp_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.with_sftp = "0"
+    args.password = ""
+
+[sftp_no_password_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.with_sftp = "1"
+    args.password = ""
+
+# ========================================
+# REWRITE MODE TESTS
+# ========================================
+
+[rewrite_front_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "front"
+
+[rewrite_framework_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "framework"
+
+[rewrite_default_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "default"
+
+# ========================================
+# CUSTOM ERROR FILE TESTS
+# ========================================
+
 [custom_error_file_test]
 
     args.custom_error_file = "1"
@@ -54,3 +122,111 @@ test_format = 1.0
     test_upgrade_from.bf5d3ed.args.domain = "sub.domain.tld"
     test_upgrade_from.bf5d3ed.args.path = "/"
     test_upgrade_from.bf5d3ed.args.password = "SuperDuper_StrongPassw0rd"
+
+# ========================================
+# COMBINED FEATURE TESTS
+# ========================================
+
+[front_mysql_php84_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "front"
+    args.database = "mysql"
+    args.phpversion = "8.4"
+    args.with_sftp = "1"
+    args.password = "SuperDuper_StrongPassw0rd"
+
+[framework_postgresql_php83_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "framework"
+    args.database = "postgresql"
+    args.phpversion = "8.3"
+    args.with_sftp = "1"
+    args.password = "SuperDuper_StrongPassw0rd"
+
+[default_none_php_none_sftp_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "default"
+    args.database = "none"
+    args.phpversion = "none"
+    args.with_sftp = "0"
+    args.password = ""
+
+[front_mysql_php74_custom_error_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "front"
+    args.database = "mysql"
+    args.phpversion = "7.4"
+    args.custom_error_file = "1"
+    args.with_sftp = "1"
+    args.password = "SuperDuper_StrongPassw0rd"
+
+[framework_postgresql_php82_no_sftp_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "framework"
+    args.database = "postgresql"
+    args.phpversion = "8.2"
+    args.with_sftp = "0"
+    args.password = ""
+
+# ========================================
+# EDGE CASE TESTS
+# ========================================
+
+[edge_case_1_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "default"
+    args.database = "mysql"
+    args.phpversion = "8.4"
+    args.with_sftp = "1"
+    args.password = ""
+    args.custom_error_file = "1"
+
+[edge_case_2_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "front"
+    args.database = "postgresql"
+    args.phpversion = "7.4"
+    args.with_sftp = "0"
+    args.password = ""
+    args.custom_error_file = "0"
+
+[edge_case_3_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "framework"
+    args.database = "none"
+    args.phpversion = "8.1"
+    args.with_sftp = "1"
+    args.password = "SuperDuper_StrongPassw0rd"
+    args.custom_error_file = "1"
+
+# ========================================
+# PERFORMANCE AND STRESS TESTS
+# ========================================
+
+[performance_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "default"
+    args.database = "mysql"
+    args.phpversion = "8.4"
+    args.with_sftp = "1"
+    args.password = "SuperDuper_StrongPassw0rd"
+    args.custom_error_file = "1"
+
+[stress_test]
+
+    only = ["install.subdir", "backup_restore", "upgrade" ]
+    args.rewrite_mode = "framework"
+    args.database = "postgresql"
+    args.phpversion = "8.3"
+    args.with_sftp = "1"
+    args.password = "SuperDuper_StrongPassw0rd"
+    args.custom_error_file = "0"

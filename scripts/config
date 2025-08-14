@@ -23,6 +23,8 @@ path=$(ynh_app_setting_get --app=$app --key=path)
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
 
+rewrite_mode=$(ynh_app_setting_get --app=$app --key=rewrite_mode)
+
 #=================================================
 # SPECIFIC VALIDATORS FOR TOML SHORT KEYS
 #=================================================
@@ -90,10 +92,16 @@ ynh_app_config_apply() {
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
-        if [ ! "$password" == "" ]
+        # Generate random password if not provided
+        if [ "$password" == "" ]
         then
-            chpasswd <<< "${app}:${password}"
+            password=$(ynh_string_random --length=12)
+            echo "No SFTP password provided, generating random password: $password"
         fi
+        
+        chpasswd <<< "${app}:${password}"
+        ynh_app_setting_set --app=$app --key=password --value="$password"
+        
     elif [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 0 ]
     then
         ynh_system_user_del_group --username=$app --groups="sftp.app"
@@ -122,6 +130,48 @@ ynh_app_config_apply() {
     if [ "$phpversion" != "none" ]
     then
         ynh_add_fpm_config --phpversion=$phpversion
+    fi
+
+    # Handle rewrite mode changes
+    if [ "${changed[rewrite_mode]}" == "true" ]
+    then
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+        
+        # Remove old rewrite config
+        ynh_delete_file_checksum --file="$nginx_extra_conf_dir/rewrite.conf"
+        ynh_secure_remove --file="$nginx_extra_conf_dir/rewrite.conf"
+        
+        # Apply new rewrite mode configuration
+        case $rewrite_mode in
+            "front")
+                ynh_add_config --template="rewrite-front.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+                ;;
+            "framework")
+                ynh_add_config --template="rewrite-framework.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+                ;;
+            "default"|*)
+                ynh_add_config --template="rewrite-default.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+                ;;
+        esac
+        
+        # Store the new rewrite mode setting
+        ynh_app_setting_set --app=$app --key=rewrite_mode --value=$rewrite_mode
+        
+        # Handle public directory for framework mode
+        if [ "$rewrite_mode" = "framework" ]
+        then
+            mkdir -p "$install_dir/www/public"
+            ynh_add_config --template="../sources/www/public/index.php" --destination="$install_dir/www/public/index.php"
+        else
+            # Remove public directory if switching away from framework mode
+            if [ -d "$install_dir/www/public" ]
+            then
+                rm -rf "$install_dir/www/public"
+            fi
+        fi
+        
+        # Reload nginx to apply changes
+        ynh_systemd_action --service_name=nginx --action=reload
     fi
 }
 

@@ -16,11 +16,6 @@ source /usr/share/yunohost/helpers
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.d"
 
-# Restore PHP configuration files if they exist
-if [ -f "./php.conf" ]; then
-    ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.d/php.conf"
-fi
-
 #=================================================
 # RESTORE THE MYSQL DATABASE
 #=================================================

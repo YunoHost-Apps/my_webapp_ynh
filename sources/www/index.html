@@ -1,35 +1,229 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My Webapp</title>
-  </head>
-  <body>
-    <h1>It works!</h1>
-    <p>Congratulation, you have just installed My Webapp.</p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Webapp - Welcome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <h2>Edit this site</h2>
-    <p>
-      First way to edit this site is by putting your files in /var/www/__APP__/www using SSH/SCP.
-    </p>
-    <p>
-      Alternatively you can achieve the same thing using SFTP. To do so, you can use a client application such as
-      <a href="https://filezilla-project.org/download.php?type=client" target="_blank">FileZilla</a>.
-      Here are the SFTP connection details:
-    </p>
-    <dl>
-      <dt>Domain</dt>
-      <dd>__DOMAIN__</dd>
-      <dt>Port</dt>
-      <dd>__SSH_PORT__</dd>
-      <dt>User</dt>
-      <dd>__ID__</dd>
-      <dt>Password</dt>
-      <dd><i>the one you set at installation</i></dd>
-    </dl>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-    <hr/>
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-    <p>As a reward, here is a random cat picture:</p>
-    <img src="https://thecatapi.com/api/images/get?format=src&type=gif">
-  </body>
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            color: #718096;
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .welcome-message {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .welcome-message h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .welcome-message p {
+            opacity: 0.95;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            color: #2d3748;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin: 10px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 20px 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 My Webapp</h1>
+            <p class="subtitle">Your Custom Web Application Skeleton</p>
+        </div>
+
+        <div class="welcome-message">
+            <h2>🎉 Welcome to Your New Web Application!</h2>
+            <p>Your YunoHost web application has been successfully installed and is ready for development. This is a powerful skeleton that supports multiple rewrite modes and modern web technologies.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">🔐</div>
+                <h3>SFTP Access</h3>
+                <p>Secure file transfer protocol access for easy file management and deployment.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🐘</div>
+                <h3>PHP Support</h3>
+                <p>Multiple PHP versions support with PHP-FPM for optimal performance.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🗄️</div>
+                <h3>Database Ready</h3>
+                <p>Optional MySQL or PostgreSQL database integration with automatic backups.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">⚙️</div>
+                <h3>3 Rewrite Modes</h3>
+                <p>Choose between Default, Front Controller, or Framework patterns for your app.</p>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="#" class="cta-button">📁 Start Building</a>
+            <a href="#" class="cta-button">📚 Documentation</a>
+        </div>
+
+        <div class="status-badge">
+            ✅ Application Successfully Installed and Running
+        </div>
+
+        <div class="footer">
+            <p>🚀 Powered by YunoHost • My Webapp Package v1.0</p>
+            <p>💡 Ready to build something amazing!</p>
+        </div>
+    </div>
+</body>
 </html>

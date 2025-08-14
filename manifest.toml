@@ -69,12 +69,12 @@ ram.runtime = "50M"
 
     [install.rewrite_mode]
     ask.en = "Choose the rewrite mode for your application"
-    ask.fr = "Choisissez le mode de réécriture pour votre application"
+    ask.fr = "Choisissez le mode de rewrite pour votre application"
     type = "select"
-    choices = ["standard", "front", "advanced"]
-    default = "standard"
-    help.en = "Standard: Basic static file serving, Front: Front controller with rewrite rules, Advanced: Front controller serving from /www/public"
-    help.fr = "Standard: Service de fichiers statiques basique, Front: Contrôleur frontal avec règles de réécriture, Avancé: Contrôleur frontal servant depuis /www/public"
+    choices = ["default", "front", "framework"]
+    default = "default"
+    help.en = "default: no special rewrite, front: rewrite to /index.php, framework: rewrite to /public/index.php"
+    help.fr = "default: pas de rewrite spécial, front: rewrite vers /index.php, framework: rewrite vers /public/index.php"
 
 [resources]
     [resources.system_user]

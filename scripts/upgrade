@@ -56,12 +56,6 @@ if [ -z "${custom_error_file:-}" ]; then
 	ynh_app_setting_set --app=$app --key=custom_error_file --value=$custom_error_file
 fi
 
-# If rewrite_mode doesn't exist, create it (default to standard for backward compatibility)
-if [ -z "${rewrite_mode:-}" ]; then
-	rewrite_mode="standard"
-	ynh_app_setting_set --app=$app --key=rewrite_mode --value=$rewrite_mode
-fi
-
 # Delete old user
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
 then
@@ -89,42 +83,12 @@ nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 
 mkdir -p "$nginx_extra_conf_dir"
 
-# Prepare nginx extra conf based on rewrite mode
-if [ "$rewrite_mode" = "front" ] || [ "$rewrite_mode" = "advanced" ]
+# Prepare nginx extra conf
+if [ $phpversion != "none" ]
 then
-    # Front controller mode - PHP config toujours nécessaire
-    if [ $phpversion != "none" ]
-    then
-        # Définir php_version pour ynh_replace_vars
-        php_version="$phpversion"
-        ynh_add_config --template="php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
-else
-    # Standard mode - load PHP config if needed
-    if [ $phpversion != "none" ]
-    then
-        # Définir php_version pour ynh_replace_vars
-        php_version="$phpversion"
-        ynh_add_config --template="php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
+    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+    YNH_PHP_VERSION="$phpversion"
 fi
-
-# Définir le webroot selon le mode choisi
-if [ "$rewrite_mode" = "advanced" ]
-then
-    APP_WEBROOT="www/public"
-else
-    APP_WEBROOT="www"
-fi
-
-# Définir app_webroot pour ynh_replace_vars (avec / au début)
-app_webroot="/$APP_WEBROOT"
-
-# Stocker le webroot pour la configuration NGINX
-ynh_app_setting_set --app=$app --key=webroot --value=$APP_WEBROOT
-ynh_app_setting_set --app=$app --key=app_webroot --value=$app_webroot
 
 # Add the config error code
 if [ $custom_error_file -eq 1 ]
@@ -132,7 +96,7 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-# Create a dedicated NGINX config with webroot variable
+# Create a dedicated NGINX config
 ynh_add_nginx_config
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
