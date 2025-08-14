@@ -46,6 +46,18 @@ then
         password=$(ynh_string_random --length=12)
         echo "No SFTP password provided and no database, generating random password: $password"
         echo "IMPORTANT: Please note this password for SFTP access!"
+        
+        # Create a password file for easy access
+        echo "SFTP Password: $password" > "$install_dir/sftp_password.txt"
+        echo "Username: $app" >> "$install_dir/sftp_password.txt"
+        echo "Host: $domain" >> "$install_dir/sftp_password.txt"
+        echo "Port: 22" >> "$install_dir/sftp_password.txt"
+        echo "Directory: $install_dir/www" >> "$install_dir/sftp_password.txt"
+        echo "" >> "$install_dir/sftp_password.txt"
+        echo "This file contains your SFTP credentials." >> "$install_dir/sftp_password.txt"
+        echo "You can delete it after noting the information." >> "$install_dir/sftp_password.txt"
+        chmod 600 "$install_dir/sftp_password.txt"
+        echo "SFTP credentials saved to: $install_dir/sftp_password.txt"
     fi
 fi
 

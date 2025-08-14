@@ -143,6 +143,50 @@
             font-size: 0.9rem;
         }
 
+        .sftp-credentials {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .sftp-credentials h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sftp-credentials p {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .credentials-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .credentials-display pre {
+            margin: 0;
+            color: #495057;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .note {
+            font-style: italic;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
         .cat-section {
             text-align: center;
             margin: 30px 0;
@@ -233,6 +277,25 @@
                 <p>Server software: <strong><?php echo $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown'; ?></strong></p>
                 <p>Document root: <strong><?php echo $_SERVER['DOCUMENT_ROOT'] ?? 'Unknown'; ?></strong></p>
             </div>
+
+            <?php
+            // Check if SFTP password file exists and display credentials
+            $install_dir = dirname($_SERVER['DOCUMENT_ROOT']);
+            $sftp_file = $install_dir . '/sftp_password.txt';
+            if (file_exists($sftp_file) && is_readable($sftp_file)) {
+                $sftp_content = file_get_contents($sftp_file);
+                if ($sftp_content) {
+                    echo '<div class="sftp-credentials">';
+                    echo '<h3><i class="fas fa-key"></i> SFTP Credentials</h3>';
+                    echo '<p>Your SFTP credentials are available in the file: <code>' . htmlspecialchars($sftp_file) . '</code></p>';
+                    echo '<div class="credentials-display">';
+                    echo '<pre>' . htmlspecialchars($sftp_content) . '</pre>';
+                    echo '</div>';
+                    echo '<p class="note"><i class="fas fa-info-circle"></i> You can delete this file after noting the information.</p>';
+                    echo '</div>';
+                }
+            }
+            ?>
 
             <div class="cat-section">
                 <h3><i class="fas fa-cat"></i> As a reward, here is a random cat picture:</h3>
