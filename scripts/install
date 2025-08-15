@@ -20,6 +20,11 @@ path=${path:-$YNH_APP_ARG_PATH}
 install_dir=${install_dir:-/var/www/$app}
 install_mode=${install_mode:-$YNH_APP_ARG_INSTALL_MODE}
 
+# Variables spécifiques
+password=$YNH_APP_ARG_PASSWORD
+app_nb=$YNH_APP_INSTANCE_NUMBER
+ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
+
 # Variables supplémentaires pour compatibilité
 dir=${dir:-$path}
 id=${id:-$app}
@@ -27,11 +32,6 @@ id=${id:-$app}
 # Debug des variables (à supprimer après test)
 echo "DEBUG: app=$app, domain=$domain, path=$path, install_dir=$install_dir, install_mode=$install_mode"
 echo "DEBUG: dir=$dir, id=$id, ssh_port=$ssh_port"
-
-# Variables spécifiques
-password=$YNH_APP_ARG_PASSWORD
-app_nb=$YNH_APP_INSTANCE_NUMBER
-ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
 # Variables SFTP et autres
 with_sftp=${with_sftp:-$YNH_APP_ARG_WITH_SFTP}
