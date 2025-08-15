@@ -8,17 +8,20 @@
  * - front_controller_public : Laravel/Symfony style
  */
 
-// Détection du mode d'installation (pour affichage informatif)
-// Essayer de détecter automatiquement le mode, sinon utiliser le paramètre GET ou la valeur par défaut
-$install_mode = 'standard'; // valeur par défaut
-
-// Détection automatique basée sur la structure des fichiers
-if (file_exists(__DIR__ . '/index.php') && __DIR__ === dirname(__DIR__)) {
-    // Si on est dans /www et qu'il y a un index.php, c'est probablement front_controller_www
-    $install_mode = 'front_controller_www';
-} elseif (file_exists(__DIR__ . '/index.php') && __DIR__ === dirname(dirname(__DIR__)) . '/public') {
-    // Si on est dans /www/public et qu'il y a un index.php, c'est front_controller_public
-    $install_mode = 'front_controller_public';
+// Détection du mode d'installation basée sur le chemin
+try {
+    $current_path = __DIR__;
+    $install_mode = 'standard'; // valeur par défaut
+    
+    // Détection simple et robuste
+    if (strpos($current_path, '/public') !== false) {
+        $install_mode = 'front_controller_public';
+    } elseif (basename($current_path) === 'www') {
+        $install_mode = 'front_controller_www';
+    }
+} catch (Exception $e) {
+    // En cas d'erreur, utiliser le mode standard
+    $install_mode = 'standard';
 }
 
 // Permettre la surcharge via paramètre GET
