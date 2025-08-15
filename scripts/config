@@ -73,6 +73,16 @@ then
     dependencies_from_raw_bash=$(eval "$(ynh_read_manifest -k "resources.apt.packages_from_raw_bash")" | tr "\n" " ")
     ynh_install_app_dependencies "$dependencies $dependencies_from_raw_bash"
 
+    # Définir le répertoire racine PHP selon le mode d'installation
+    install_mode=$(ynh_app_setting_get --app=$app --key=install_mode)
+    if [ "$install_mode" == "front_controller_public" ]; then
+        # Pour le mode public, PHP_ROOT doit pointer vers /www/public
+        php_root="$install_dir/www/public"
+    else
+        # Pour les autres modes, PHP_ROOT pointe vers /www
+        php_root="$install_dir/www"
+    fi
+
     nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
     mkdir -p "$nginx_extra_conf_dir"
     if [ "$phpversion" == "none" ]
@@ -80,18 +90,6 @@ then
         ynh_delete_file_checksum --file="$nginx_extra_conf_dir/php.conf"
         ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
     else
-        # Créer la configuration PHP avec le bon répertoire racine selon le mode
-        install_mode=$(ynh_app_setting_get --app=$app --key=install_mode)
-        if [ "$install_mode" == "front_controller_public" ]; then
-            # Pour le mode public, PHP_ROOT doit pointer vers /www/public
-            YNH_PHP_ROOT="$install_dir/www/public"
-            php_root="$install_dir/www/public"
-        else
-            # Pour les autres modes, PHP_ROOT pointe vers /www
-            YNH_PHP_ROOT="$install_dir/www"
-            php_root="$install_dir/www"
-        fi
-        
         ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
         ynh_add_fpm_config --phpversion=$phpversion
         # ^ the helper takes care of ynh_app_setting_set the phpversion
