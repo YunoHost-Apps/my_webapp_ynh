@@ -111,13 +111,14 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-# Configuration NGINX principale selon le mode d'installation
+# Configuration NGINX principale (toujours la même pour tous les modes)
+ynh_add_nginx_config
+
+# Ajouter des règles de réécriture selon le mode d'installation
 if [ "$install_mode" == "front_controller_public" ]; then
-    ynh_add_config --template="nginx-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/main.conf"
+    ynh_add_config --template="nginx-rewrite-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
 elif [ "$install_mode" == "front_controller_www" ]; then
-    ynh_add_config --template="nginx-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/main.conf"
-else
-    ynh_add_nginx_config  # comportement existant (standard)
+    ynh_add_config --template="nginx-rewrite-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
 fi
 
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"

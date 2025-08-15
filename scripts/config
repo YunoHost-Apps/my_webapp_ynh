@@ -145,8 +145,15 @@ then
     nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
     mkdir -p "$nginx_extra_conf_dir"
     
+    # Toujours recréer la configuration principale
+    ynh_add_nginx_config
+    
+    # Supprimer l'ancien fichier de réécriture s'il existe
+    ynh_secure_remove --file="$nginx_extra_conf_dir/rewrite.conf"
+    
     if [ "$install_mode" == "front_controller_public" ]; then
-        ynh_add_config --template="nginx-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/main.conf"
+        # Ajouter les règles de réécriture pour le mode public
+        ynh_add_config --template="nginx-rewrite-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
         # Créer le répertoire public et l'index
         mkdir -p "$install_dir/www/public"
         ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/public/index.php"
@@ -156,15 +163,13 @@ then
         chown -R $app:www-data "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
         chmod -R 750 "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
     elif [ "$install_mode" == "front_controller_www" ]; then
-        ynh_add_config --template="nginx-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/main.conf"
+        # Ajouter les règles de réécriture pour le mode www
+        ynh_add_config --template="nginx-rewrite-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
         # Créer l'index PHP
         ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
     else
-        # Mode standard - utiliser la configuration par défaut
-        ynh_add_nginx_config
-        # Supprimer les fichiers spécifiques aux autres modes
+        # Mode standard - supprimer l'index PHP s'il existe
         ynh_secure_remove --file="$install_dir/www/index.php"
-        ynh_secure_remove --file="$nginx_extra_conf_dir/main.conf"
     fi
     
     # Recharger NGINX
