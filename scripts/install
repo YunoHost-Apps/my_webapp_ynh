@@ -22,7 +22,11 @@ ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=2
 
-[ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
+# Validation du mot de passe SFTP
+# Si SFTP est activé mais pas de mot de passe, on utilisera le mot de passe de l'utilisateur courant
+if [ $with_sftp -eq 1 ] && [ -z "$password" ]; then
+    ynh_print_info --message="No SFTP password provided, will use current user's password"
+fi
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -111,7 +115,13 @@ fi
 if [ $with_sftp -eq 1 ]
 then
     # Add the password to this user
-    chpasswd <<< "${app}:${password}"
+    if [ -n "$password" ]; then
+        # Utiliser le mot de passe fourni
+        chpasswd <<< "${app}:${password}"
+    else
+        # Pas de mot de passe fourni, l'utilisateur utilisera son mot de passe YunoHost actuel
+        ynh_print_info --message="SFTP user created without specific password - will use current user's YunoHost password"
+    fi
 fi
 
 #=================================================
@@ -126,27 +136,18 @@ mkdir -p "$install_dir/www"
 case "$install_mode" in
   "standard")
     # Mode standard: index statique (comportement existant)
-    if [ $with_sftp -eq 1 ]
-    then
-        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
-    else
-        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
-    fi
+    ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
     ;;
 
   "front_controller_www")
     # Front controller à la racine /www (index.php reçoit toutes les requêtes)
-    ynh_add_config --template="../sources/www/frontcontroller_index.php" --destination="$install_dir/www/index.php"
-    # Optionnel : fournir un index.html explicatif si besoin
-    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
     ;;
 
   "front_controller_public")
     # Front controller dans /www/public (ex: Laravel / Symfony)
     mkdir -p "$install_dir/www/public"
-    ynh_add_config --template="../sources/www/public_frontcontroller_index.php" --destination="$install_dir/www/public/index.php"
-    # fichier fallback/README si souhaité
-    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/public/index.php"
     ;;
   *)
     ynh_die --message="Unknown install_mode: $install_mode"

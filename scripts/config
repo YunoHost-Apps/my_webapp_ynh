@@ -45,9 +45,11 @@ set__password() {
 ynh_app_config_validate() {
     _ynh_app_config_validate
 
+    # Validation du mot de passe SFTP
+    # Si SFTP est activé mais pas de mot de passe, on utilisera le mot de passe de l'utilisateur courant
     if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ "$password" == "" ]
     then
-        ynh_die --message="You need to set a password to enable SFTP"
+        ynh_print_info --message="No SFTP password provided, will use current user's password"
     fi
 }
 
@@ -147,7 +149,7 @@ then
         ynh_add_config --template="nginx-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/main.conf"
         # Créer le répertoire public et l'index
         mkdir -p "$install_dir/www/public"
-        ynh_add_config --template="../sources/www/public_frontcontroller_index.php" --destination="$install_dir/www/public/index.php"
+        ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/public/index.php"
         # Permissions spécifiques
         chown -R $app:www-data "$install_dir/www/public"
         mkdir -p "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
@@ -156,7 +158,7 @@ then
     elif [ "$install_mode" == "front_controller_www" ]; then
         ynh_add_config --template="nginx-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/main.conf"
         # Créer l'index PHP
-        ynh_add_config --template="../sources/www/frontcontroller_index.php" --destination="$install_dir/www/index.php"
+        ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
     else
         # Mode standard - utiliser la configuration par défaut
         ynh_add_nginx_config
