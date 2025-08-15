@@ -8,20 +8,28 @@
  * - front_controller_public : Laravel/Symfony style
  */
 
-// Détection du mode d'installation basée sur le chemin
-try {
-    $current_path = __DIR__;
-    $install_mode = 'standard'; // valeur par défaut
-    
-    // Détection simple et robuste
-    if (strpos($current_path, '/public') !== false) {
-        $install_mode = 'front_controller_public';
-    } elseif (basename($current_path) === 'www') {
-        $install_mode = 'front_controller_www';
+// Détection du mode d'installation
+$install_mode = 'standard'; // valeur par défaut
+
+// Essayer de charger le fichier de configuration du mode
+$mode_config_file = __DIR__ . '/mode_config.php';
+if (file_exists($mode_config_file)) {
+    include $mode_config_file;
+}
+
+// Fallback : détection basée sur le chemin si pas de fichier de config
+if ($install_mode === 'standard') {
+    try {
+        $current_path = __DIR__;
+        
+        if (strpos($current_path, '/public') !== false) {
+            $install_mode = 'front_controller_public';
+        } elseif (strpos($current_path, '/www') !== false && !strpos($current_path, '/public')) {
+            $install_mode = 'front_controller_www';
+        }
+    } catch (Exception $e) {
+        $install_mode = 'standard';
     }
-} catch (Exception $e) {
-    // En cas d'erreur, utiliser le mode standard
-    $install_mode = 'standard';
 }
 
 // Permettre la surcharge via paramètre GET
@@ -114,7 +122,7 @@ $current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
         }
         
         .container::before {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: 0;

@@ -167,12 +167,16 @@ case "$install_mode" in
   "front_controller_www")
     # Front controller à la racine /www (index.php reçoit toutes les requêtes)
     ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
+    # Créer un fichier de configuration pour indiquer le mode
+    echo "<?php \$install_mode = 'front_controller_www'; ?>" > "$install_dir/www/mode_config.php"
     ;;
 
   "front_controller_public")
     # Front controller dans /www/public (ex: Laravel / Symfony)
     mkdir -p "$install_dir/www/public"
     ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/public/index.php"
+    # Créer un fichier de configuration pour indiquer le mode
+    echo "<?php \$install_mode = 'front_controller_public'; ?>" > "$install_dir/www/public/mode_config.php"
     ;;
   *)
     ynh_die --message="Unknown install_mode: $install_mode"
