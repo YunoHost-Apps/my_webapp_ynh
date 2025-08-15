@@ -180,15 +180,6 @@ if [ $phpversion != "none" ]
 then
     ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
-    # Définir le répertoire racine PHP selon le mode d'installation
-    if [ "$install_mode" == "front_controller_public" ]; then
-        php_root="$install_dir/www/public"
-        YNH_PHP_ROOT="$install_dir/www/public"
-    else
-        php_root="$install_dir/www"
-        YNH_PHP_ROOT="$install_dir/www"
-    fi
-
     # Create a dedicated PHP-FPM config
     ynh_add_fpm_config
 fi
