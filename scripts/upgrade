@@ -116,10 +116,9 @@ if [ "$install_mode" == "front_controller_public" ]; then
     ynh_add_config --template="nginx-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/main.conf"
 elif [ "$install_mode" == "front_controller_www" ]; then
     ynh_add_config --template="nginx-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/main.conf"
+else
+    ynh_add_nginx_config  # comportement existant (standard)
 fi
-
-# Toujours créer le fichier principal NGINX (nécessaire pour tous les modes)
-ynh_add_nginx_config
 
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
