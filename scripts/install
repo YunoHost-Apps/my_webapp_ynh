@@ -13,9 +13,23 @@ source /usr/share/yunohost/helpers
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
+# Variables de base YunoHost (devraient être définies automatiquement)
+app=${app:-$YNH_APP_INSTANCE_NAME}
+domain=${domain:-$YNH_APP_ARG_DOMAIN}
+path=${path:-$YNH_APP_ARG_PATH}
+install_dir=${install_dir:-/var/www/$app}
+install_mode=${install_mode:-$YNH_APP_ARG_INSTALL_MODE}
+
+# Variables spécifiques
 password=$YNH_APP_ARG_PASSWORD
 app_nb=$YNH_APP_INSTANCE_NUMBER
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
+
+# Variables SFTP et autres
+with_sftp=${with_sftp:-$YNH_APP_ARG_WITH_SFTP}
+database=${database:-$YNH_APP_ARG_DATABASE}
+phpversion=${phpversion:-$YNH_APP_ARG_PHPVERSION}
+custom_error_file=${custom_error_file:-$YNH_APP_ARG_CUSTOM_ERROR_FILE}
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
