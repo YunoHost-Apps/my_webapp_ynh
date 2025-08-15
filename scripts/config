@@ -148,12 +148,12 @@ then
     # Toujours recréer la configuration principale
     ynh_add_nginx_config
     
-    # Supprimer l'ancien fichier de réécriture s'il existe
-    ynh_secure_remove --file="$nginx_extra_conf_dir/rewrite.conf"
+    # Supprimer l'ancien fichier try_files s'il existe
+    ynh_secure_remove --file="$nginx_extra_conf_dir/try_files.conf"
     
+    # Créer la configuration try_files selon le nouveau mode
     if [ "$install_mode" == "front_controller_public" ]; then
-        # Ajouter les règles de réécriture pour le mode public
-        ynh_add_config --template="nginx-rewrite-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+        ynh_add_config --template="nginx-tryfiles-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
         # Créer le répertoire public et l'index
         mkdir -p "$install_dir/www/public"
         ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/public/index.php"
@@ -163,12 +163,13 @@ then
         chown -R $app:www-data "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
         chmod -R 750 "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
     elif [ "$install_mode" == "front_controller_www" ]; then
-        # Ajouter les règles de réécriture pour le mode www
-        ynh_add_config --template="nginx-rewrite-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+        ynh_add_config --template="nginx-tryfiles-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
         # Créer l'index PHP
         ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
     else
-        # Mode standard - supprimer l'index PHP s'il existe
+        ynh_add_config --template="nginx-tryfiles-standard.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
+        # Mode standard - créer l'index HTML et supprimer l'index PHP s'il existe
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
         ynh_secure_remove --file="$install_dir/www/index.php"
     fi
     

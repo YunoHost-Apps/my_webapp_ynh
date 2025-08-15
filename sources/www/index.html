@@ -1,58 +1,3 @@
-<?php
-/**
- * My Webapp - Page d'accueil unifiée
- * 
- * Cette page s'adapte automatiquement selon le mode d'installation :
- * - standard : fichiers statiques
- * - front_controller_www : WordPress/Drupal style
- * - front_controller_public : Laravel/Symfony style
- */
-
-// Détection du mode d'installation (pour affichage informatif)
-// Essayer de détecter automatiquement le mode, sinon utiliser le paramètre GET ou la valeur par défaut
-$install_mode = 'standard'; // valeur par défaut
-
-// Détection automatique basée sur la structure des fichiers
-if (file_exists(__DIR__ . '/index.php') && __DIR__ === dirname(__DIR__)) {
-    // Si on est dans /www et qu'il y a un index.php, c'est probablement front_controller_www
-    $install_mode = 'front_controller_www';
-} elseif (file_exists(__DIR__ . '/index.php') && __DIR__ === dirname(dirname(__DIR__)) . '/public') {
-    // Si on est dans /www/public et qu'il y a un index.php, c'est front_controller_public
-    $install_mode = 'front_controller_public';
-}
-
-// Permettre la surcharge via paramètre GET
-$install_mode = $_GET['mode'] ?? $install_mode;
-$with_sftp = $_GET['sftp'] ?? true;
-
-// Gestion du mot de passe SFTP
-$sftp_password = $_GET['password'] ?? '';
-$use_current_user_password = $with_sftp && empty($sftp_password);
-
-// Configuration des icônes et couleurs selon le mode
-$mode_config = [
-    'standard' => [
-        'icon' => 'fas fa-file-code',
-        'color' => '#3498db',
-        'title' => 'Site Web Statique',
-        'description' => 'Votre site web est configuré pour servir des fichiers statiques (HTML, CSS, JS).'
-    ],
-    'front_controller_www' => [
-        'icon' => 'fab fa-wordpress',
-        'color' => '#21759b',
-        'title' => 'Application Web (Front Controller)',
-        'description' => 'Votre application utilise un front controller à la racine (WordPress, Drupal, etc.).'
-    ],
-    'front_controller_public' => [
-        'icon' => 'fab fa-laravel',
-        'color' => '#ff2d20',
-        'title' => 'Application Framework (Public)',
-        'description' => 'Votre application utilise un répertoire public (Laravel, Symfony, etc.).'
-    ]
-];
-
-$current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -68,7 +13,7 @@ $current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
     
     <style>
         :root {
-            --primary-color: <?= $current_mode['color'] ?>;
+            --primary-color: #3498db;
             --secondary-color: #2c3e50;
             --accent-color: #e74c3c;
             --success-color: #27ae60;
@@ -394,8 +339,8 @@ $current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
         
         <!-- Indicateur de mode -->
         <div class="mode-indicator">
-            <i class="<?= $current_mode['icon'] ?> mode-icon"></i>
-            <span><?= $current_mode['title'] ?></span>
+            <i class="fas fa-file-code mode-icon"></i>
+            <span>Site Web Statique</span>
         </div>
         
         <!-- Titre principal -->
@@ -403,7 +348,7 @@ $current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
         
         <!-- Description -->
         <p class="description">
-            <?= $current_mode['description'] ?>
+            Votre site web est configuré pour servir des fichiers statiques (HTML, CSS, JS).
             Votre application est maintenant prête à être utilisée.
         </p>
         
@@ -434,7 +379,6 @@ $current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
             </div>
         </div>
         
-        <?php if ($with_sftp): ?>
         <!-- Section SFTP -->
         <div class="sftp-section">
             <div class="sftp-title">
@@ -442,13 +386,6 @@ $current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
                 Accès SFTP Configuré
             </div>
             <p>Vous pouvez maintenant éditer votre site via SFTP en utilisant les informations suivantes :</p>
-            
-            <?php if ($use_current_user_password): ?>
-            <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
-                <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
-                <strong>Note :</strong> Aucun mot de passe spécifique n'a été défini. L'accès SFTP utilise le mot de passe de votre utilisateur YunoHost actuel.
-            </div>
-            <?php endif; ?>
             
             <div class="sftp-details">
                 <div class="sftp-item">
@@ -465,17 +402,10 @@ $current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
                 </div>
                 <div class="sftp-item">
                     <div class="sftp-label">Mot de passe</div>
-                    <div class="sftp-value">
-                        <?php if ($use_current_user_password): ?>
-                            <span style="color: #f39c12;"><i class="fas fa-info-circle"></i> Mot de passe de l'utilisateur courant</span>
-                        <?php else: ?>
-                            Celui défini à l'installation
-                        <?php endif; ?>
-                    </div>
+                    <div class="sftp-value">Celui défini à l'installation</div>
                 </div>
             </div>
         </div>
-        <?php endif; ?>
         
         <!-- Instructions selon le mode -->
         <div class="instructions">
@@ -484,27 +414,11 @@ $current_mode = $mode_config[$install_mode] ?? $mode_config['standard'];
                 Prochaines étapes
             </div>
             
-            <?php if ($install_mode === 'standard'): ?>
             <ul class="instructions-list">
                 <li><i class="fas fa-upload icon"></i>Uploadez vos fichiers HTML, CSS et JavaScript dans le répertoire <code>www/</code></li>
-                <li><i class="fas fa-edit icon"></i>Remplacez ce fichier <code>index.php</code> par votre page d'accueil</li>
+                <li><i class="fas fa-edit icon"></i>Remplacez ce fichier <code>index.html</code> par votre page d'accueil</li>
                 <li><i class="fas fa-cog icon"></i>Configurez votre application selon vos besoins</li>
             </ul>
-            
-            <?php elseif ($install_mode === 'front_controller_www'): ?>
-            <ul class="instructions-list">
-                <li><i class="fas fa-download icon"></i>Téléchargez votre application (WordPress, Drupal, etc.) dans le répertoire <code>www/</code></li>
-                <li><i class="fas fa-file-code icon"></i>Assurez-vous que <code>index.php</code> est à la racine de <code>www/</code></li>
-                <li><i class="fas fa-database icon"></i>Configurez votre base de données si nécessaire</li>
-            </ul>
-            
-            <?php else: // front_controller_public ?>
-            <ul class="instructions-list">
-                <li><i class="fas fa-download icon"></i>Téléchargez votre application (Laravel, Symfony, etc.) dans le répertoire <code>www/</code></li>
-                <li><i class="fas fa-folder icon"></i>Assurez-vous que <code>index.php</code> est dans <code>www/public/</code></li>
-                <li><i class="fas fa-cogs icon"></i>Configurez <code>.env</code> et vos dépendances</li>
-            </ul>
-            <?php endif; ?>
         </div>
         
         <!-- Footer -->

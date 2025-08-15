@@ -138,8 +138,8 @@ mkdir -p "$install_dir/www"
 # Gestion des différents modes d'installation
 case "$install_mode" in
   "standard")
-    # Mode standard: index statique (comportement existant)
-    ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
+    # Mode standard: index statique HTML
+    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
     ;;
 
   "front_controller_www")
