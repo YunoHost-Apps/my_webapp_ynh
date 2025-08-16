@@ -23,9 +23,9 @@ Visitez l'URL de votre application pour voir la page d'accueil par défaut et le
 ### 2. Choisir Votre Mode NGINX
 Votre application est configurée avec le mode NGINX **`{{ nginx_mode }}`** :
 
-- **Classic** : Service de fichiers standard (par défaut)
-- **Rewrite** : Pattern front controller pour applications PHP modernes
-- **Rewrite-Public** : Front controller avec séparation du répertoire public
+- **Statique** : Service de fichiers standard (par défaut)
+- **Front** : Pattern front controller pour applications PHP modernes
+- **Public** : Front controller avec séparation du répertoire public
 
 ### 3. Uploader Votre Contenu
 Connectez-vous via SFTP en utilisant les identifiants affichés sur votre page d'application :
@@ -36,8 +36,8 @@ Connectez-vous via SFTP en utilisant les identifiants affichés sur votre page d
 
 ### 4. Structure des Fichiers
 Selon votre mode NGINX, placez vos fichiers dans :
-- **Classic/Rewrite** : répertoire `www/`
-- **Rewrite-Public** : répertoire `www/public/`
+- **Statique/Front** : répertoire `www/`
+- **Public** : répertoire `www/public/`
 
 ### 5. Pages d'Erreur Personnalisées (Optionnel)
 Pour activer les pages d'erreur personnalisées :

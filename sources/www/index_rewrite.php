@@ -17,7 +17,8 @@ $php_sapi = php_sapi_name();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Webapp - Rewrite Mode</title>
+    <title>My Webapp - Front Mode</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -259,18 +260,18 @@ $php_sapi = php_sapi_name();
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎉 It Works!</h1>
-            <p>Congratulations! You have successfully installed My Webapp in Rewrite Mode</p>
-            <div class="mode-badge">🔄 Front Controller Mode</div>
+            <h1><i class="fas fa-check-circle"></i> It Works!</h1>
+            <p>Congratulations! You have successfully installed My Webapp in Front Mode</p>
+            <div class="mode-badge"><i class="fas fa-sync-alt"></i> Front Controller Mode</div>
         </div>
 
         <div class="content">
             <div class="section">
-                <h2>🚀 Rewrite Mode Overview</h2>
-                <p>Your application is running in <strong>Rewrite Mode</strong>, which provides a modern front controller pattern for PHP applications.</p>
+                <h2><i class="fas fa-rocket"></i> Front Mode Overview</h2>
+                <p>Your application is running in <strong>Front Mode</strong>, which provides a modern front controller pattern for PHP applications.</p>
                 
                 <div class="info-box">
-                    <h4>Rewrite Mode Features:</h4>
+                    <h4>Front Mode Features:</h4>
                     <ul>
                         <li><strong>Front Controller</strong> - All requests route through index.php</li>
                         <li><strong>Clean URLs</strong> - SEO-friendly routing structure</li>
@@ -281,7 +282,7 @@ $php_sapi = php_sapi_name();
             </div>
 
             <div class="section">
-                <h2>📁 SFTP Connection Details</h2>
+                <h2><i class="fas fa-folder-open"></i> SFTP Connection Details</h2>
                 <p>Use these credentials to connect via SFTP and upload your website files:</p>
                 
                 <div class="sftp-details">
@@ -306,7 +307,7 @@ $php_sapi = php_sapi_name();
                 </div>
 
                 <div class="info-box">
-                    <h4>🔐 Password Information</h4>
+                    <h4><i class="fas fa-key"></i> Password Information</h4>
                     <p><strong>Important:</strong> If you didn't provide a password during installation, a secure random password was automatically generated for you. This password is displayed above and stored in your application settings.</p>
                     <p>The generated password is cryptographically secure and 20 characters long. You can change it anytime through the YunoHost configuration panel.</p>
                 </div>
@@ -315,8 +316,8 @@ $php_sapi = php_sapi_name();
             </div>
 
             <div class="section">
-                <h2>📂 File Structure & Routing</h2>
-                <p>In Rewrite Mode, your application structure should be:</p>
+                <h2><i class="fas fa-folder-tree"></i> File Structure & Routing</h2>
+                <p>In Front Mode, your application structure should be:</p>
                 
                 <div class="code-block">
                     /var/www/<?php echo htmlspecialchars($app_id); ?>/www/<br>
@@ -341,7 +342,7 @@ $php_sapi = php_sapi_name();
             </div>
 
             <div class="section">
-                <h2>⚙️ Server Information</h2>
+                <h2><i class="fas fa-cog"></i> Server Information</h2>
                 <div class="server-info">
                     <h4>Current Server Details:</h4>
                     <div class="server-grid">
@@ -366,7 +367,7 @@ $php_sapi = php_sapi_name();
             </div>
 
             <div class="cat-section">
-                <h3>🐱 Random Cat GIF</h3>
+                <h3><i class="fas fa-cat"></i> Random Cat GIF</h3>
                 <p>As a reward for your successful installation, here's a random cat GIF:</p>
                 <img src="https://thecatapi.com/api/images/get?format=src&type=gif" alt="Random Cat GIF" class="cat-image">
             </div>

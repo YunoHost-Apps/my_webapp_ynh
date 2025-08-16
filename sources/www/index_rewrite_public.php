@@ -21,7 +21,8 @@ $is_public_dir = strpos($current_path, '/public/') !== false;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Webapp - Rewrite-Public Mode</title>
+    <title>My Webapp - Public Mode</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -280,23 +281,23 @@ $is_public_dir = strpos($current_path, '/public/') !== false;
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎉 It Works!</h1>
-            <p>Congratulations! You have successfully installed My Webapp in Rewrite-Public Mode</p>
-            <div class="mode-badge">🏗️ Framework-Ready Mode</div>
+            <h1><i class="fas fa-check-circle"></i> It Works!</h1>
+            <p>Congratulations! You have successfully installed My Webapp in Public Mode</p>
+            <div class="mode-badge"><i class="fas fa-building"></i> Framework-Ready Mode</div>
         </div>
 
         <div class="content">
             <div class="section">
-                <h2>🚀 Rewrite-Public Mode Overview</h2>
-                <p>Your application is running in <strong>Rewrite-Public Mode</strong>, which provides a modern front controller pattern with a dedicated public directory - perfect for modern PHP frameworks.</p>
+                <h2><i class="fas fa-rocket"></i> Public Mode Overview</h2>
+                <p>Your application is running in <strong>Public Mode</strong>, which provides a modern front controller pattern with a dedicated public directory - perfect for modern PHP frameworks.</p>
                 
                 <div class="framework-info">
-                    <h4>🎯 Perfect for Modern Frameworks:</h4>
+                    <h4><i class="fas fa-bullseye"></i> Perfect for Modern Frameworks:</h4>
                     <p>This mode is specifically designed for Laravel, Symfony, CodeIgniter, and other modern PHP frameworks that separate public assets from application code.</p>
                 </div>
 
                 <div class="info-box">
-                    <h4>Rewrite-Public Mode Features:</h4>
+                    <h4>Public Mode Features:</h4>
                     <ul>
                         <li><strong>Public Directory</strong> - Serves files from /www/public/</li>
                         <li><strong>Front Controller</strong> - All requests route through index.php</li>
@@ -308,7 +309,7 @@ $is_public_dir = strpos($current_path, '/public/') !== false;
             </div>
 
             <div class="section">
-                <h2>📁 SFTP Connection Details</h2>
+                <h2><i class="fas fa-folder-open"></i> SFTP Connection Details</h2>
                 <p>Use these credentials to connect via SFTP and upload your website files:</p>
                 
                 <div class="sftp-details">
@@ -333,7 +334,7 @@ $is_public_dir = strpos($current_path, '/public/') !== false;
                 </div>
 
                 <div class="info-box">
-                    <h4>🔐 Password Information</h4>
+                    <h4><i class="fas fa-key"></i> Password Information</h4>
                     <p><strong>Important:</strong> If you didn't provide a password during installation, a secure random password was automatically generated for you. This password is displayed above and stored in your application settings.</p>
                     <p>The generated password is cryptographically secure and 20 characters long. You can change it anytime through the YunoHost configuration panel.</p>
                 </div>
@@ -342,8 +343,8 @@ $is_public_dir = strpos($current_path, '/public/') !== false;
             </div>
 
             <div class="section">
-                <h2>📂 File Structure & Framework Setup</h2>
-                <p>In Rewrite-Public Mode, your application structure should be:</p>
+                <h2><i class="fas fa-folder-tree"></i> File Structure & Framework Setup</h2>
+                <p>In Public Mode, your application structure should be:</p>
                 
                 <div class="code-block">
                     /var/www/<?php echo htmlspecialchars($app_id); ?>/www/<br>
@@ -395,7 +396,7 @@ $is_public_dir = strpos($current_path, '/public/') !== false;
             </div>
 
             <div class="section">
-                <h2>⚙️ Server Information</h2>
+                <h2><i class="fas fa-cog"></i> Server Information</h2>
                 <div class="server-info">
                     <h4>Current Server Details:</h4>
                     <div class="server-grid">
@@ -422,15 +423,15 @@ $is_public_dir = strpos($current_path, '/public/') !== false;
                     <h4>Current Location:</h4>
                     <p>You are currently viewing the file from: <code><?php echo htmlspecialchars($current_path); ?></code></p>
                     <?php if ($is_public_dir): ?>
-                        <p><strong>✅ You are in the public directory - perfect for framework setup!</strong></p>
+                        <p><strong><i class="fas fa-check"></i> You are in the public directory - perfect for framework setup!</strong></p>
                     <?php else: ?>
-                        <p><strong>⚠️ You are not in the public directory. Make sure to set your document root to /www/public/</strong></p>
+                        <p><strong><i class="fas fa-exclamation-triangle"></i> You are not in the public directory. Make sure to set your document root to /www/public/</strong></p>
                     <?php endif; ?>
                 </div>
             </div>
 
             <div class="cat-section">
-                <h3>🐱 Random Cat GIF</h3>
+                <h3><i class="fas fa-cat"></i> Random Cat GIF</h3>
                 <p>As a reward for your successful installation, here's a random cat GIF:</p>
                 <img src="https://thecatapi.com/api/images/get?format=src&type=gif" alt="Random Cat GIF" class="cat-image">
             </div>

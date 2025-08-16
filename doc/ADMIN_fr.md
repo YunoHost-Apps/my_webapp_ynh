@@ -43,9 +43,9 @@ Cela vous donne un accès direct en tant qu'utilisateur de l'application. La com
 
 ### Structure des Fichiers
 
-- **Mode Classic** : Placez les fichiers directement dans `__INSTALL_DIR__/www/`
-- **Mode Rewrite** : Placez les fichiers dans `__INSTALL_DIR__/www/` (routés via index.php)
-- **Mode Rewrite-Public** : Placez les fichiers publics dans `__INSTALL_DIR__/www/public/`
+- **Mode Statique** : Placez les fichiers directement dans `__INSTALL_DIR__/www/`
+- **Mode Front** : Placez les fichiers dans `__INSTALL_DIR__/www/` (routés via index.php)
+- **Mode Public** : Placez les fichiers publics dans `__INSTALL_DIR__/www/public/`
 
 ### Ajout de Contenu
 
@@ -78,9 +78,9 @@ L'application prend en charge la gestion personnalisée des erreurs HTTP 403 (In
 
 L'application génère automatiquement des configurations NGINX selon votre mode sélectionné :
 
-- **Classic** : Configuration standard avec support PHP optionnel
-- **Rewrite** : Pattern front controller avec sécurité renforcée
-- **Rewrite-Public** : Front controller avec séparation du répertoire public
+- **Statique** : Configuration standard avec support PHP optionnel
+- **Front** : Pattern front controller avec sécurité renforcée
+- **Public** : Front controller avec séparation du répertoire public
 
 ### Modifications NGINX Personnalisées
 

@@ -59,8 +59,8 @@ ram.runtime = "50M"
     ask.en = "Choose NGINX mode"
     ask.fr = "Choisissez le mode NGINX"
     type = "select"
-    choices = ["classic", "rewrite", "rewrite-public"]
-    default = "classic"
+    choices = ["static", "front", "public"]
+    default = "static"
 
     [install.database]
     ask.en = "Do you need a database?"

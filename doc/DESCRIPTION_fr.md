@@ -4,7 +4,7 @@ Cette application fournit une plateforme flexible pour déployer des application
 
 ## Fonctionnalités
 
-- **Modes NGINX Multiples** : Choisissez entre les configurations Classic, Rewrite et Rewrite-Public
+- **Modes NGINX Multiples** : Choisissez entre les configurations Statique, Front et Public
 - **Déploiement Flexible** : Support des fichiers statiques et des applications PHP
 - **Accès SFTP** : Upload et gestion sécurisés des fichiers avec génération automatique de mot de passe
 - **Support Base de Données** : Intégration optionnelle MySQL ou PostgreSQL
@@ -14,18 +14,18 @@ Cette application fournit une plateforme flexible pour déployer des application
 
 ## Modes de Configuration NGINX
 
-### Mode Classic (Par Défaut)
+### Mode Statique (Par Défaut)
 - Configuration NGINX standard
 - Service direct des fichiers depuis le répertoire `/www`
 - Compatible avec les applications web traditionnelles
 
-### Mode Rewrite
+### Mode Front
 - Pattern front controller
 - Route toutes les requêtes via `index.php`
 - Sécurité renforcée avec protection des fichiers sensibles
 - Idéal pour les applications PHP modernes
 
-### Mode Rewrite-Public
+### Mode Public
 - Front controller avec séparation du répertoire public
 - Sert depuis le répertoire `/www/public`
 - Parfait pour Laravel, Symfony et autres frameworks modernes
@@ -45,7 +45,7 @@ Les fichiers peuvent être uploadés via :
 - Accès SFTP (recommandé)
 - Toute autre méthode de transfert de fichiers de votre choix
 
-L'application crée un répertoire `www` où vous pouvez placer les fichiers de votre application web. Pour le mode Rewrite-Public, utilisez le sous-répertoire `www/public`.
+L'application crée un répertoire `www` où vous pouvez placer les fichiers de votre application web. Pour le mode Public, utilisez le sous-répertoire `www/public`.
 
 ## Intégration Base de Données
 

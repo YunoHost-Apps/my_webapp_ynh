@@ -54,5 +54,5 @@ name.fr = "Configuration de My Webapp"
         ask.en = "Select NGINX mode"
         ask.fr = "Sélectionnez le mode NGINX"
         type = "select"
-        choices = ["Static", "Front", "Public"]
-        default = "Static"
+        choices = ["static", "front", "public"]
+        default = "static"
