@@ -30,7 +30,7 @@ ram.runtime = "50M"
 
     [install.path]
     type = "path"
-    default = "/site"
+    default = "/"
 
     [install.with_sftp]
     ask.en = "Do you need a SFTP access?"
@@ -53,7 +53,7 @@ ram.runtime = "50M"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
     choices = ["none", "8.1", "8.2", "8.3", "8.4"]
-    default = "none"
+    default = "8.4"
 
     [install.nginx_mode]
     ask.en = "Choose NGINX mode"

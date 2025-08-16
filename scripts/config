@@ -139,8 +139,18 @@ ynh_app_config_apply() {
         # Appliquer le nouveau mode
         if [ "$nginx_mode" = "rewrite" ]; then
             ynh_add_config --template="nginx-rewrite.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+            # Ajouter la configuration PHP si nécessaire
+            if [ "$phpversion" != "none" ]
+            then
+                ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+            fi
         elif [ "$nginx_mode" = "rewrite-public" ]; then
             ynh_add_config --template="nginx-rewrite-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+            # Ajouter la configuration PHP si nécessaire
+            if [ "$phpversion" != "none" ]
+            then
+                ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+            fi
         else
             # Mode classique
             if [ "$phpversion" != "none" ]
