@@ -1,11 +1,68 @@
-Cette application vous permet d'installer facilement une application vide, dans laquelle vous pouvez déployer votre propre site web "statique" (HTML/CSS/JS) ou PHP.
+# My Webapp - Plateforme d'Application Web Personnalisée
 
-Les fichiers être déposé [via SFTP](https://yunohost.org/fr/filezilla) ou toute autre méthode de votre choix.
+Cette application fournit une plateforme flexible pour déployer des applications web personnalisées sur YunoHost. Elle prend en charge à la fois le contenu statique (HTML/CSS/JS) et les applications PHP dynamiques avec plusieurs modes de configuration NGINX.
 
-Lors de l'installation, il est aussi possible d'initialiser une base de données MySQL ou PostgreSQL, qui sera sauvegardée et restaurée avec le reste de l'application. Les détails de connexion seront stockés dans le fichier `db_accesss.txt` situé dans le répertoire racine.
+## Fonctionnalités
 
-La version de PHP-FPM peut aussi être choisie, parmi (aucune), `7.4`, `8.0`, `8.1`, `8.2`, `8.3` et `8.4`.
+- **Modes NGINX Multiples** : Choisissez entre les configurations Classic, Rewrite et Rewrite-Public
+- **Déploiement Flexible** : Support des fichiers statiques et des applications PHP
+- **Accès SFTP** : Upload et gestion sécurisés des fichiers avec génération automatique de mot de passe
+- **Support Base de Données** : Intégration optionnelle MySQL ou PostgreSQL
+- **PHP-FPM** : Sélection parmi PHP 8.1, 8.2, 8.3 ou 8.4 (ou aucune)
+- **Pages d'Erreur Personnalisées** : Gestion personnalisée des erreurs 404 et autres
+- **Sauvegardes Automatiques** : Intégration des sauvegardes de base de données et de fichiers
 
-**Une fois installée, rendez-vous sur l'URL choisie pour connaître l'utilisateur, le domaine et le port que vous devrez utiliser pour l'accès SFTP.** Le mot de passe est celui que vous avez choisi lors de l'installation. Sous le répertoire Web, vous verrez un dossier `www` qui contient les fichiers publics servis par cette application. Vous pouvez mettre tous les fichiers de votre application Web personnalisée à l'intérieur.
+## Modes de Configuration NGINX
 
-L'application vous permet aussi de gérer - si vous activez l'option dans le panneau de configuration - la gestion des erreurs 404, il vous suffit de créer un dossier `error` dans le répertoire racine `www` et d'y placer vos fichiers d'erreur `html` 
+### Mode Classic (Par Défaut)
+- Configuration NGINX standard
+- Service direct des fichiers depuis le répertoire `/www`
+- Compatible avec les applications web traditionnelles
+
+### Mode Rewrite
+- Pattern front controller
+- Route toutes les requêtes via `index.php`
+- Sécurité renforcée avec protection des fichiers sensibles
+- Idéal pour les applications PHP modernes
+
+### Mode Rewrite-Public
+- Front controller avec séparation du répertoire public
+- Sert depuis le répertoire `/www/public`
+- Parfait pour Laravel, Symfony et autres frameworks modernes
+
+## Installation et Utilisation
+
+Lors de l'installation, vous pouvez configurer :
+- Sélection du mode NGINX
+- Version PHP (8.1, 8.2, 8.3, 8.4, ou aucune)
+- Type de base de données (MySQL, PostgreSQL, ou aucune)
+- Accès SFTP avec mot de passe personnalisé (généré automatiquement si aucun fourni)
+- Support des pages d'erreur personnalisées
+
+## Gestion des Fichiers
+
+Les fichiers peuvent être uploadés via :
+- Accès SFTP (recommandé)
+- Toute autre méthode de transfert de fichiers de votre choix
+
+L'application crée un répertoire `www` où vous pouvez placer les fichiers de votre application web. Pour le mode Rewrite-Public, utilisez le sous-répertoire `www/public`.
+
+## Intégration Base de Données
+
+Si vous sélectionnez une base de données lors de l'installation :
+- Les détails de connexion sont stockés dans `db_access.txt`
+- Intégration automatique des sauvegardes et restaurations
+- Gestion sécurisée des identifiants
+
+## Personnalisation
+
+- **Pages d'Erreur** : Créez un dossier `error` dans `www` avec vos fichiers HTML personnalisés
+- **Configuration** : Modifiez les paramètres via le panneau d'administration YunoHost
+- **Mode NGINX** : Changez de mode après installation via le panneau de configuration
+
+## Fonctionnalités de Sécurité
+
+- Protection des fichiers sensibles (`.env`, `.json`, `.ini`, `.tpl`)
+- Protection des répertoires cachés (sauf `.well-known/`)
+- Accès SFTP sécurisé
+- Conformité aux standards de sécurité YunoHost 

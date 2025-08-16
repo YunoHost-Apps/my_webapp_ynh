@@ -45,11 +45,11 @@ set__password() {
 ynh_app_config_validate() {
     _ynh_app_config_validate
 
-    # Validation du mot de passe SFTP
-    # Si SFTP est activé mais pas de mot de passe, on utilisera le mot de passe de l'utilisateur courant
-    if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ "$password" == "" ]
-    then
-        ynh_print_info --message="No SFTP password provided, will use current user's password"
+    # If SFTP is enabled but no password provided, generate a random one
+    if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ -z "$password" ]; then
+        ynh_script_progression --message="No password provided for SFTP, generating random password..." --weight=1
+        password=$(ynh_string_random --length=20)
+        ynh_script_progression --message="Generated random password for SFTP access..." --weight=1
     fi
 }
 
@@ -57,55 +57,43 @@ ynh_app_config_apply() {
     _ynh_app_config_apply
 
     if [ "${changed[phpversion]}" == "true" ]
-then
-    if [ "${old[phpversion]}" != "none" ]
     then
-        ynh_app_setting_set --app=$app --key=phpversion --value="${old[phpversion]}"
-        ynh_remove_fpm_config
+        if [ "${old[phpversion]}" != "none" ]
+        then
+            ynh_app_setting_set --app=$app --key=phpversion --value="${old[phpversion]}"
+            ynh_remove_fpm_config
+        fi
+        ynh_remove_app_dependencies
+        YNH_PHP_VERSION=$phpversion
+        # ^ ynh_add_config replaces __PHPVERSION__ by __PHP_YNH_VERSION__...
+        ynh_app_setting_set --app=$app --key=phpversion --value="$phpversion"
+
+        database=$(ynh_app_setting_get --app=$app --key=database)
+        dependencies="$(ynh_read_manifest -k "resources.apt.packages")"
+        dependencies_from_raw_bash=$(eval "$(ynh_read_manifest -k "resources.apt.packages_from_raw_bash")" | tr "\n" " ")
+        ynh_install_app_dependencies "$dependencies $dependencies_from_raw_bash"
+
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+        mkdir -p "$nginx_extra_conf_dir"
+        if [ "$phpversion" == "none" ]
+        then
+            ynh_delete_file_checksum --file="$nginx_extra_conf_dir/php.conf"
+            ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
+        else
+            ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+            ynh_add_fpm_config --phpversion=$phpversion
+            # ^ the helper takes care of ynh_app_setting_set the phpversion
+        fi
+
+        ynh_add_nginx_config
     fi
-    ynh_remove_app_dependencies
-    YNH_PHP_VERSION=$phpversion
-    # ^ ynh_add_config replaces __PHPVERSION__ by __PHP_YNH_VERSION__...
-    ynh_app_setting_set --app=$app --key=phpversion --value="$phpversion"
-
-    database=$(ynh_app_setting_get --app=$app --key=database)
-    dependencies="$(ynh_read_manifest -k "resources.apt.packages")"
-    dependencies_from_raw_bash=$(eval "$(ynh_read_manifest -k "resources.apt.packages_from_raw_bash")" | tr "\n" " ")
-    ynh_install_app_dependencies "$dependencies $dependencies_from_raw_bash"
-
-    # Définir le répertoire racine PHP selon le mode d'installation
-    install_mode=$(ynh_app_setting_get --app=$app --key=install_mode)
-    if [ "$install_mode" == "front_controller_public" ]; then
-        # Pour le mode public, PHP_ROOT doit pointer vers /www/public
-        php_root="$install_dir/www/public"
-    else
-        # Pour les autres modes, PHP_ROOT pointe vers /www
-        php_root="$install_dir/www"
-    fi
-
-    nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
-    mkdir -p "$nginx_extra_conf_dir"
-    if [ "$phpversion" == "none" ]
-    then
-        ynh_delete_file_checksum --file="$nginx_extra_conf_dir/php.conf"
-        ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
-    else
-        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        ynh_add_fpm_config --phpversion=$phpversion
-        # ^ the helper takes care of ynh_app_setting_set the phpversion
-    fi
-
-    ynh_add_nginx_config
-fi
 
     if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ]
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
-        if [ ! "$password" == "" ]
-        then
-            chpasswd <<< "${app}:${password}"
-        fi
+        # Always set password when SFTP is enabled
+        chpasswd <<< "${app}:${password}"
     elif [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 0 ]
     then
         ynh_system_user_del_group --username=$app --groups="sftp.app"
@@ -132,50 +120,74 @@ fi
     fi
 
     if [ "$phpversion" != "none" ]
-then
-    ynh_add_fpm_config --phpversion=$phpversion
-fi
-
-# Gestion du changement de mode d'installation
-if [ "${changed[install_mode]}" == "true" ]
-then
-    ynh_script_progression --message="Changing installation mode to $install_mode..." --weight=2
-    
-    # Recréer la configuration NGINX selon le nouveau mode
-    nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
-    mkdir -p "$nginx_extra_conf_dir"
-    
-    # Toujours recréer la configuration principale
-    ynh_add_nginx_config
-    
-    # Supprimer l'ancien fichier try_files s'il existe
-    ynh_secure_remove --file="$nginx_extra_conf_dir/try_files.conf"
-    
-    # Créer la configuration try_files selon le nouveau mode
-    if [ "$install_mode" == "front_controller_public" ]; then
-        ynh_add_config --template="nginx-tryfiles-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-        # Créer le répertoire public et l'index
-        mkdir -p "$install_dir/www/public"
-        ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/public/index.php"
-        # Permissions spécifiques
-        chown -R $app:www-data "$install_dir/www/public"
-        mkdir -p "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-        chown -R $app:www-data "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-        chmod -R 750 "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-    elif [ "$install_mode" == "front_controller_www" ]; then
-        ynh_add_config --template="nginx-tryfiles-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-        # Créer l'index PHP
-        ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
-    else
-        ynh_add_config --template="nginx-tryfiles-standard.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-        # Mode standard - créer l'index HTML et supprimer l'index PHP s'il existe
-        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
-        ynh_secure_remove --file="$install_dir/www/index.php"
+    then
+        ynh_add_fpm_config --phpversion=$phpversion
     fi
-    
-    # Recharger NGINX
-    ynh_systemd_action --service_name=nginx --action=reload
-fi
+
+    # Appliquer le mode NGINX
+    if [ "${changed[nginx_mode]}" == "true" ]
+    then
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+        mkdir -p "$nginx_extra_conf_dir"
+        
+        # Supprimer les anciennes configurations
+        ynh_delete_file_checksum --file="$nginx_extra_conf_dir/rewrite.conf"
+        ynh_secure_remove --file="$nginx_extra_conf_dir/rewrite.conf"
+        ynh_delete_file_checksum --file="$nginx_extra_conf_dir/php.conf"
+        ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
+        
+        # Appliquer le nouveau mode
+        if [ "$nginx_mode" = "rewrite" ]; then
+            ynh_add_config --template="nginx-rewrite.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+        elif [ "$nginx_mode" = "rewrite-public" ]; then
+            ynh_add_config --template="nginx-rewrite-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+        else
+            # Mode classique
+            if [ "$phpversion" != "none" ]
+            then
+                ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+            fi
+        fi
+        
+        ynh_add_nginx_config
+        
+        # Update index files based on new NGINX mode
+        ynh_script_progression --message="Updating index files for new NGINX mode..." --weight=1
+        
+        # Ensure www directory exists
+        mkdir -p "$install_dir/www"
+        
+        # Copy appropriate index file based on new NGINX mode
+        if [ "$nginx_mode" = "rewrite" ]; then
+            # Rewrite mode: copy PHP file
+            ynh_add_config --template="index_rewrite.php" --destination="$install_dir/www/index.php"
+            # Also copy HTML file for SFTP info
+            if [ $with_sftp -eq 1 ]; then
+                ynh_add_config --template="index.html" --destination="$install_dir/www/index.html"
+            else
+                ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/index.html"
+            fi
+        elif [ "$nginx_mode" = "rewrite-public" ]; then
+            # Rewrite-public mode: create public directory and copy PHP file
+            mkdir -p "$install_dir/www/public"
+            ynh_add_config --template="index_rewrite_public.php" --destination="$install_dir/www/public/index.php"
+            # Also copy HTML file to public for SFTP info
+            if [ $with_sftp -eq 1 ]; then
+                ynh_add_config --template="index.html" --destination="$install_dir/www/public/index.html"
+            else
+                ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/public/index.html"
+            fi
+        else
+            # Classic mode: copy HTML file
+            if [ $with_sftp -eq 1 ]; then
+                ynh_add_config --template="index.html" --destination="$install_dir/www/index.html"
+            else
+                ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/index.html"
+            fi
+        fi
+        
+        ynh_systemd_action --service_name=nginx --action=reload
+    fi
 }
 
 ynh_app_config_run $1

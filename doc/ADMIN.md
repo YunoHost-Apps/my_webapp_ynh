@@ -1,35 +1,139 @@
-This app is simply a blank web app skeleton : you are expected to add you own content (HTML, CSS, PHP, ...) inside `__INSTALL_DIR__/www/`. One way to do so is by using SFTP.
+# My Webapp - Administration Guide
 
-### Login using SFTP
+This application provides a flexible web application platform where you can deploy your own custom content (HTML, CSS, PHP, etc.) in the `__INSTALL_DIR__/www/` directory.
 
-Once installed, go to the chosen URL to know the username, domain and port you will have to use for the SFTP access. 
+## File Management
 
-- Host: `__DOMAIN__`
-- Username: `__ID__`
-- Password: password chosen during installation
-- Port: 22 (unless you changed the SSH port)
+### SFTP Access (Recommended)
 
-To connect, you'll need an SFTP app such as [Filezilla](https://filezilla-project.org/) for Windows, Mac or Linux. You can also use your default file manager on [Mac](https://support.apple.com/guide/mac-help/connect-mac-shared-computers-servers-mchlp1140/mac) or Linux.
+Once installed, visit your application URL to get the SFTP connection details:
 
-#### Forgot your SFTP password?
+- **Host**: `__DOMAIN__`
+- **Username**: `__ID__`
+- **Password**: Password chosen during installation
+- **Port**: 22 (default SSH port)
 
-If you forgot your SFTP password, you can change it in YunoHost's webadmin interface in `Apps > My webapp > My Webapp configuration`.
-You can also check there that SFTP is enabled.
+#### SFTP Clients
 
-### Login using the command line
+- **Windows/Mac/Linux**: [FileZilla](https://filezilla-project.org/)
+- **Mac**: Built-in Finder (Go > Connect to Server)
+- **Linux**: File manager with SFTP support
 
-Starting YunoHost v11.1.21, you can run `sudo yunohost app shell __APP__` in the command line interface to log in as your app user.
+#### Password Management
 
-The `php` command will point to the PHP version installed for the app.
+**Important**: If you don't provide a password during installation when SFTP is enabled, a secure random password will be automatically generated for you. This password will be displayed during the installation process and stored in the application settings.
 
-### Adding or editing files
+To change your SFTP password or check if SFTP is enabled:
+1. Go to YunoHost admin panel
+2. Navigate to `Apps > My webapp > Configuration`
+3. Modify SFTP settings as needed
 
-Once logged in, under the Web directory you will see a `www` folder which contains the public files served by this app. You can put all the files of your custom Web application inside.
+**Note**: The generated password is cryptographically secure and 20 characters long. You can change it anytime through the configuration panel.
 
-### 403 and 404 error handling
+### Command Line Access
 
-The web server configuration supports http error handling `403` and `404` (access denied and resource not found). Create an `error` folder at `__INSTALL_DIR__/www/error`, and put your `403.html` and `404.html` files in there.
+Starting from YunoHost v11.1.21, you can use:
+```bash
+sudo yunohost app shell __APP__
+```
 
-### Customizing the nginx configuration
+This gives you direct access as the application user. The `php` command will use the PHP version configured for your app.
 
-If you want to add tweak the nginx configuration for this app, it is recommended to edit `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/WHATEVER_NAME.conf` (ensure that the file has the `.conf` extension) and reload the nginx after making sure that the configuration is valid using `nginx -t`.
+## Content Management
+
+### File Structure
+
+- **Classic Mode**: Place files directly in `__INSTALL_DIR__/www/`
+- **Rewrite Mode**: Place files in `__INSTALL_DIR__/www/` (routed through index.php)
+- **Rewrite-Public Mode**: Place public files in `__INSTALL_DIR__/www/public/`
+
+### Adding Content
+
+1. Connect via SFTP or command line
+2. Navigate to the appropriate directory based on your NGINX mode
+3. Upload or create your web application files
+4. Ensure proper file permissions (typically 644 for files, 755 for directories)
+
+## Error Handling
+
+### Custom Error Pages
+
+The application supports custom error handling for HTTP errors 403 (Forbidden) and 404 (Not Found):
+
+1. Create an `error` folder in `__INSTALL_DIR__/www/error/`
+2. Add your custom HTML files:
+   - `403.html` for access denied errors
+   - `404.html` for resource not found errors
+
+### Error Page Features
+
+- Fully customizable HTML content
+- Support for CSS styling and JavaScript
+- Responsive design recommendations
+- Integration with your application theme
+
+## NGINX Configuration
+
+### Mode-Specific Configurations
+
+The application automatically generates NGINX configurations based on your selected mode:
+
+- **Classic**: Standard configuration with optional PHP support
+- **Rewrite**: Front controller pattern with enhanced security
+- **Rewrite-Public**: Front controller with public directory separation
+
+### Custom NGINX Modifications
+
+To customize the NGINX configuration:
+
+1. Edit files in `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/`
+2. Ensure files have `.conf` extension
+3. Test configuration validity: `nginx -t`
+4. Reload NGINX: `systemctl reload nginx`
+
+**Note**: Avoid modifying the main configuration files. Use the app-specific directory for customizations.
+
+## Security Considerations
+
+### File Permissions
+
+- Web files: 644 (readable by web server)
+- Directories: 755 (executable by web server)
+- Sensitive files: 600 (owner only)
+
+### Protected Resources
+
+The application automatically protects:
+- Configuration files (`.env`, `.json`, `.ini`, `.tpl`)
+- Hidden directories (except `.well-known/`)
+- System files outside the web directory
+
+### SFTP Security
+
+- Use strong passwords
+- Consider key-based authentication
+- Monitor access logs regularly
+- Disable SFTP if not needed
+
+## Troubleshooting
+
+### Common Issues
+
+1. **403 Forbidden**: Check file permissions and ownership
+2. **404 Not Found**: Verify file paths and NGINX mode configuration
+3. **SFTP Connection Failed**: Confirm credentials and SSH service status
+4. **PHP Errors**: Check PHP version compatibility and configuration
+
+### Logs
+
+- **NGINX**: `/var/log/nginx/error.log`
+- **PHP-FPM**: `/var/log/php__VERSION__-fpm.log`
+- **Application**: Check YunoHost admin panel for app-specific logs
+
+### Support
+
+For additional help:
+- Check YunoHost documentation
+- Review application logs
+- Consult the configuration panel
+- Verify NGINX mode settings

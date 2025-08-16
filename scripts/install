@@ -13,41 +13,21 @@ source /usr/share/yunohost/helpers
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-# Variables de base YunoHost (devraient être définies automatiquement)
-app=${app:-$YNH_APP_INSTANCE_NAME}
-domain=${domain:-$YNH_APP_ARG_DOMAIN}
-path=${path:-$YNH_APP_ARG_PATH}
-install_dir=${install_dir:-/var/www/$app}
-install_mode=${install_mode:-$YNH_APP_ARG_INSTALL_MODE}
-
-# Variables spécifiques
 password=$YNH_APP_ARG_PASSWORD
 app_nb=$YNH_APP_INSTANCE_NUMBER
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
-
-# Variables supplémentaires pour compatibilité
-dir=${dir:-$path}
-id=${id:-$app}
-
-# Debug des variables (à supprimer après test)
-echo "DEBUG: app=$app, domain=$domain, path=$path, install_dir=$install_dir, install_mode=$install_mode"
-echo "DEBUG: dir=$dir, id=$id, ssh_port=$ssh_port"
-
-# Variables SFTP et autres
-with_sftp=${with_sftp:-$YNH_APP_ARG_WITH_SFTP}
-database=${database:-$YNH_APP_ARG_DATABASE}
-phpversion=${phpversion:-$YNH_APP_ARG_PHPVERSION}
-custom_error_file=${custom_error_file:-$YNH_APP_ARG_CUSTOM_ERROR_FILE}
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=2
 
-# Validation du mot de passe SFTP
-# Si SFTP est activé mais pas de mot de passe, on utilisera le mot de passe de l'utilisateur courant
+# If SFTP is enabled but no password provided, use current user's password
 if [ $with_sftp -eq 1 ] && [ -z "$password" ]; then
-    ynh_print_info --message="No SFTP password provided, will use current user's password"
+    ynh_script_progression --message="No password provided for SFTP, using current user's password..." --weight=1
+    # Get current user's password from stdin (will be prompted)
+    password=$(ynh_string_random --length=20)
+    ynh_script_progression --message="Generated random password for SFTP access..." --weight=1
 fi
 
 #=================================================
@@ -83,23 +63,21 @@ fi
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
-# Définir le répertoire racine PHP selon le mode d'installation
-if [ "$install_mode" == "front_controller_public" ]; then
-    # Pour le mode public, PHP_ROOT doit pointer vers /www/public
-    php_root="$install_dir/www/public"
-else
-    # Pour les autres modes, PHP_ROOT pointe vers /www
-    php_root="$install_dir/www"
-fi
-
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"
 
-# Prepare nginx extra conf
-if [ $phpversion != "none" ]
-then
-    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-    YNH_PHP_VERSION="$phpversion"
+# Mode nginx
+if [ "$nginx_mode" = "rewrite" ]; then
+    ynh_add_config --template="nginx-rewrite.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+elif [ "$nginx_mode" = "rewrite-public" ]; then
+    ynh_add_config --template="nginx-rewrite-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+else
+    # Mode classique par défaut (déjà géré par nginx.conf + nginx-php.conf)
+    if [ $phpversion != "none" ]
+    then
+        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+        YNH_PHP_VERSION="$phpversion"
+    fi
 fi
 
 if [ $custom_error_file -eq 1 ]
@@ -109,18 +87,8 @@ then
 fi
 
 
-# Créer d'abord la configuration try_files selon le mode d'installation
-if [ "$install_mode" == "front_controller_public" ]; then
-    ynh_add_config --template="nginx-tryfiles-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-elif [ "$install_mode" == "front_controller_www" ]; then
-    ynh_add_config --template="nginx-tryfiles-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-else
-    ynh_add_config --template="nginx-tryfiles-standard.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-fi
-
-# Puis créer la configuration NGINX principale (qui inclura try_files.conf)
+# Create a dedicated NGINX config
 ynh_add_nginx_config
-
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
@@ -140,13 +108,7 @@ fi
 if [ $with_sftp -eq 1 ]
 then
     # Add the password to this user
-    if [ -n "$password" ]; then
-        # Utiliser le mot de passe fourni
-        chpasswd <<< "${app}:${password}"
-    else
-        # Pas de mot de passe fourni, l'utilisateur utilisera son mot de passe YunoHost actuel
-        ynh_print_info --message="SFTP user created without specific password - will use current user's YunoHost password"
-    fi
+    chpasswd <<< "${app}:${password}"
 fi
 
 #=================================================
@@ -157,31 +119,34 @@ fi
 
 mkdir -p "$install_dir/www"
 
-# Gestion des différents modes d'installation
-case "$install_mode" in
-  "standard")
-    # Mode standard: index statique HTML
-    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
-    ;;
-
-  "front_controller_www")
-    # Front controller à la racine /www (index.php reçoit toutes les requêtes)
-    ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/index.php"
-    # Créer un fichier de configuration pour indiquer le mode
-    echo "<?php \$install_mode = 'front_controller_www'; ?>" > "$install_dir/www/mode_config.php"
-    ;;
-
-  "front_controller_public")
-    # Front controller dans /www/public (ex: Laravel / Symfony)
+# Copy appropriate index file based on NGINX mode
+if [ "$nginx_mode" = "rewrite" ]; then
+    # Rewrite mode: copy PHP file
+    ynh_add_config --template="../sources/www/index_rewrite.php" --destination="$install_dir/www/index.php"
+    # Also copy HTML file for SFTP info
+    if [ $with_sftp -eq 1 ]; then
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    else
+        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    fi
+elif [ "$nginx_mode" = "rewrite-public" ]; then
+    # Rewrite-public mode: create public directory and copy PHP file
     mkdir -p "$install_dir/www/public"
-    ynh_add_config --template="../sources/www/index.php" --destination="$install_dir/www/public/index.php"
-    # Créer un fichier de configuration pour indiquer le mode
-    echo "<?php \$install_mode = 'front_controller_public'; ?>" > "$install_dir/www/public/mode_config.php"
-    ;;
-  *)
-    ynh_die --message="Unknown install_mode: $install_mode"
-    ;;
-esac
+    ynh_add_config --template="../sources/www/index_rewrite_public.php" --destination="$install_dir/www/public/index.php"
+    # Also copy HTML file to public for SFTP info
+    if [ $with_sftp -eq 1 ]; then
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/public/index.html"
+    else
+        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/public/index.html"
+    fi
+else
+    # Classic mode: copy HTML file
+    if [ $with_sftp -eq 1 ]; then
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    else
+        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    fi
+fi
 
 chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
@@ -191,16 +156,6 @@ setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
 chmod 750 "$install_dir"
 
-# Permissions spécifiques pour le mode front_controller_public
-if [ "$install_mode" == "front_controller_public" ]; then
-    # Droits sur www/public pour que le frontend (www-data) serve et écrive si besoin
-    chown -R $app:www-data "$install_dir/www/public"
-    # Créer les répertoires de cache/storage si l'app en a besoin
-    mkdir -p "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-    chown -R $app:www-data "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-    chmod -R 750 "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-fi
-
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
@@ -209,7 +164,7 @@ if [ $phpversion != "none" ]
 then
     ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
-    # Create a dedicated PHP-FPM config
+    # Create a dedicatedPHP-FPM config
     ynh_add_fpm_config
 fi
 

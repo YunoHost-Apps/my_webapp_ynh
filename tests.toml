@@ -54,16 +54,3 @@ test_format = 1.0
     test_upgrade_from.bf5d3ed.args.domain = "sub.domain.tld"
     test_upgrade_from.bf5d3ed.args.path = "/"
     test_upgrade_from.bf5d3ed.args.password = "SuperDuper_StrongPassw0rd"
-
-# Tests pour les différents modes d'installation
-[standard_test]
-    args.install_mode = "standard"
-    only = ["install.subdir", "backup_restore", "upgrade" ]
-
-[frontcontroller_www_test]
-    args.install_mode = "front_controller_www"
-    only = ["install.subdir", "backup_restore", "upgrade" ]
-
-[frontcontroller_public_test]
-    args.install_mode = "front_controller_public"
-    only = ["install.subdir", "backup_restore", "upgrade" ]

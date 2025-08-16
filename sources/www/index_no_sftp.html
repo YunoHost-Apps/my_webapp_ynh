@@ -68,41 +68,36 @@
             color: #555;
         }
 
-        .sftp-details {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            border-left: 5px solid #3498db;
-        }
-
-        .sftp-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .sftp-item {
-            background: white;
-            padding: 15px;
+        .info-box {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
             border-radius: 10px;
-            border: 1px solid #e9ecef;
+            padding: 20px;
+            margin: 20px 0;
         }
 
-        .sftp-label {
-            font-weight: 600;
-            color: #2c3e50;
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+
+        .info-box li {
             margin-bottom: 5px;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .sftp-value {
-            color: #3498db;
-            font-size: 1.1rem;
-            font-weight: 500;
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
         }
 
         .cat-section {
@@ -126,26 +121,21 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .info-box {
-            background: #e8f4fd;
-            border: 1px solid #bee5eb;
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
         }
 
-        .info-box h4 {
-            color: #0c5460;
+        .warning-box h4 {
+            color: #856404;
             margin-bottom: 10px;
         }
 
-        .info-box ul {
-            margin-left: 20px;
-            color: #0c5460;
-        }
-
-        .info-box li {
-            margin-bottom: 5px;
+        .warning-box p {
+            color: #856404;
         }
 
         a {
@@ -171,10 +161,6 @@
             .content {
                 padding: 30px 20px;
             }
-            
-            .sftp-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -193,45 +179,39 @@
                 <div class="info-box">
                     <h4>Quick Start Options:</h4>
                     <ul>
-                        <li><strong>SFTP Access</strong> - Recommended for easy file management</li>
-                        <li><strong>SSH/SCP</strong> - Direct server access for advanced users</li>
-                        <li><strong>File Upload</strong> - Use any FTP client of your choice</li>
+                        <li><strong>SSH/SCP Access</strong> - Direct server access for advanced users</li>
+                        <li><strong>File Upload</strong> - Use any file transfer method of your choice</li>
+                        <li><strong>Web Interface</strong> - If available through your hosting provider</li>
                     </ul>
                 </div>
             </div>
 
             <div class="section">
-                <h2>📁 SFTP Connection Details</h2>
-                <p>Use these credentials to connect via SFTP and upload your website files:</p>
+                <h2>📁 File Upload Instructions</h2>
+                <p>To edit this site, upload your website files using one of these methods:</p>
                 
-                <div class="sftp-details">
-                    <div class="sftp-grid">
-                        <div class="sftp-item">
-                            <div class="sftp-label">Domain</div>
-                            <div class="sftp-value">__DOMAIN__</div>
-                        </div>
-                        <div class="sftp-item">
-                            <div class="sftp-label">Port</div>
-                            <div class="sftp-value">__SSH_PORT__</div>
-                        </div>
-                        <div class="sftp-item">
-                            <div class="sftp-label">Username</div>
-                            <div class="sftp-value">__ID__</div>
-                        </div>
-                        <div class="sftp-item">
-                            <div class="sftp-label">Password</div>
-                            <div class="sftp-value">Your installation password</div>
-                        </div>
-                    </div>
+                <div class="warning-box">
+                    <h4>⚠️ SFTP Not Enabled</h4>
+                    <p>SFTP access is not enabled for this installation. Use SSH/SCP or other file transfer methods.</p>
+                    <p><strong>Note:</strong> You can enable SFTP later through the YunoHost configuration panel. If you don't provide a password, a secure random password will be automatically generated for you.</p>
                 </div>
 
-                <div class="info-box">
-                    <h4>🔐 Password Information</h4>
-                    <p><strong>Important:</strong> If you didn't provide a password during installation, a secure random password was automatically generated for you. This password is displayed above and stored in your application settings.</p>
-                    <p>The generated password is cryptographically secure and 20 characters long. You can change it anytime through the YunoHost configuration panel.</p>
+                <h3>Method 1: SSH/SCP (Recommended)</h3>
+                <p>Use SSH to connect to your server and upload files directly:</p>
+                <div class="code-block">
+                    # Upload files using SCP<br>
+                    scp -r /path/to/your/website/* user@__DOMAIN__:/var/www/__APP__/www/
                 </div>
 
-                <p><strong>Recommended SFTP Client:</strong> <a href="https://filezilla-project.org/download.php?type=client" target="_blank">FileZilla</a> (Free, cross-platform)</p>
+                <h3>Method 2: SSH File Transfer</h3>
+                <p>Connect via SSH and use command-line tools:</p>
+                <div class="code-block">
+                    # Connect via SSH<br>
+                    ssh user@__DOMAIN__<br><br>
+                    # Navigate to web directory<br>
+                    cd /var/www/__APP__/www/<br><br>
+                    # Upload files using rsync, wget, or other tools
+                </div>
             </div>
 
             <div class="section">

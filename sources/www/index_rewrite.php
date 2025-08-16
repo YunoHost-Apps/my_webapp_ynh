@@ -1,9 +1,23 @@
+<?php
+// Get server information
+$domain = $_SERVER['HTTP_HOST'] ?? 'your-domain.com';
+$app_id = basename(dirname($_SERVER['SCRIPT_NAME']));
+$ssh_port = 22; // Default SSH port
+
+// Check if we're in a subdirectory
+$base_path = dirname($_SERVER['SCRIPT_NAME']);
+$is_subdir = $base_path !== '/';
+
+// Get PHP version info
+$php_version = PHP_VERSION;
+$php_sapi = php_sapi_name();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Webapp - Installation Successful</title>
+    <title>My Webapp - Rewrite Mode</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +35,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -47,6 +61,16 @@
             opacity: 0.9;
         }
 
+        .mode-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
         .content {
             padding: 40px;
         }
@@ -61,6 +85,12 @@
             margin-bottom: 15px;
             border-bottom: 3px solid #3498db;
             padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #34495e;
+            font-size: 1.2rem;
+            margin: 20px 0 10px 0;
         }
 
         .section p {
@@ -105,6 +135,38 @@
             font-weight: 500;
         }
 
+        .info-box {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
         .cat-section {
             text-align: center;
             margin-top: 40px;
@@ -126,26 +188,42 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .info-box {
-            background: #e8f4fd;
-            border: 1px solid #bee5eb;
-            border-radius: 10px;
+        .server-info {
+            background: #f1f2f6;
+            border-radius: 15px;
             padding: 20px;
             margin: 20px 0;
         }
 
-        .info-box h4 {
-            color: #0c5460;
-            margin-bottom: 10px;
+        .server-info h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
         }
 
-        .info-box ul {
-            margin-left: 20px;
-            color: #0c5460;
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
         }
 
-        .info-box li {
+        .server-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .server-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
             margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .server-value {
+            font-weight: 600;
+            color: #2c3e50;
         }
 
         a {
@@ -172,7 +250,7 @@
                 padding: 30px 20px;
             }
             
-            .sftp-grid {
+            .sftp-grid, .server-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -182,20 +260,22 @@
     <div class="container">
         <div class="header">
             <h1>🎉 It Works!</h1>
-            <p>Congratulations! You have successfully installed My Webapp</p>
+            <p>Congratulations! You have successfully installed My Webapp in Rewrite Mode</p>
+            <div class="mode-badge">🔄 Front Controller Mode</div>
         </div>
 
         <div class="content">
             <div class="section">
-                <h2>🚀 Getting Started</h2>
-                <p>Your web application is now ready! You can start building your website by uploading your files.</p>
+                <h2>🚀 Rewrite Mode Overview</h2>
+                <p>Your application is running in <strong>Rewrite Mode</strong>, which provides a modern front controller pattern for PHP applications.</p>
                 
                 <div class="info-box">
-                    <h4>Quick Start Options:</h4>
+                    <h4>Rewrite Mode Features:</h4>
                     <ul>
-                        <li><strong>SFTP Access</strong> - Recommended for easy file management</li>
-                        <li><strong>SSH/SCP</strong> - Direct server access for advanced users</li>
-                        <li><strong>File Upload</strong> - Use any FTP client of your choice</li>
+                        <li><strong>Front Controller</strong> - All requests route through index.php</li>
+                        <li><strong>Clean URLs</strong> - SEO-friendly routing structure</li>
+                        <li><strong>Enhanced Security</strong> - Protection for sensitive files</li>
+                        <li><strong>Modern PHP Apps</strong> - Perfect for frameworks and custom routing</li>
                     </ul>
                 </div>
             </div>
@@ -208,15 +288,15 @@
                     <div class="sftp-grid">
                         <div class="sftp-item">
                             <div class="sftp-label">Domain</div>
-                            <div class="sftp-value">__DOMAIN__</div>
+                            <div class="sftp-value"><?php echo htmlspecialchars($domain); ?></div>
                         </div>
                         <div class="sftp-item">
                             <div class="sftp-label">Port</div>
-                            <div class="sftp-value">__SSH_PORT__</div>
+                            <div class="sftp-value"><?php echo $ssh_port; ?></div>
                         </div>
                         <div class="sftp-item">
                             <div class="sftp-label">Username</div>
-                            <div class="sftp-value">__ID__</div>
+                            <div class="sftp-value"><?php echo htmlspecialchars($app_id); ?></div>
                         </div>
                         <div class="sftp-item">
                             <div class="sftp-label">Password</div>
@@ -235,12 +315,54 @@
             </div>
 
             <div class="section">
-                <h2>📂 File Structure</h2>
-                <p>Upload your website files to the following directory:</p>
-                <div class="info-box">
-                    <code>/var/www/__APP__/www/</code>
+                <h2>📂 File Structure & Routing</h2>
+                <p>In Rewrite Mode, your application structure should be:</p>
+                
+                <div class="code-block">
+                    /var/www/<?php echo htmlspecialchars($app_id); ?>/www/<br>
+                    ├── index.php          # Main entry point<br>
+                    ├── .htaccess         # URL rewriting rules<br>
+                    ├── assets/           # CSS, JS, images<br>
+                    ├── includes/         # PHP includes<br>
+                    └── pages/            # Content pages
                 </div>
-                <p>This directory contains all the files that will be served by your web application.</p>
+
+                <h3>URL Routing</h3>
+                <p>All URLs will be processed through your main <code>index.php</code> file, allowing you to create clean, SEO-friendly URLs:</p>
+                
+                <div class="info-box">
+                    <h4>Example URLs:</h4>
+                    <ul>
+                        <li><code>/about</code> → routes to your about page</li>
+                        <li><code>/blog/post-123</code> → routes to blog post</li>
+                        <li><code>/api/users</code> → routes to API endpoint</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚙️ Server Information</h2>
+                <div class="server-info">
+                    <h4>Current Server Details:</h4>
+                    <div class="server-grid">
+                        <div class="server-item">
+                            <div class="server-label">PHP Version</div>
+                            <div class="server-value"><?php echo $php_version; ?></div>
+                        </div>
+                        <div class="server-item">
+                            <div class="server-label">Server API</div>
+                            <div class="server-value"><?php echo $php_sapi; ?></div>
+                        </div>
+                        <div class="server-item">
+                            <div class="server-label">Document Root</div>
+                            <div class="server-value"><?php echo htmlspecialchars($_SERVER['DOCUMENT_ROOT'] ?? 'N/A'); ?></div>
+                        </div>
+                        <div class="server-item">
+                            <div class="server-label">Script Path</div>
+                            <div class="server-value"><?php echo htmlspecialchars($_SERVER['SCRIPT_NAME'] ?? 'N/A'); ?></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="cat-section">

@@ -16,8 +16,10 @@ license = "GPL-3.0-only"
 yunohost = ">= 11.2.4"
 architectures = "all"
 multi_instance = true
+
 ldap = "not_relevant"
 sso = "not_relevant"
+
 disk = "50M"
 ram.build = "50M"
 ram.runtime = "50M"
@@ -28,7 +30,7 @@ ram.runtime = "50M"
 
     [install.path]
     type = "path"
-    default = "/"
+    default = "/site"
 
     [install.with_sftp]
     ask.en = "Do you need a SFTP access?"
@@ -50,8 +52,15 @@ ram.runtime = "50M"
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
-    choices = ["8.0", "8.1", "8.2", "8.3", "8.4"]
-    default = "8.4"
+    choices = ["none", "8.1", "8.2", "8.3", "8.4"]
+    default = "none"
+
+    [install.nginx_mode]
+    ask.en = "Choose NGINX mode"
+    ask.fr = "Choisissez le mode NGINX"
+    type = "select"
+    choices = ["classic", "rewrite", "rewrite-public"]
+    default = "classic"
 
     [install.database]
     ask.en = "Do you need a database?"
@@ -60,21 +69,13 @@ ram.runtime = "50M"
     choices = [ "none", "mysql", "postgresql" ]
     default = "none"
 
-    [install.install_mode]
-ask.en = "Installation mode"
-ask.fr = "Mode d'installation"
-type = "select"
-choices = ["standard", "front_controller_www", "front_controller_public"]
-default = "standard"
-help.en = "standard: static files, front_controller_www: WordPress/Drupal style, front_controller_public: Laravel/Symfony style"
-help.fr = "standard: fichiers statiques, front_controller_www: style WordPress/Drupal, front_controller_public: style Laravel/Symfony"
-
-[install.custom_error_file]
-ask.en = "Activate the custom error file use"
-ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
-type = "boolean"
-default = false
-help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
+    [install.custom_error_file]
+    ask.en = "Activate the custom error file use"
+    ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
+    type = "boolean"
+    default = false
+    help.en = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
+    help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
 
 [resources]
     [resources.system_user]

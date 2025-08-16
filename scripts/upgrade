@@ -56,12 +56,6 @@ if [ -z "${custom_error_file:-}" ]; then
 	ynh_app_setting_set --app=$app --key=custom_error_file --value=$custom_error_file
 fi
 
-# If install_mode doesn't exist, create it (default to standard for backward compatibility)
-if [ -z "${install_mode:-}" ]; then
-	install_mode="standard"
-	ynh_app_setting_set --app=$app --key=install_mode --value=$install_mode
-fi
-
 # Delete old user
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
 then
@@ -84,25 +78,22 @@ ynh_maintenance_mode_ON
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
 
-# Définir le répertoire racine PHP selon le mode d'installation
-if [ "$install_mode" == "front_controller_public" ]; then
-    # Pour le mode public, PHP_ROOT doit pointer vers /www/public
-    php_root="$install_dir/www/public"
-else
-    # Pour les autres modes, PHP_ROOT pointe vers /www
-    php_root="$install_dir/www"
-fi
-
 # Prepare nginx.conf
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 
 mkdir -p "$nginx_extra_conf_dir"
 
-# Prepare nginx extra conf
-if [ $phpversion != "none" ]
-then
-    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-    YNH_PHP_VERSION="$phpversion"
+# Mode nginx
+if [ "$nginx_mode" = "rewrite" ]; then
+    ynh_add_config --template="nginx-rewrite.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+elif [ "$nginx_mode" = "rewrite-public" ]; then
+    ynh_add_config --template="nginx-rewrite-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
+else
+    if [ $phpversion != "none" ]
+    then
+        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+        YNH_PHP_VERSION="$phpversion"
+    fi
 fi
 
 # Add the config error code
@@ -111,19 +102,46 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-# Créer d'abord la configuration try_files selon le mode d'installation
-if [ "$install_mode" == "front_controller_public" ]; then
-    ynh_add_config --template="nginx-tryfiles-frontcontroller-public.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-elif [ "$install_mode" == "front_controller_www" ]; then
-    ynh_add_config --template="nginx-tryfiles-frontcontroller-www.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-else
-    ynh_add_config --template="nginx-tryfiles-standard.conf" --destination="$nginx_extra_conf_dir/try_files.conf"
-fi
-
-# Puis créer la configuration NGINX principale (qui inclura try_files.conf)
+# Create a dedicated NGINX config
 ynh_add_nginx_config
-
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+
+#=================================================
+# UPDATE INDEX FILES BASED ON NGINX MODE
+#=================================================
+ynh_script_progression --message="Updating index files..." --weight=1
+
+# Ensure www directory exists
+mkdir -p "$install_dir/www"
+
+# Copy appropriate index file based on NGINX mode
+if [ "$nginx_mode" = "rewrite" ]; then
+    # Rewrite mode: copy PHP file
+    ynh_add_config --template="index_rewrite.php" --destination="$install_dir/www/index.php"
+    # Also copy HTML file for SFTP info
+    if [ $with_sftp -eq 1 ]; then
+        ynh_add_config --template="index.html" --destination="$install_dir/www/index.html"
+    else
+        ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/index.html"
+    fi
+elif [ "$nginx_mode" = "rewrite-public" ]; then
+    # Rewrite-public mode: create public directory and copy PHP file
+    mkdir -p "$install_dir/www/public"
+    ynh_add_config --template="index_rewrite_public.php" --destination="$install_dir/www/public/index.php"
+    # Also copy HTML file to public for SFTP info
+    if [ $with_sftp -eq 1 ]; then
+        ynh_add_config --template="index.html" --destination="$install_dir/www/public/index.html"
+    else
+        ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/public/index.html"
+    fi
+else
+    # Classic mode: copy HTML file
+    if [ $with_sftp -eq 1 ]; then
+        ynh_add_config --template="index.html" --destination="$install_dir/www/index.html"
+    else
+        ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/index.html"
+    fi
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -174,16 +192,6 @@ chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
 chmod 750 "$install_dir"
-
-# Permissions spécifiques pour le mode front_controller_public
-if [ "$install_mode" == "front_controller_public" ]; then
-    # Droits sur www/public pour que le frontend (www-data) serve et écrive si besoin
-    chown -R $app:www-data "$install_dir/www/public"
-    # Créer les répertoires de cache/storage si l'app en a besoin
-    mkdir -p "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-    chown -R $app:www-data "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-    chmod -R 750 "$install_dir/www/storage" "$install_dir/www/bootstrap/cache"
-fi
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

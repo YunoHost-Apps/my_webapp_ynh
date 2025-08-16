@@ -36,23 +36,23 @@ name.fr = "Configuration de My Webapp"
         help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
 
     [main.php_fpm_config]
-    name = "PHP-FPM configuration"
+    name.en = "PHP-FPM configuration"
+    name.fr = "Configuration PHP-FPM"
 
         [main.php_fpm_config.phpversion]
-        ask = "PHP version"
+        ask.en = "PHP version"
+        ask.fr = "Version PHP"
         type = "select"
-        choices = ["none", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+        choices = ["none", "8.1", "8.2", "8.3", "8.4"]
         default = "none"
 
-    [main.install_mode]
-    name.en = "Installation mode"
-    name.fr = "Mode d'installation"
+    [main.nginx_mode]
+    name.en = "NGINX mode"
+    name.fr = "Mode NGINX"
 
-        [main.install_mode.install_mode]
-        ask.en = "Installation mode"
-        ask.fr = "Mode d'installation"
+        [main.nginx_mode.mode]
+        ask.en = "Select NGINX mode"
+        ask.fr = "Sélectionnez le mode NGINX"
         type = "select"
-        choices = ["standard", "front_controller_www", "front_controller_public"]
-        default = "standard"
-        help.en = "standard: static files, front_controller_www: WordPress/Drupal style, front_controller_public: Laravel/Symfony style"
-        help.fr = "standard: fichiers statiques, front_controller_www: style WordPress/Drupal, front_controller_public: style Laravel/Symfony"
+        choices = ["classic", "rewrite", "rewrite-public"]
+        default = "classic"

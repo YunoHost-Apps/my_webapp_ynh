@@ -8,7 +8,7 @@ It shall NOT be edited by hand.
   My Webapp, packaged for YunoHost
 </h1>
 
-Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files
+Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files. **Now supports 3 NGINX installation modes: Classic, Rewrite, and Rewrite-Public for modern web applications.**
 
 [![Version: 1.0~ynh21](https://img.shields.io/badge/Version-1.0~ynh21-rgba(0,150,0,1)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 

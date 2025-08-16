@@ -1,11 +1,68 @@
-This application allows you to easily install an "empty" web application, in which you deploy your own custom website in the form of "static" HTML/CSS/JS assets or PHP.
+# My Webapp - Custom Web Application Platform
 
-Files can be uploaded [via SFTP](https://yunohost.org/en/filezilla) or any other method of your chosing.
+This application provides a flexible platform for deploying custom web applications on YunoHost. It supports both static content (HTML/CSS/JS) and dynamic PHP applications with multiple NGINX configuration modes.
 
-During installation, you can also chose to initialize a MySQL or PostgreSQL database, which will be backed up and restored just like the other files in your application. The connection details will be stored in the file `db_access.txt` located in the root directory of the app.
+## Features
 
-PHP-FPM version can also be selected among (none), `7.4`, `8.0`, `8.1`, `8.2`, `8.3` and `8.4`.
+- **Multiple NGINX Modes**: Choose between Classic, Rewrite, and Rewrite-Public configurations
+- **Flexible Deployment**: Support for static files and PHP applications
+- **SFTP Access**: Secure file upload and management with automatic password generation
+- **Database Support**: Optional MySQL or PostgreSQL integration
+- **PHP-FPM**: Select from PHP 8.1, 8.2, 8.3, or 8.4 (or none)
+- **Custom Error Pages**: Personalized 404 and error handling
+- **Automatic Backups**: Database and file backup integration
 
-**Once installed, go to the chosen URL to know the user, domain and port you will have to use for the SFTP access.** The password is the one specified during the installation. Under the app directory, you will see a `www` folder which contains the public files served by this app. You can put all the files of your custom web application inside.
+## NGINX Configuration Modes
 
-You can also customize 404 errors - if you enable the option in the config panel. Simply create an `error` folder in the `www` root directory, containing your custom `html` files. 
+### Classic Mode (Default)
+- Standard NGINX configuration
+- Direct file serving from `/www` directory
+- Compatible with traditional web applications
+
+### Rewrite Mode
+- Front controller pattern
+- Routes all requests through `index.php`
+- Enhanced security with sensitive file protection
+- Ideal for modern PHP applications
+
+### Rewrite-Public Mode
+- Front controller with public directory separation
+- Serves from `/www/public` directory
+- Perfect for Laravel, Symfony, and other modern frameworks
+
+## Installation & Usage
+
+During installation, you can configure:
+- NGINX mode selection
+- PHP version (8.1, 8.2, 8.3, 8.4, or none)
+- Database type (MySQL, PostgreSQL, or none)
+- SFTP access with custom password (auto-generated if none provided)
+- Custom error page support
+
+## File Management
+
+Files can be uploaded via:
+- SFTP access (recommended)
+- Any other file transfer method of your choice
+
+The application creates a `www` directory where you can place your web application files. For Rewrite-Public mode, use the `www/public` subdirectory.
+
+## Database Integration
+
+If you select a database during installation:
+- Connection details are stored in `db_access.txt`
+- Automatic backup and restore integration
+- Secure credential management
+
+## Customization
+
+- **Error Pages**: Create an `error` folder in `www` with custom HTML files
+- **Configuration**: Modify settings through the YunoHost admin panel
+- **NGINX Mode**: Switch between modes after installation via configuration panel
+
+## Security Features
+
+- Sensitive file protection (`.env`, `.json`, `.ini`, `.tpl`)
+- Hidden directory protection (except `.well-known/`)
+- Secure SFTP access
+- YunoHost security standards compliance 
