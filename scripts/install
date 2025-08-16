@@ -63,6 +63,10 @@ fi
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
+# Augmenter temporairement le nombre maximum de fichiers ouverts
+OLD_LIMIT=$(ulimit -n)
+ulimit -n 65535
+
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"
 
@@ -98,6 +102,8 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
+# Rétablir la limite précédente
+ulimit -n $OLD_LIMIT
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
