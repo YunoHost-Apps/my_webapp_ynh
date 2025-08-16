@@ -44,7 +44,7 @@ name.fr = "Configuration de My Webapp"
         ask.fr = "Version PHP"
         type = "select"
         choices = ["none", "8.1", "8.2", "8.3", "8.4"]
-        default = "none"
+        default = "8.4"
 
     [main.nginx_mode]
     name.en = "NGINX mode"
@@ -54,5 +54,5 @@ name.fr = "Configuration de My Webapp"
         ask.en = "Select NGINX mode"
         ask.fr = "Sélectionnez le mode NGINX"
         type = "select"
-        choices = ["classic", "rewrite", "rewrite-public"]
-        default = "classic"
+        choices = ["Static", "Front", "Public"]
+        default = "Static"
