@@ -56,6 +56,12 @@ if [ -z "${custom_error_file:-}" ]; then
 	ynh_app_setting_set --app=$app --key=custom_error_file --value=$custom_error_file
 fi
 
+# If mode doesn't exist, create it with default value
+if [ -z "${mode:-}" ]; then
+	mode="static"
+	ynh_app_setting_set --app=$app --key=mode --value=$mode
+fi
+
 # Delete old user
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
 then
@@ -83,29 +89,11 @@ nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 
 mkdir -p "$nginx_extra_conf_dir"
 
-# Mode nginx
-if [ "$nginx_mode" = "front" ]; then
-    ynh_add_config --template="nginx-rewrite.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
-    # Ajouter la configuration PHP si nécessaire
-    if [ $phpversion != "none" ]
-    then
-        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
-elif [ "$nginx_mode" = "public" ]; then
-    ynh_add_config --template="nginx-rewrite-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
-    # Ajouter la configuration PHP si nécessaire
-    if [ $phpversion != "none" ]
-    then
-        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
-else
-    if [ $phpversion != "none" ]
-    then
-        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
+# Prepare nginx extra conf
+if [ $phpversion != "none" ]
+then
+    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+    YNH_PHP_VERSION="$phpversion"
 fi
 
 # Add the config error code
@@ -116,44 +104,11 @@ fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+
+# Add the routing mode configuration
+ynh_add_config --template="$mode.conf" --destination="$nginx_extra_conf_dir/$mode.conf"
+
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
-
-#=================================================
-# UPDATE INDEX FILES BASED ON NGINX MODE
-#=================================================
-ynh_script_progression --message="Updating index files..." --weight=1
-
-# Ensure www directory exists
-mkdir -p "$install_dir/www"
-
-# Copy appropriate index file based on NGINX mode
-if [ "$nginx_mode" = "front" ]; then
-    # Front mode: copy PHP file
-    ynh_add_config --template="index_rewrite.php" --destination="$install_dir/www/index.php"
-    # Also copy HTML file for SFTP info
-    if [ $with_sftp -eq 1 ]; then
-        ynh_add_config --template="index.html" --destination="$install_dir/www/index.html"
-    else
-        ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/index.html"
-    fi
-elif [ "$nginx_mode" = "public" ]; then
-    # Public mode: create public directory and copy PHP file
-    mkdir -p "$install_dir/www/public"
-    ynh_add_config --template="index_rewrite_public.php" --destination="$install_dir/www/public/index.php"
-    # Also copy HTML file to public for SFTP info
-    if [ $with_sftp -eq 1 ]; then
-        ynh_add_config --template="index.html" --destination="$install_dir/www/public/index.html"
-    else
-        ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/public/index.html"
-    fi
-else
-    # Static mode: copy HTML file
-    if [ $with_sftp -eq 1 ]; then
-        ynh_add_config --template="index.html" --destination="$install_dir/www/index.html"
-    else
-        ynh_add_config --template="index_no_sftp.html" --destination="$install_dir/www/index.html"
-    fi
-fi
 
 #=================================================
 # CREATE DEDICATED USER

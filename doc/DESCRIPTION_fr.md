@@ -1,68 +1,52 @@
-# My Webapp - Plateforme d'Application Web Personnalisée
+# 🌐 My Webapp - Votre Application Web Personnalisée
 
-Cette application fournit une plateforme flexible pour déployer des applications web personnalisées sur YunoHost. Elle prend en charge à la fois le contenu statique (HTML/CSS/JS) et les applications PHP dynamiques avec plusieurs modes de configuration NGINX.
+Cette application vous permet d'installer facilement une **application web personnalisée** où vous pouvez déployer votre propre site web en utilisant des fichiers HTML, CSS, JavaScript ou PHP.
 
-## Fonctionnalités
+## ✨ Fonctionnalités Principales
 
-- **Modes NGINX Multiples** : Choisissez entre les configurations Statique, Front et Public
-- **Déploiement Flexible** : Support des fichiers statiques et des applications PHP
-- **Accès SFTP** : Upload et gestion sécurisés des fichiers avec génération automatique de mot de passe
-- **Support Base de Données** : Intégration optionnelle MySQL ou PostgreSQL
-- **PHP-FPM** : Sélection parmi PHP 8.1, 8.2, 8.3 ou 8.4 (ou aucune)
-- **Pages d'Erreur Personnalisées** : Gestion personnalisée des erreurs 404 et autres
-- **Sauvegardes Automatiques** : Intégration des sauvegardes de base de données et de fichiers
+- **Déploiement Facile** : Téléchargez vos fichiers via SFTP ou toute autre méthode
+- **Routage Flexible** : Choisissez entre 3 modes de routage (static, front, public)
+- **Support Base de Données** : Base de données MySQL ou PostgreSQL optionnelle avec sauvegarde automatique
+- **Support PHP** : Sélectionnez parmi les versions PHP 8.0 à 8.4, ou aucune
+- **Pages d'Erreur Personnalisées** : Créez des pages d'erreur 404 personnalisées
+- **Accès SFTP** : Transfert de fichiers sécurisé avec fallback automatique du mot de passe
 
-## Modes de Configuration NGINX
+## 🚀 Pour Commencer
 
-### Mode Statique (Par Défaut)
-- Configuration NGINX standard
-- Service direct des fichiers depuis le répertoire `/www`
-- Compatible avec les applications web traditionnelles
+1. **Installez l'application** et choisissez vos préférences
+2. **Téléchargez vos fichiers** dans le dossier `www` via SFTP
+3. **Accédez à votre site** à l'URL choisie
+4. **Personnalisez** les pages d'erreur et les paramètres selon vos besoins
 
-### Mode Front
-- Pattern front controller
-- Route toutes les requêtes via `index.php`
-- Sécurité renforcée avec protection des fichiers sensibles
-- Idéal pour les applications PHP modernes
+## 📁 Structure des Fichiers
 
-### Mode Public
-- Front controller avec séparation du répertoire public
-- Sert depuis le répertoire `/www/public`
-- Parfait pour Laravel, Symfony et autres frameworks modernes
+```
+www/
+├── index.html          # Votre page principale
+├── css/               # Feuilles de style
+├── js/                # Fichiers JavaScript
+├── images/            # Images et médias
+└── error/             # Pages d'erreur personnalisées (optionnel)
+```
 
-## Installation et Utilisation
+## 🔐 Accès SFTP
 
-Lors de l'installation, vous pouvez configurer :
-- Sélection du mode NGINX
-- Version PHP (8.1, 8.2, 8.3, 8.4, ou aucune)
-- Type de base de données (MySQL, PostgreSQL, ou aucune)
-- Accès SFTP avec mot de passe personnalisé (généré automatiquement si aucun fourni)
-- Support des pages d'erreur personnalisées
+- **Nom d'utilisateur** : Même nom que votre application
+- **Mot de passe** : Celui que vous avez défini lors de l'installation
+- **Port** : Port SSH standard (généralement 22)
+- **Répertoire** : Dossier `www/` pour les fichiers publics
 
-## Gestion des Fichiers
+> **💡 Astuce** : Si vous ne définissez pas de mot de passe lors de l'installation, le système utilisera automatiquement votre nom d'utilisateur actuel comme mot de passe pour plus de commodité.
 
-Les fichiers peuvent être uploadés via :
-- Accès SFTP (recommandé)
-- Toute autre méthode de transfert de fichiers de votre choix
+## 🎨 Options de Personnalisation
 
-L'application crée un répertoire `www` où vous pouvez placer les fichiers de votre application web. Pour le mode Public, utilisez le sous-répertoire `www/public`.
+- **Mode de Routage** : Choisissez comment les URLs sont gérées
+- **Version PHP** : Sélectionnez la version PHP qui correspond à vos besoins
+- **Base de Données** : Ajoutez une base de données pour du contenu dynamique
+- **Pages d'Erreur** : Créez des pages d'erreur 404 et d'erreur personnalisées
 
-## Intégration Base de Données
+## 📚 Besoin d'Aide ?
 
-Si vous sélectionnez une base de données lors de l'installation :
-- Les détails de connexion sont stockés dans `db_access.txt`
-- Intégration automatique des sauvegardes et restaurations
-- Gestion sécurisée des identifiants
-
-## Personnalisation
-
-- **Pages d'Erreur** : Créez un dossier `error` dans `www` avec vos fichiers HTML personnalisés
-- **Configuration** : Modifiez les paramètres via le panneau d'administration YunoHost
-- **Mode NGINX** : Changez de mode après installation via le panneau de configuration
-
-## Fonctionnalités de Sécurité
-
-- Protection des fichiers sensibles (`.env`, `.json`, `.ini`, `.tpl`)
-- Protection des répertoires cachés (sauf `.well-known/`)
-- Accès SFTP sécurisé
-- Conformité aux standards de sécurité YunoHost 
+- Consultez la documentation d'administration pour la configuration détaillée
+- Visitez la communauté YunoHost pour le support
+- Consultez la documentation des modes de routage pour une utilisation avancée 

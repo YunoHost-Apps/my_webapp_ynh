@@ -36,23 +36,23 @@ name.fr = "Configuration de My Webapp"
         help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
 
     [main.php_fpm_config]
-    name.en = "PHP-FPM configuration"
-    name.fr = "Configuration PHP-FPM"
+    name = "PHP-FPM configuration"
 
-        [main.php_fpm_config.phpversion]
-        ask.en = "PHP version"
-        ask.fr = "Version PHP"
-        type = "select"
-        choices = ["none", "8.1", "8.2", "8.3", "8.4"]
-        default = "8.4"
+            [main.php_fpm_config.phpversion]
+    ask = "PHP version"
+    type = "select"
+    choices = ["none", "8.0", "8.1", "8.2", "8.3", "8.4"]
+    default = "8.4"
 
-    [main.nginx_mode]
-    name.en = "NGINX mode"
-    name.fr = "Mode NGINX"
+    [main.routing]
+    name.en = "Routing configuration"
+    name.fr = "Configuration du routage"
 
-        [main.nginx_mode.mode]
-        ask.en = "Select NGINX mode"
-        ask.fr = "Sélectionnez le mode NGINX"
+        [main.routing.mode]
+        ask.en = "Routing mode"
+        ask.fr = "Mode de routage"
         type = "select"
         choices = ["static", "front", "public"]
         default = "static"
+        help.en = "static: serves static files and falls back to index.php, front: direct routing to index.php, public: serves from public directory"
+        help.fr = "static: sert les fichiers statiques et bascule vers index.php, front: routage direct vers index.php, public: sert depuis le répertoire public"

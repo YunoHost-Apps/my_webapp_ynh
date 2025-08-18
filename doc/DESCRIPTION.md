@@ -1,61 +1,52 @@
-# My Webapp - Custom Web Application Platform 🚀
+# 🌐 My Webapp - Your Custom Web Application
 
-A flexible platform for deploying custom web applications on YunoHost with multiple NGINX configuration modes and comprehensive features.
+This application allows you to easily install a **custom web application** where you can deploy your own website using HTML, CSS, JavaScript, or PHP files.
 
 ## ✨ Key Features
 
-- **Multiple NGINX Modes**: Choose between Static, Front, and Public configurations
-- **Flexible Deployment**: Support for static files and PHP applications  
-- **SFTP Access**: Secure file upload with automatic password generation
-- **Database Support**: Optional MySQL or PostgreSQL integration
-- **PHP-FPM**: Select from PHP 8.1, 8.2, 8.3, or 8.4 (or none)
-- **Custom Error Pages**: Personalized 404 and error handling
-- **Automatic Backups**: Database and file backup integration
+- **Easy Deployment**: Upload your files via SFTP or any method you prefer
+- **Flexible Routing**: Choose between 3 routing modes (static, front, public)
+- **Database Support**: Optional MySQL or PostgreSQL database with automatic backup
+- **PHP Support**: Select from PHP versions 8.0 to 8.4, or none
+- **Custom Error Pages**: Create personalized 404 error pages
+- **SFTP Access**: Secure file transfer with automatic password fallback
 
-## 🌐 NGINX Configuration Modes
+## 🚀 Getting Started
 
-### Static Mode (Default)
-Standard NGINX configuration for traditional web applications. Direct file serving from the `/www` directory with optional PHP support.
+1. **Install the app** and choose your preferences
+2. **Upload your files** to the `www` folder via SFTP
+3. **Access your website** at the chosen URL
+4. **Customize** error pages and settings as needed
 
-### Front Mode  
-Front controller pattern that routes all requests through `index.php`. Enhanced security with sensitive file protection, perfect for modern PHP applications.
+## 📁 File Structure
 
-### Public Mode
-Front controller with public directory separation. Serves from `/www/public` directory, ideal for Laravel, Symfony, and other modern frameworks.
+```
+www/
+├── index.html          # Your main page
+├── css/               # Stylesheets
+├── js/                # JavaScript files
+├── images/            # Images and media
+└── error/             # Custom error pages (optional)
+```
 
-## 🚀 Installation & Usage
+## 🔐 SFTP Access
 
-During installation, configure:
-- NGINX mode selection
-- PHP version (8.1, 8.2, 8.3, 8.4, or none)
-- Database type (MySQL, PostgreSQL, or none)
-- SFTP access with custom password (auto-generated if none provided)
-- Custom error page support
+- **Username**: Same as your app name
+- **Password**: The one you set during installation
+- **Port**: Standard SSH port (usually 22)
+- **Directory**: `www/` folder for public files
 
-## 📁 File Management
+> **💡 Tip**: If you don't set a password during installation, the system will automatically use your current username as the password for convenience.
 
-Upload files via:
-- SFTP access (recommended)
-- Any other file transfer method
+## 🎨 Customization Options
 
-The application creates a `www` directory for your web application files. For Public mode, use the `www/public` subdirectory.
+- **Routing Mode**: Choose how URLs are handled
+- **PHP Version**: Select the PHP version that fits your needs
+- **Database**: Add a database for dynamic content
+- **Error Pages**: Create custom 404 and error pages
 
-## 🗄️ Database Integration
+## 📚 Need Help?
 
-If you select a database during installation:
-- Connection details are stored in `db_access.txt`
-- Automatic backup and restore integration
-- Secure credential management
-
-## ⚙️ Customization
-
-- **Error Pages**: Create an `error` folder in `www` with custom HTML files
-- **Configuration**: Modify settings through the YunoHost admin panel
-- **NGINX Mode**: Switch between modes after installation via configuration panel
-
-## 🔒 Security Features
-
-- Sensitive file protection (`.env`, `.json`, `.ini`, `.tpl`)
-- Hidden directory protection (except `.well-known/`)
-- Secure SFTP access
-- YunoHost security standards compliance 
+- Check the admin documentation for detailed configuration
+- Visit the YunoHost community for support
+- Review the routing modes documentation for advanced usage 

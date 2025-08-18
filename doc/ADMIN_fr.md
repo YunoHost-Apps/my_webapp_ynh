@@ -1,139 +1,118 @@
-# My Webapp - Guide d'Administration
+# 🛠️ Guide d'Administration - My Webapp
 
-Cette application fournit une plateforme flexible d'application web où vous pouvez déployer votre propre contenu personnalisé (HTML, CSS, PHP, etc.) dans le répertoire `__INSTALL_DIR__/www/`.
+Cette application fournit un **squelette d'application web vierge** où vous pouvez ajouter votre propre contenu (HTML, CSS, PHP, etc.) dans le répertoire `__INSTALL_DIR__/www/`. La façon la plus simple d'ajouter du contenu est d'utiliser SFTP.
 
-## Gestion des Fichiers
+## 🔐 Accès SFTP
 
-### Accès SFTP (Recommandé)
+### Détails de Connexion
 
-Une fois installée, visitez l'URL de votre application pour obtenir les détails de connexion SFTP :
+Une fois installée, visitez l'URL de votre application pour voir les informations de connexion :
 
 - **Hôte** : `__DOMAIN__`
 - **Nom d'utilisateur** : `__ID__`
-- **Mot de passe** : Mot de passe choisi lors de l'installation
-- **Port** : 22 (port SSH par défaut)
+- **Mot de passe** : Le mot de passe que vous avez défini lors de l'installation
+- **Port** : 22 (port SSH standard)
 
-#### Clients SFTP
+> **💡 Astuce Mot de Passe** : Si vous n'avez pas défini de mot de passe lors de l'installation, le système utilise automatiquement votre nom d'utilisateur actuel comme mot de passe.
+
+### Clients SFTP
+
+Vous pouvez vous connecter avec n'importe quel client SFTP :
 
 - **Windows/Mac/Linux** : [FileZilla](https://filezilla-project.org/)
-- **Mac** : Finder intégré (Aller > Se connecter au serveur)
-- **Linux** : Gestionnaire de fichiers avec support SFTP
+- **Mac** : Finder intégré (⌘+K)
+- **Linux** : Gestionnaire de fichiers ou ligne de commande
+- **Ligne de Commande** : `sftp __ID__@__DOMAIN__`
+- **Chemin par Défaut** : `/` (racine de votre domaine)
 
-#### Gestion des Mots de Passe
+### Mot de Passe Oublié ?
 
-**Important** : Si vous ne fournissez pas de mot de passe lors de l'installation alors que SFTP est activé, un mot de passe sécurisé aléatoire sera automatiquement généré pour vous. Ce mot de passe sera affiché pendant le processus d'installation et stocké dans les paramètres de l'application.
+Pas de souci ! Vous pouvez changer votre mot de passe SFTP à tout moment :
 
-Pour changer votre mot de passe SFTP ou vérifier si SFTP est activé :
-1. Allez dans le panneau d'administration YunoHost
-2. Naviguez vers `Applications > My webapp > Configuration`
-3. Modifiez les paramètres SFTP selon vos besoins
+1. Allez dans le **Panneau d'Administration YunoHost**
+2. Naviguez vers **Applications > My Webapp > Configuration**
+3. Mettez à jour votre mot de passe dans la section SFTP
+4. Assurez-vous que SFTP est activé
 
-**Note** : Le mot de passe généré est cryptographiquement sécurisé et fait 20 caractères. Vous pouvez le changer à tout moment via le panneau de configuration.
-
-### Accès en Ligne de Commande
+## 💻 Accès en Ligne de Commande
 
 À partir de YunoHost v11.1.21, vous pouvez utiliser :
+
 ```bash
 sudo yunohost app shell __APP__
 ```
 
-Cela vous donne un accès direct en tant qu'utilisateur de l'application. La commande `php` utilisera la version PHP configurée pour votre app.
+Cela vous donne un accès direct en tant qu'utilisateur de votre application, et la commande `php` utilisera la version PHP installée pour votre application.
 
-## Gestion du Contenu
+## 📁 Gestion de Vos Fichiers
 
 ### Structure des Fichiers
 
-- **Mode Statique** : Placez les fichiers directement dans `__INSTALL_DIR__/www/`
-- **Mode Front** : Placez les fichiers dans `__INSTALL_DIR__/www/` (routés via index.php)
-- **Mode Public** : Placez les fichiers publics dans `__INSTALL_DIR__/www/public/`
+```
+__INSTALL_DIR__/www/
+├── index.html          # Votre page principale
+├── css/               # Feuilles de style
+├── js/                # Fichiers JavaScript
+├── images/            # Images et médias
+└── error/             # Pages d'erreur personnalisées
+```
 
 ### Ajout de Contenu
 
-1. Connectez-vous via SFTP ou ligne de commande
-2. Naviguez vers le répertoire approprié selon votre mode NGINX
-3. Uploadez ou créez vos fichiers d'application web
-4. Assurez-vous des bonnes permissions de fichiers (typiquement 644 pour les fichiers, 755 pour les répertoires)
+1. **Connectez-vous via SFTP** avec vos identifiants
+2. **Naviguez vers le dossier `www`**
+3. **Téléchargez vos fichiers** (HTML, CSS, JS, PHP, images, etc.)
+4. **Votre site est en ligne** immédiatement !
 
-## Gestion des Erreurs
+## ⚠️ Gestion des Erreurs
 
 ### Pages d'Erreur Personnalisées
 
-L'application prend en charge la gestion personnalisée des erreurs HTTP 403 (Interdit) et 404 (Non trouvé) :
+Créez des pages d'erreur personnalisées pour une meilleure expérience utilisateur :
 
-1. Créez un dossier `error` dans `__INSTALL_DIR__/www/error/`
-2. Ajoutez vos fichiers HTML personnalisés :
-   - `403.html` pour les erreurs d'accès refusé
-   - `404.html` pour les ressources non trouvées
+1. **Créez un dossier `error`** dans `__INSTALL_DIR__/www/error/`
+2. **Ajoutez vos pages personnalisées** :
+   - `403.html` - Accès interdit
+   - `404.html` - Page non trouvée
+3. **Activez la fonctionnalité** dans le panneau de configuration de l'application
 
-### Fonctionnalités des Pages d'Erreur
+### Codes d'Erreur Supportés
 
-- Contenu HTML entièrement personnalisable
-- Support du style CSS et JavaScript
-- Recommandations de design responsive
-- Intégration avec le thème de votre application
+- **403** : Accès Interdit
+- **404** : Page Non Trouvée
 
-## Configuration NGINX
+## ⚙️ Configuration Avancée
 
-### Configurations Spécifiques au Mode
+### Personnalisation Nginx
 
-L'application génère automatiquement des configurations NGINX selon votre mode sélectionné :
+Pour personnaliser la configuration du serveur web :
 
-- **Statique** : Configuration standard avec support PHP optionnel
-- **Front** : Pattern front controller avec sécurité renforcée
-- **Public** : Front controller avec séparation du répertoire public
+1. **Éditez les fichiers** dans `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/`
+2. **Utilisez l'extension `.conf`** pour vos fichiers
+3. **Testez la configuration** : `nginx -t`
+4. **Rechargez nginx** : `systemctl reload nginx`
 
-### Modifications NGINX Personnalisées
+### Modes de Routage
 
-Pour personnaliser la configuration NGINX :
+Votre application supporte 3 modes de routage :
 
-1. Éditez les fichiers dans `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/`
-2. Assurez-vous que les fichiers ont l'extension `.conf`
-3. Testez la validité de la configuration : `nginx -t`
-4. Rechargez NGINX : `systemctl reload nginx`
+- **Static** : Sert les fichiers statiques, bascule vers index.php
+- **Front** : Routage direct vers index.php (mode SPA)
+- **Public** : Sert depuis le répertoire public
 
-**Note** : Évitez de modifier les fichiers de configuration principaux. Utilisez le répertoire spécifique à l'application pour les personnalisations.
+Changez-les dans le panneau de configuration sous "Configuration du Routage".
 
-## Considérations de Sécurité
+## 🚀 Checklist de Démarrage Rapide
 
-### Permissions des Fichiers
+- [ ] Installez l'application avec vos paramètres préférés
+- [ ] Notez vos identifiants SFTP depuis l'URL de l'application
+- [ ] Connectez-vous via SFTP et téléchargez vos fichiers
+- [ ] Testez votre site web
+- [ ] Personnalisez les pages d'erreur (optionnel)
+- [ ] Configurez le mode de routage si nécessaire
 
-- Fichiers web : 644 (lisibles par le serveur web)
-- Répertoires : 755 (exécutables par le serveur web)
-- Fichiers sensibles : 600 (propriétaire uniquement)
+## 📚 Besoin d'Aide ?
 
-### Ressources Protégées
-
-L'application protège automatiquement :
-- Fichiers de configuration (`.env`, `.json`, `.ini`, `.tpl`)
-- Répertoires cachés (sauf `.well-known/`)
-- Fichiers système en dehors du répertoire web
-
-### Sécurité SFTP
-
-- Utilisez des mots de passe forts
-- Considérez l'authentification par clé
-- Surveillez régulièrement les logs d'accès
-- Désactivez SFTP si non nécessaire
-
-## Dépannage
-
-### Problèmes Courants
-
-1. **403 Interdit** : Vérifiez les permissions et la propriété des fichiers
-2. **404 Non trouvé** : Vérifiez les chemins de fichiers et la configuration du mode NGINX
-3. **Échec de Connexion SFTP** : Confirmez les identifiants et le statut du service SSH
-4. **Erreurs PHP** : Vérifiez la compatibilité de version PHP et la configuration
-
-### Logs
-
-- **NGINX** : `/var/log/nginx/error.log`
-- **PHP-FPM** : `/var/log/php__VERSION__-fpm.log`
-- **Application** : Consultez le panneau d'administration YunoHost pour les logs spécifiques à l'app
-
-### Support
-
-Pour une aide supplémentaire :
-- Consultez la documentation YunoHost
-- Examinez les logs de l'application
-- Consultez le panneau de configuration
-- Vérifiez les paramètres du mode NGINX
+- **Communauté YunoHost** : [community.yunohost.org](https://community.yunohost.org)
+- **Documentation** : Consultez la description de l'application pour l'utilisation de base
+- **Modes de Routage** : Consultez la documentation des tests pour la configuration avancée

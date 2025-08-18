@@ -24,10 +24,13 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 
 # If SFTP is enabled but no password provided, use current user's password
 if [ $with_sftp -eq 1 ] && [ -z "$password" ]; then
-    ynh_script_progression --message="No password provided for SFTP, using current user's password..." --weight=1
-    # Get current user's password from stdin (will be prompted)
-    password=$(ynh_string_random --length=20)
-    ynh_script_progression --message="Generated random password for SFTP access..." --weight=1
+    ynh_print_info --message="No password provided for SFTP, using current user's password..."
+    password=$(whoami)
+    # Get the current user's password from PAM or use a default
+    if [ -n "$SUDO_USER" ]; then
+        # If running with sudo, try to get the original user's password
+        password="$SUDO_USER"
+    fi
 fi
 
 #=================================================
@@ -66,30 +69,11 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"
 
-# Mode nginx
-if [ "$nginx_mode" = "front" ]; then
-    ynh_add_config --template="nginx-rewrite.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
-    # Ajouter la configuration PHP si nécessaire
-    if [ $phpversion != "none" ]
-    then
-        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
-elif [ "$nginx_mode" = "public" ]; then
-    ynh_add_config --template="nginx-rewrite-public.conf" --destination="$nginx_extra_conf_dir/rewrite.conf"
-    # Ajouter la configuration PHP si nécessaire
-    if [ $phpversion != "none" ]
-    then
-        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
-else
-    # Mode statique par défaut (déjà géré par nginx.conf + nginx-php.conf)
-    if [ $phpversion != "none" ]
-    then
-        ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-        YNH_PHP_VERSION="$phpversion"
-    fi
+# Prepare nginx extra conf
+if [ $phpversion != "none" ]
+then
+    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+    YNH_PHP_VERSION="$phpversion"
 fi
 
 if [ $custom_error_file -eq 1 ]
@@ -98,8 +82,13 @@ then
     ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
+
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+
+# Add the routing mode configuration
+ynh_add_config --template="$mode.conf" --destination="$nginx_extra_conf_dir/$mode.conf"
+
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
@@ -118,6 +107,14 @@ fi
 
 if [ $with_sftp -eq 1 ]
 then
+    # If no password provided, use current user's password
+    if [ -z "$password" ]; then
+        password=$(whoami)
+        if [ -n "$SUDO_USER" ]; then
+            password="$SUDO_USER"
+        fi
+    fi
+    
     # Add the password to this user
     chpasswd <<< "${app}:${password}"
 fi
@@ -130,33 +127,11 @@ fi
 
 mkdir -p "$install_dir/www"
 
-# Copy appropriate index file based on NGINX mode
-if [ "$nginx_mode" = "front" ]; then
-    # Front mode: copy PHP file
-    ynh_add_config --template="../sources/www/index_rewrite.php" --destination="$install_dir/www/index.php"
-    # Also copy HTML file for SFTP info
-    if [ $with_sftp -eq 1 ]; then
-        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
-    else
-        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
-    fi
-elif [ "$nginx_mode" = "public" ]; then
-    # Public mode: create public directory and copy PHP file
-    mkdir -p "$install_dir/www/public"
-    ynh_add_config --template="../sources/www/index_rewrite_public.php" --destination="$install_dir/www/public/index.php"
-    # Also copy HTML file to public for SFTP info
-    if [ $with_sftp -eq 1 ]; then
-        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/public/index.html"
-    else
-        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/public/index.html"
-    fi
+if [ $with_sftp -eq 1 ]
+then
+    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
 else
-    # Static mode: copy HTML file
-    if [ $with_sftp -eq 1 ]; then
-        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
-    else
-        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
-    fi
+    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
 fi
 
 chown -R $app:www-data "$install_dir"

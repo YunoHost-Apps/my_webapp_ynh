@@ -16,10 +16,8 @@ license = "GPL-3.0-only"
 yunohost = ">= 11.2.4"
 architectures = "all"
 multi_instance = true
-
 ldap = "not_relevant"
 sso = "not_relevant"
-
 disk = "50M"
 ram.build = "50M"
 ram.runtime = "50M"
@@ -52,15 +50,8 @@ ram.runtime = "50M"
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
-    choices = ["none", "8.1", "8.2", "8.3", "8.4"]
+    choices = ["none", "8.0", "8.1", "8.2", "8.3", "8.4"]
     default = "8.4"
-
-    [install.nginx_mode]
-    ask.en = "Choose NGINX mode"
-    ask.fr = "Choisissez le mode NGINX"
-    type = "select"
-    choices = ["static", "front", "public"]
-    default = "static"
 
     [install.database]
     ask.en = "Do you need a database?"
@@ -69,13 +60,21 @@ ram.runtime = "50M"
     choices = [ "none", "mysql", "postgresql" ]
     default = "none"
 
+    [install.mode]
+    ask.en = "Choose the routing mode for your application"
+    ask.fr = "Choisissez le mode de routage pour votre application"
+    type = "select"
+    choices = ["static", "front", "public"]
+    default = "static"
+    help.en = "static: serves static files and falls back to index.php, front: direct routing to index.php, public: serves from public directory"
+    help.fr = "static: sert les fichiers statiques et bascule vers index.php, front: routage direct vers index.php, public: sert depuis le répertoire public"
+
     [install.custom_error_file]
     ask.en = "Activate the custom error file use"
     ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
     type = "boolean"
     default = false
-    help.en = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
-    help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
+    help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
 
 [resources]
     [resources.system_user]

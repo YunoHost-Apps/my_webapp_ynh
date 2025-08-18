@@ -1,176 +1,118 @@
-# My Webapp - Administration Guide 🛠️
+# 🛠️ Administration Guide - My Webapp
 
-Complete guide for managing your My Webapp installation, including file management, configuration, and troubleshooting.
+This app provides a **blank web application skeleton** where you can add your own content (HTML, CSS, PHP, etc.) inside the `__INSTALL_DIR__/www/` directory. The easiest way to add content is using SFTP.
 
-## 📁 File Management
+## 🔐 SFTP Access
 
-### SFTP Access (Recommended)
+### Connection Details
 
-Get SFTP connection details by visiting your application URL after installation:
+Once installed, visit your app's URL to see the connection information:
 
 - **Host**: `__DOMAIN__`
 - **Username**: `__ID__`
-- **Password**: Password chosen during installation
-- **Port**: 22 (default SSH port)
+- **Password**: The password you set during installation
+- **Port**: 22 (standard SSH port)
 
-#### SFTP Clients
+> **💡 Password Tip**: If you didn't set a password during installation, the system automatically uses your current username as the password.
+
+### SFTP Clients
+
+You can connect using any SFTP client:
 
 - **Windows/Mac/Linux**: [FileZilla](https://filezilla-project.org/)
-- **Mac**: Built-in Finder (Go > Connect to Server)
-- **Linux**: File manager with SFTP support
+- **Mac**: Built-in Finder (⌘+K)
+- **Linux**: File manager or command line
+- **Command Line**: `sftp __ID__@__DOMAIN__`
+- **Default Path**: `/` (root of your domain)
 
-#### Password Management
+### Forgot Your Password?
 
-**Important**: If you don't provide a password during installation when SFTP is enabled, a secure random password will be automatically generated. This password is displayed during installation and stored in your application settings.
+No worries! You can change your SFTP password anytime:
 
-To change your SFTP password or check if SFTP is enabled:
-1. Go to YunoHost admin panel
-2. Navigate to `Apps > My webapp > Configuration`
-3. Modify SFTP settings as needed
+1. Go to **YunoHost Admin Panel**
+2. Navigate to **Apps > My Webapp > Configuration**
+3. Update your password in the SFTP section
+4. Make sure SFTP is enabled
 
-**Note**: The generated password is cryptographically secure and 20 characters long. You can change it anytime through the configuration panel.
+## 💻 Command Line Access
 
-### Command Line Access
+Starting from YunoHost v11.1.21, you can use:
 
-Starting from YunoHost v11.1.21, use:
 ```bash
 sudo yunohost app shell __APP__
 ```
 
-This gives you direct access as the application user. The `php` command will use the PHP version configured for your app.
+This gives you direct access as your app user, and the `php` command will use the PHP version installed for your app.
 
-## 📂 Content Management
+## 📁 Managing Your Files
 
 ### File Structure
 
-- **Static Mode**: Place files directly in `__INSTALL_DIR__/www/`
-- **Front Mode**: Place files in `__INSTALL_DIR__/www/` (routed through index.php)
-- **Public Mode**: Place public files in `__INSTALL_DIR__/www/public/`
+```
+__INSTALL_DIR__/www/
+├── index.html          # Your main page
+├── css/               # Stylesheets
+├── js/                # JavaScript files
+├── images/            # Images and media
+└── error/             # Custom error pages
+```
 
 ### Adding Content
 
-1. Connect via SFTP or command line
-2. Navigate to the appropriate directory based on your NGINX mode
-3. Upload or create your web application files
-4. Ensure proper file permissions (typically 644 for files, 755 for directories)
+1. **Connect via SFTP** using your credentials
+2. **Navigate to the `www` folder**
+3. **Upload your files** (HTML, CSS, JS, PHP, images, etc.)
+4. **Your site is live** immediately!
 
 ## ⚠️ Error Handling
 
 ### Custom Error Pages
 
-Support for custom error handling for HTTP errors 403 (Forbidden) and 404 (Not Found):
+Create custom error pages for better user experience:
 
-1. Create an `error` folder in `__INSTALL_DIR__/www/error/`
-2. Add your custom HTML files:
-   - `403.html` for access denied errors
-   - `404.html` for resource not found errors
+1. **Create an `error` folder** in `__INSTALL_DIR__/www/error/`
+2. **Add your custom pages**:
+   - `403.html` - Access denied
+   - `404.html` - Page not found
+3. **Enable the feature** in the app configuration panel
 
-### Error Page Features
+### Supported Error Codes
 
-- Fully customizable HTML content
-- Support for CSS styling and JavaScript
-- Responsive design recommendations
-- Integration with your application theme
+- **403**: Access Forbidden
+- **404**: Page Not Found
 
-## 🌐 NGINX Configuration
+## ⚙️ Advanced Configuration
 
-### Mode-Specific Configurations
+### Nginx Customization
 
-The application automatically generates NGINX configurations based on your selected mode:
+To customize the web server configuration:
 
-- **Static**: Standard configuration with optional PHP support
-- **Front**: Front controller pattern with enhanced security
-- **Public**: Front controller with public directory separation
+1. **Edit files** in `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/`
+2. **Use `.conf` extension** for your files
+3. **Test configuration**: `nginx -t`
+4. **Reload nginx**: `systemctl reload nginx`
 
-### Custom NGINX Modifications
+### Routing Modes
 
-To customize the NGINX configuration:
+Your app supports 3 routing modes:
 
-1. Edit files in `/etc/nginx/conf.d/__DOMAIN__.d/__ID__.d/`
-2. Ensure files have `.conf` extension
-3. Test configuration validity: `nginx -t`
-4. Reload NGINX: `systemctl reload nginx`
+- **Static**: Serves static files, falls back to index.php
+- **Front**: Direct routing to index.php (SPA mode)
+- **Public**: Serves from public directory
 
-**Note**: Avoid modifying the main configuration files. Use the app-specific directory for customizations.
+Change these in the configuration panel under "Routing Configuration".
 
-## 🔒 Security Considerations
+## 🚀 Quick Start Checklist
 
-### File Permissions
+- [ ] Install the app with your preferred settings
+- [ ] Note your SFTP credentials from the app URL
+- [ ] Connect via SFTP and upload your files
+- [ ] Test your website
+- [ ] Customize error pages (optional)
+- [ ] Configure routing mode if needed
 
-- Web files: 644 (readable by web server)
-- Directories: 755 (executable by web server)
-- Configuration files: 600 (owner only)
+## 📚 Need More Help?
 
-### Sensitive File Protection
-
-The application automatically protects sensitive files:
-- `.env`, `.json`, `.ini`, `.tpl` files are denied access
-- Hidden directories (except `.well-known/`) are protected
-- PHP files are processed securely through PHP-FPM
-
-## 🔧 Configuration Management
-
-### Changing NGINX Mode
-
-To switch between NGINX modes after installation:
-
-1. Go to YunoHost admin panel
-2. Navigate to `Apps > My webapp > Configuration`
-3. Select the desired NGINX mode
-4. Apply changes
-
-**Note**: Changing NGINX mode will update your configuration and may require file reorganization.
-
-### PHP Version Management
-
-To change PHP version:
-
-1. Go to YunoHost admin panel
-2. Navigate to `Apps > My webapp > Configuration`
-3. Select the desired PHP version
-4. Apply changes
-
-**Note**: PHP version changes require application restart and may affect existing PHP code.
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-**SFTP Connection Failed**
-- Verify the domain and username are correct
-- Check if SFTP is enabled in configuration
-- Ensure the password is correct or check for auto-generated password
-
-**PHP Not Working**
-- Verify PHP version is selected in configuration
-- Check NGINX configuration files
-- Ensure PHP-FPM service is running
-
-**File Upload Issues**
-- Check file permissions (644 for files, 755 for directories)
-- Verify disk space availability
-- Check SFTP user permissions
-
-### Logs and Debugging
-
-Access application logs:
-```bash
-sudo yunohost app log __APP__
-```
-
-Check NGINX error logs:
-```bash
-sudo tail -f /var/log/nginx/error.log
-```
-
-Check PHP-FPM logs:
-```bash
-sudo tail -f /var/log/php__VERSION__-fpm.log
-```
-
-## 📚 Additional Resources
-
-- [YunoHost Documentation](https://yunohost.org/docs)
-- [NGINX Documentation](https://nginx.org/en/docs/)
-- [PHP Documentation](https://www.php.net/docs.php)
-- [SFTP Best Practices](https://en.wikipedia.org/wiki/SSH_File_Transfer_Protocol)
+- **YunoHost Community**: [community.yunohost.org](https://community.yunohost.org)
+- **Documentation**: Check the app description for basic usage
+- **Routing Modes**: Review the test documentation for advanced configuration
