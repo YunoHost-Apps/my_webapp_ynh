@@ -158,6 +158,23 @@ ynh_app_config_apply() {
         # Store the mode setting
         ynh_app_setting_set --app=$app --key=mode --value="$mode"
         
+        # Update source files based on new mode
+        if [ "$mode" = "front" ]
+        then
+            ynh_add_config --template="../sources/www/index_front.php" --destination="$install_dir/www/index.php"
+        elif [ "$mode" = "public" ]
+        then
+            ynh_add_config --template="../sources/www/index_public.php" --destination="$install_dir/www/index.php"
+        else
+            # static mode
+            if [ $with_sftp -eq 1 ]
+            then
+                ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+            else
+                ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+            fi
+        fi
+        
         ynh_systemd_action --service_name=nginx --action=reload
     else
         # Ensure mode configuration exists even if not changed

@@ -136,11 +136,31 @@ fi
 
 mkdir -p "$install_dir/www"
 
+# Copy source files based on mode and SFTP settings
 if [ $with_sftp -eq 1 ]
 then
-    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    if [ "$mode" = "front" ]
+    then
+        ynh_add_config --template="../sources/www/index_front.php" --destination="$install_dir/www/index.php"
+    elif [ "$mode" = "public" ]
+    then
+        ynh_add_config --template="../sources/www/index_public.php" --destination="$install_dir/www/index.php"
+    else
+        # static mode
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    fi
 else
-    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    # No SFTP - use no_sftp version for static mode, or PHP versions for other modes
+    if [ "$mode" = "front" ]
+    then
+        ynh_add_config --template="../sources/www/index_front.php" --destination="$install_dir/www/index.php"
+    elif [ "$mode" = "public" ]
+    then
+        ynh_add_config --template="../sources/www/index_public.php" --destination="$install_dir/www/index.php"
+    else
+        # static mode without SFTP
+        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    fi
 fi
 
 chown -R $app:www-data "$install_dir"
