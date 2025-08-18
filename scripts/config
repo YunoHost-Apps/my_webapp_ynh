@@ -62,6 +62,11 @@ ynh_app_config_validate() {
     fi
 }
 
+# Get mode from arguments if not set
+if [ -z "${mode:-}" ]; then
+    mode=$YNH_APP_ARG_MODE
+fi
+
 ynh_app_config_apply() {
     _ynh_app_config_apply
 

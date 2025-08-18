@@ -4,9 +4,9 @@
 # COMMON VARIABLES
 #=================================================
 
-# Load mode from app settings if not set
+# Load mode from app settings if not set (fallback only)
 if [ -z "${mode:-}" ]; then
-    mode=$(ynh_app_setting_get --app=$app --key=mode 2>/dev/null || echo "static")
+    mode="static"
 fi
 
 #=================================================

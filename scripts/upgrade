@@ -67,6 +67,11 @@ if [ -z "${mode:-}" ]; then
     mode=$(ynh_app_setting_get --app=$app --key=mode 2>/dev/null || echo "static")
 fi
 
+# Get mode from arguments if not set
+if [ -z "${mode:-}" ]; then
+    mode=$YNH_APP_ARG_MODE
+fi
+
 # Delete old user
 if [ -n "$(ynh_app_setting_get --app=$app --key=user)" ]
 then

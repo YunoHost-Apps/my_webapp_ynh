@@ -15,6 +15,7 @@ source /usr/share/yunohost/helpers
 
 password=$YNH_APP_ARG_PASSWORD
 app_nb=$YNH_APP_INSTANCE_NUMBER
+mode=$YNH_APP_ARG_MODE
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
 #=================================================
