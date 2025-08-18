@@ -4,6 +4,11 @@
 # COMMON VARIABLES
 #=================================================
 
+# Load mode from app settings if not set
+if [ -z "${mode:-}" ]; then
+    mode=$(ynh_app_setting_get --app=$app --key=mode 2>/dev/null || echo "static")
+fi
+
 #=================================================
 # EXPERIMENTAL HELPERS
 #=================================================

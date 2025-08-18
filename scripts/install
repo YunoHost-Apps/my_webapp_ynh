@@ -33,6 +33,11 @@ if [ $with_sftp -eq 1 ] && [ -z "$password" ]; then
     fi
 fi
 
+# Ensure mode has a default value
+if [ -z "${mode:-}" ]; then
+    mode="static"
+fi
+
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
@@ -88,6 +93,9 @@ ynh_add_nginx_config
 
 # Add the routing mode configuration
 ynh_add_config --template="$mode.conf" --destination="$nginx_extra_conf_dir/$mode.conf"
+
+# Store the mode setting
+ynh_app_setting_set --app=$app --key=mode --value="$mode"
 
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 

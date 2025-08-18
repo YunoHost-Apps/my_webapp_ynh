@@ -55,6 +55,11 @@ ynh_app_config_validate() {
             password="$SUDO_USER"
         fi
     fi
+
+    # Ensure mode has a default value
+    if [ -z "${mode:-}" ]; then
+        mode=$(ynh_app_setting_get --app=$app --key=mode 2>/dev/null || echo "static")
+    fi
 }
 
 ynh_app_config_apply() {
@@ -145,7 +150,16 @@ ynh_app_config_apply() {
         # Add new mode configuration
         ynh_add_config --template="$mode.conf" --destination="$nginx_extra_conf_dir/$mode.conf"
         
+        # Store the mode setting
+        ynh_app_setting_set --app=$app --key=mode --value="$mode"
+        
         ynh_systemd_action --service_name=nginx --action=reload
+    else
+        # Ensure mode configuration exists even if not changed
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+        if [ ! -f "$nginx_extra_conf_dir/$mode.conf" ]; then
+            ynh_add_config --template="$mode.conf" --destination="$nginx_extra_conf_dir/$mode.conf"
+        fi
     fi
 
     if [ "$phpversion" != "none" ]
