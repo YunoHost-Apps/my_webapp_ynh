@@ -106,7 +106,7 @@ else
     ynh_config_add --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
 fi
 
-#chown -R $app:www-data "$install_dir"
+chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
 chown root:root "$install_dir"
