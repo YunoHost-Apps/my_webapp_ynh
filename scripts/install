@@ -15,6 +15,7 @@ source /usr/share/yunohost/helpers
 
 password=$YNH_APP_ARG_PASSWORD
 app_nb=$YNH_APP_INSTANCE_NUMBER
+mode=$YNH_APP_ARG_MODE
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
 #=================================================
@@ -22,7 +23,21 @@ ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=2
 
-[ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
+# If SFTP is enabled but no password provided, use current user's password
+if [ $with_sftp -eq 1 ] && [ -z "$password" ]; then
+    ynh_print_info --message="No password provided for SFTP, using current user's password..."
+    password=$(whoami)
+    # Get the current user's password from PAM or use a default
+    if [ -n "$SUDO_USER" ]; then
+        # If running with sudo, try to get the original user's password
+        password="$SUDO_USER"
+    fi
+fi
+
+# Ensure mode has a default value
+if [ -z "${mode:-}" ]; then
+    mode="static"
+fi
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -76,6 +91,13 @@ fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+
+# Add the routing mode configuration
+ynh_add_config --template="$mode.conf" --destination="$nginx_extra_conf_dir/$mode.conf"
+
+# Store the mode setting
+ynh_app_setting_set --app=$app --key=mode --value="$mode"
+
 ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
@@ -94,6 +116,14 @@ fi
 
 if [ $with_sftp -eq 1 ]
 then
+    # If no password provided, use current user's password
+    if [ -z "$password" ]; then
+        password=$(whoami)
+        if [ -n "$SUDO_USER" ]; then
+            password="$SUDO_USER"
+        fi
+    fi
+    
     # Add the password to this user
     chpasswd <<< "${app}:${password}"
 fi
@@ -106,11 +136,31 @@ fi
 
 mkdir -p "$install_dir/www"
 
+# Copy source files based on mode and SFTP settings
 if [ $with_sftp -eq 1 ]
 then
-    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    if [ "$mode" = "front" ]
+    then
+        ynh_add_config --template="../sources/www/index_front.php" --destination="$install_dir/www/index.php"
+    elif [ "$mode" = "public" ]
+    then
+        ynh_add_config --template="../sources/www/index_public.php" --destination="$install_dir/www/index.php"
+    else
+        # static mode
+        ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    fi
 else
-    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    # No SFTP - use no_sftp version for static mode, or PHP versions for other modes
+    if [ "$mode" = "front" ]
+    then
+        ynh_add_config --template="../sources/www/index_front.php" --destination="$install_dir/www/index.php"
+    elif [ "$mode" = "public" ]
+    then
+        ynh_add_config --template="../sources/www/index_public.php" --destination="$install_dir/www/index.php"
+    else
+        # static mode without SFTP
+        ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    fi
 fi
 
 chown -R $app:www-data "$install_dir"

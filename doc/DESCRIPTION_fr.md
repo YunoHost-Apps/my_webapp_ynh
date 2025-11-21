@@ -1,11 +1,52 @@
-Cette application vous permet d'installer facilement une application vide, dans laquelle vous pouvez déployer votre propre site web "statique" (HTML/CSS/JS) ou PHP.
+# 🌐 My Webapp - Votre Application Web Personnalisée
 
-Les fichiers être déposé [via SFTP](https://yunohost.org/fr/filezilla) ou toute autre méthode de votre choix.
+Cette application vous permet d'installer facilement une **application web personnalisée** où vous pouvez déployer votre propre site web en utilisant des fichiers HTML, CSS, JavaScript ou PHP.
 
-Lors de l'installation, il est aussi possible d'initialiser une base de données MySQL ou PostgreSQL, qui sera sauvegardée et restaurée avec le reste de l'application. Les détails de connexion seront affichés après l'installation de l'application.
+## ✨ Fonctionnalités Principales
 
-La version de PHP-FPM peut aussi être choisie, parmi (aucune), `8.1`, `8.2`, `8.3` et `8.4`.
+- **Déploiement Facile** : Téléchargez vos fichiers via SFTP ou toute autre méthode
+- **Routage Flexible** : Choisissez entre 3 modes de routage (static, front, public)
+- **Support Base de Données** : Base de données MySQL ou PostgreSQL optionnelle avec sauvegarde automatique
+- **Support PHP** : Sélectionnez parmi les versions PHP 8.0 à 8.4, ou aucune
+- **Pages d'Erreur Personnalisées** : Créez des pages d'erreur 404 personnalisées
+- **Accès SFTP** : Transfert de fichiers sécurisé avec fallback automatique du mot de passe
 
-**Une fois installée, rendez-vous sur l'URL choisie pour connaître l'utilisateur, le domaine et le port que vous devrez utiliser pour l'accès SFTP.** Le mot de passe est celui que vous avez choisi lors de l'installation. Sous le répertoire Web, vous verrez un dossier `www` qui contient les fichiers publics servis par cette application. Vous pouvez mettre tous les fichiers de votre application Web personnalisée à l'intérieur.
+## 🚀 Pour Commencer
 
-L'application vous permet aussi de gérer - si vous activez l'option dans le panneau de configuration - la gestion des erreurs 404, il vous suffit de créer un dossier `error` dans le répertoire racine `www` et d'y placer vos fichiers d'erreur `html` 
+1. **Installez l'application** et choisissez vos préférences
+2. **Téléchargez vos fichiers** dans le dossier `www` via SFTP
+3. **Accédez à votre site** à l'URL choisie
+4. **Personnalisez** les pages d'erreur et les paramètres selon vos besoins
+
+## 📁 Structure des Fichiers
+
+```
+www/
+├── index.html          # Votre page principale
+├── css/               # Feuilles de style
+├── js/                # Fichiers JavaScript
+├── images/            # Images et médias
+└── error/             # Pages d'erreur personnalisées (optionnel)
+```
+
+## 🔐 Accès SFTP
+
+- **Nom d'utilisateur** : Même nom que votre application
+- **Mot de passe** : Celui que vous avez défini lors de l'installation
+- **Port** : Port SSH standard (généralement 22)
+- **Répertoire** : Dossier `www/` pour les fichiers publics
+
+> **💡 Astuce** : Si vous ne définissez pas de mot de passe lors de l'installation, le système utilisera automatiquement votre nom d'utilisateur actuel comme mot de passe pour plus de commodité.
+
+## 🎨 Options de Personnalisation
+
+- **Mode de Routage** : Choisissez comment les URLs sont gérées
+- **Version PHP** : Sélectionnez la version PHP qui correspond à vos besoins
+- **Base de Données** : Ajoutez une base de données pour du contenu dynamique
+- **Pages d'Erreur** : Créez des pages d'erreur 404 et d'erreur personnalisées
+
+## 📚 Besoin d'Aide ?
+
+- Consultez la documentation d'administration pour la configuration détaillée
+- Visitez la communauté YunoHost pour le support
+- Consultez la documentation des modes de routage pour une utilisation avancée 

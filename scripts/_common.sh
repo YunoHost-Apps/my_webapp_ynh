@@ -4,6 +4,11 @@
 # COMMON VARIABLES
 #=================================================
 
+# Load mode from app settings if not set (fallback only)
+if [ -z "${mode:-}" ]; then
+    mode="static"
+fi
+
 #=================================================
 # EXPERIMENTAL HELPERS
 #=================================================

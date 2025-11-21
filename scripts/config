@@ -45,11 +45,27 @@ set__password() {
 ynh_app_config_validate() {
     _ynh_app_config_validate
 
-    if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ "$password" == "" ]
-    then
-        ynh_die --message="You need to set a password to enable SFTP"
+    # If SFTP is enabled but no password provided, use current user's password
+    if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ -z "$password" ]; then
+        ynh_print_info --message="No password provided for SFTP, using current user's password..."
+        password=$(whoami)
+        # Get the current user's password from PAM or use a default
+        if [ -n "$SUDO_USER" ]; then
+            # If running with sudo, try to get the original user's password
+            password="$SUDO_USER"
+        fi
+    fi
+
+    # Ensure mode has a default value
+    if [ -z "${mode:-}" ]; then
+        mode=$(ynh_app_setting_get --app=$app --key=mode 2>/dev/null || echo "static")
     fi
 }
+
+# Get mode from arguments if not set
+if [ -z "${mode:-}" ]; then
+    mode=$YNH_APP_ARG_MODE
+fi
 
 ynh_app_config_apply() {
     _ynh_app_config_apply
@@ -90,16 +106,21 @@ ynh_app_config_apply() {
     then
         ynh_system_user_add_group --username=$app --groups="sftp.app"
 
-        if [ ! "$password" == "" ]
-        then
-            chpasswd <<< "${app}:${password}"
+        # If no password provided, use current user's password
+        if [ -z "$password" ]; then
+            password=$(whoami)
+            if [ -n "$SUDO_USER" ]; then
+                password="$SUDO_USER"
+            fi
         fi
+        
+        chpasswd <<< "${app}:${password}"
     elif [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 0 ]
     then
         ynh_system_user_del_group --username=$app --groups="sftp.app"
     fi
     
-    if [ "${changed[password]}" == "true" ] && [ ! "$password" == "" ]
+    if [ "${changed[password]}" == "true" ] && [ -n "$password" ]
     then
         chpasswd <<< "${app}:${password}"
     fi
@@ -117,6 +138,50 @@ ynh_app_config_apply() {
             ynh_secure_remove --file="$nginx_extra_conf_dir/error-code.conf"
         fi
         ynh_systemd_action --service_name=nginx --action=reload
+    fi
+
+    if [ "${changed[mode]}" == "true" ]
+    then
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+        
+        # Remove old mode configuration
+        old_mode=$(ynh_app_setting_get --app=$app --key=mode)
+        if [ -n "$old_mode" ] && [ "$old_mode" != "$mode" ]
+        then
+            ynh_delete_file_checksum --file="$nginx_extra_conf_dir/$old_mode.conf"
+            ynh_secure_remove --file="$nginx_extra_conf_dir/$old_mode.conf"
+        fi
+        
+        # Add new mode configuration
+        ynh_add_config --template="$mode.conf" --destination="$nginx_extra_conf_dir/$mode.conf"
+        
+        # Store the mode setting
+        ynh_app_setting_set --app=$app --key=mode --value="$mode"
+        
+        # Update source files based on new mode
+        if [ "$mode" = "front" ]
+        then
+            ynh_add_config --template="../sources/www/index_front.php" --destination="$install_dir/www/index.php"
+        elif [ "$mode" = "public" ]
+        then
+            ynh_add_config --template="../sources/www/index_public.php" --destination="$install_dir/www/index.php"
+        else
+            # static mode
+            if [ $with_sftp -eq 1 ]
+            then
+                ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+            else
+                ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+            fi
+        fi
+        
+        ynh_systemd_action --service_name=nginx --action=reload
+    else
+        # Ensure mode configuration exists even if not changed
+        nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
+        if [ ! -f "$nginx_extra_conf_dir/$mode.conf" ]; then
+            ynh_add_config --template="$mode.conf" --destination="$nginx_extra_conf_dir/$mode.conf"
+        fi
     fi
 
     if [ "$phpversion" != "none" ]

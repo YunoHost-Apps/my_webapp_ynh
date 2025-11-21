@@ -1,9 +1,13 @@
+<?php
+// Get current timestamp for cache busting
+$timestamp = time();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Webapp - Welcome</title>
+    <title>My Webapp - Front Mode</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -14,7 +18,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -35,7 +39,7 @@
 
         .logo {
             font-size: 3rem;
-            color: #667eea;
+            color: #4facfe;
             margin-bottom: 20px;
         }
 
@@ -53,6 +57,16 @@
             line-height: 1.6;
         }
 
+        .mode-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -61,7 +75,7 @@
         }
 
         .feature {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
             border-radius: 15px;
@@ -137,7 +151,7 @@
 
         .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
             padding: 15px 30px;
             text-decoration: none;
@@ -146,17 +160,27 @@
             font-size: 1.1rem;
             transition: all 0.3s ease;
             margin: 20px 10px;
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
         }
 
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 15px 30px rgba(79, 172, 254, 0.4);
         }
 
         .footer {
             margin-top: 30px;
             color: #666;
+            font-size: 0.9rem;
+        }
+
+        .php-info {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
             font-size: 0.9rem;
         }
 
@@ -178,29 +202,41 @@
 <body>
     <div class="container">
         <div class="logo">
-            <i class="fas fa-globe"></i>
+            <i class="fas fa-route"></i>
+        </div>
+        
+        <div class="mode-badge">
+            <i class="fas fa-arrow-right"></i> Front Mode - SPA Routing
         </div>
         
         <h1>Welcome to My Webapp!</h1>
         <p class="subtitle">
-            Your custom web application is ready. Start building something amazing!
+            Your custom web application is ready with <strong>Front Mode</strong> routing. 
+            All routes will be handled by this PHP file for SPA-like behavior.
         </p>
 
+        <div class="php-info">
+            <i class="fas fa-code"></i> <strong>PHP Info:</strong> 
+            Version <?php echo phpversion(); ?> | 
+            Server: <?php echo $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown'; ?> | 
+            Time: <?php echo date('Y-m-d H:i:s'); ?>
+        </div>
+
         <div class="features">
+            <div class="feature">
+                <i class="fas fa-route"></i>
+                <h3>Front Mode</h3>
+                <p>All routes handled by PHP</p>
+            </div>
             <div class="feature">
                 <i class="fas fa-rocket"></i>
                 <h3>Fast & Modern</h3>
                 <p>Built with the latest web technologies</p>
             </div>
             <div class="feature">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Secure SFTP</h3>
-                <p>Safe file transfer access</p>
-            </div>
-            <div class="feature">
                 <i class="fas fa-code"></i>
-                <h3>Flexible</h3>
-                <p>Support for HTML, CSS, JS & PHP</p>
+                <h3>PHP Ready</h3>
+                <p>Full PHP support enabled</p>
             </div>
         </div>
 
@@ -213,12 +249,12 @@
         </div>
 
         <div class="info-box">
-            <h3><i class="fas fa-info-circle"></i> Getting Started</h3>
+            <h3><i class="fas fa-info-circle"></i> Front Mode Features</h3>
             <ul>
-                <li>Connect via SFTP to upload your files</li>
-                <li>Place your content in the www/ directory</li>
-                <li>Customize error pages and routing modes</li>
-                <li>Configure PHP version and database if needed</li>
+                <li>All URLs route to this PHP file</li>
+                <li>Perfect for Single Page Applications</li>
+                <li>Dynamic content generation with PHP</li>
+                <li>Easy routing management</li>
             </ul>
         </div>
 
@@ -232,7 +268,7 @@
         </div>
 
         <div class="footer">
-            <p><i class="fas fa-heart"></i> Powered by YunoHost</p>
+            <p><i class="fas fa-heart"></i> Powered by YunoHost | <i class="fas fa-php"></i> PHP Mode</p>
         </div>
     </div>
 

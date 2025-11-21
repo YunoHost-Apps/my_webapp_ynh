@@ -30,7 +30,7 @@ ram.runtime = "50M"
 
     [install.path]
     type = "path"
-    default = "/site"
+    default = "/"
 
     [install.with_sftp]
     ask.en = "Do you need a SFTP access?"
@@ -61,6 +61,15 @@ ram.runtime = "50M"
     type = "select"
     choices = [ "none", "mysql", "postgresql" ]
     default = "none"
+
+    [install.mode]
+    ask.en = "Choose the routing mode for your application"
+    ask.fr = "Choisissez le mode de routage pour votre application"
+    type = "select"
+    choices = ["static", "front", "public"]
+    default = "static"
+    help.en = "static: serves static files and falls back to index.php, front: direct routing to index.php, public: serves from public directory"
+    help.fr = "static: sert les fichiers statiques et bascule vers index.php, front: routage direct vers index.php, public: sert depuis le répertoire public"
 
     [install.custom_error_file]
     ask.en = "Activate the custom error file use"
