@@ -109,10 +109,10 @@ fi
 #chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-#chown root:root "$install_dir"
+chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
-#chmod 750 "$install_dir"
+chmod 750 "$install_dir"
 
 #=================================================
 # PHP-FPM CONFIGURATION
