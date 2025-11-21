@@ -1,4 +1,4 @@
-This app is simply a blank web app skeleton : you are expected to add you own content (HTML, CSS, PHP, ...) inside `__INSTALL_DIR__/www/`. One way to do so is by using SFTP.
+This app is simply a blank web app skeleton : you are expected to add you own content (HTML, CSS, PHP...) inside `__INSTALL_DIR__/www/`. One way to do so is by using SFTP.
 
 ### Login using SFTP
 
