@@ -16,8 +16,10 @@ license = "GPL-3.0-only"
 yunohost = ">= 11.2.4"
 architectures = "all"
 multi_instance = true
+
 ldap = "not_relevant"
 sso = "not_relevant"
+
 disk = "50M"
 ram.build = "50M"
 ram.runtime = "50M"
@@ -50,8 +52,8 @@ ram.runtime = "50M"
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
-    choices = ["none", "8.0", "8.1", "8.2", "8.3", "8.4"]
-    default = "8.4"
+    choices = ["none", "8.1", "8.2", "8.3", "8.4"]
+    default = "none"
 
     [install.database]
     ask.en = "Do you need a database?"
@@ -74,7 +76,8 @@ ram.runtime = "50M"
     ask.fr = "Activer l'utilisation du fichier d'erreur personnalisé"
     type = "boolean"
     default = false
-    help = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www/error`."
+    help.en = "Once custom error enabled, you can add/create a custom `404.html` file in a directory `www\\error`."
+    help.fr = "Une fois l'erreur personnalisée activée, vous pouvez ajouter/créer un fichier `404.html` personnalisé dans un répertoire `www\\error`."
 
 [resources]
     [resources.system_user]

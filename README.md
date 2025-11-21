@@ -10,7 +10,7 @@ It shall NOT be edited by hand.
 
 Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files. **Now supports 3 NGINX installation modes: Static, Front, and Public for modern web applications.**
 
-[![Version: 1.0~ynh21](https://img.shields.io/badge/Version-1.0~ynh21-rgba(0,150,0,1)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
+[![Version: 1.0~ynh21](https://img.shields.io/badge/Version-1.0~ynh21-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
 
 <div align="center">
 <a href="https://apps.yunohost.org/app/my_webapp"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
@@ -20,8 +20,6 @@ Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files. *
 ## 📦 Developer info
 
 [![Automatic tests level](https://apps.yunohost.org/badge/cilevel/my_webapp)](https://ci-apps.yunohost.org/ci/apps/my_webapp/)
-
-🛠️ Upstream My Webapp repository: <>
 
 Pull request are welcome and should target the [`testing` branch](https://github.com/YunoHost-Apps/my_webapp_ynh/tree/testing).
 
