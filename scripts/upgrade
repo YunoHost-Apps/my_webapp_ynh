@@ -23,18 +23,11 @@ if [ -z "${database:-}" ]; then
 fi
 
 # If admin_mail_html doesn't exist, create it
-# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=admin_mail_html --value=1
-if [ -z "${admin_mail_html:-}" ]; then
-	admin_mail_html=1
-		ynh_app_setting_set --key=admin_mail_html --value=$admin_mail_html
-fi
+ynh_app_setting_set_default --key=admin_mail_html --value=1
 
 # If with_sftp doesn't exist, create it
-# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=with_sftp --value=1
-if [ -z "${with_sftp:-}" ]; then
-	with_sftp=1
-	ynh_app_setting_set --key=with_sftp --value=$with_sftp
-fi
+ynh_app_setting_set_default --key=with_sftp --value=1
+
 
 # If php_version doesn't exist, create it. We assume it is the default system one.
 if [ -z "$php_version" ]; then
@@ -43,11 +36,7 @@ if [ -z "$php_version" ]; then
 fi
 
 # If custom_error_file doesn't exist, create it.
-# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=custom_error_file --value=0
-if [ -z "${custom_error_file:-}" ]; then
-	custom_error_file=0
-	ynh_app_setting_set --key=custom_error_file --value=$custom_error_file
-fi
+ynh_app_setting_set_default --key=custom_error_file --value=0
 
 # Delete old user
 if [ -n "$(ynh_app_setting_get --key=user)" ]
@@ -133,13 +122,14 @@ fi
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:www-data "$install_dir"
+chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown root:root "$install_dir"
+chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
+chmod 750 "$install_dir"
+
 #=================================================
 # DEACTIVE MAINTENANCE MODE
 #=================================================

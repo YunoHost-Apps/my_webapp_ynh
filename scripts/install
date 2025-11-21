@@ -85,7 +85,7 @@ else
     groups=""
 fi
 
-    ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$groups"
+ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$groups"
 
 if [ $with_sftp -eq 1 ]
 then

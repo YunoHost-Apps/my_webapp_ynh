@@ -22,10 +22,10 @@ if [ $database != "none" ]; then
     db_pwd=$(ynh_app_setting_get --key=db_pwd)
 
     if [ $database == "mysql" ]; then
-        # FIXMEhelpers2.1 ynh_mysql_create_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+        ynh_mysql_create_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
         ynh_mysql_db_shell < ./db.sql
     elif [ $database == "postgresql" ]; then
-        # FIXMEhelpers2.1 ynh_psql_create_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+        ynh_psql_create_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
         ynh_psql_db_shell < ./db.sql
     fi
 fi
@@ -58,13 +58,14 @@ ynh_script_progression "Restoring the app main directory..."
 ynh_restore "$install_dir"
 
 # Restore permissions on app files
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:www-data "$install_dir"
+chown -R $app:www-data "$install_dir"
 # Home directory of the user needs to be owned by root to allow
 # SFTP connections
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown root:root "$install_dir"
+chown root:root "$install_dir"
 setfacl -m g:$app:r-x "$install_dir"
 setfacl -m g:www-data:r-x "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
+chmod 750 "$install_dir"
+
 #=================================================
 # RESTORE THE PHP-FPM CONFIGURATION
 #=================================================
