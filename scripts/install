@@ -1,13 +1,9 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
+
+ynh_app_setting_set --key=php_upload_max_filesize --value=500M
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
@@ -20,68 +16,67 @@ ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_script_progression --message="Validating installation parameters..." --weight=2
+ynh_script_progression "Validating installation parameters..."
 
-[ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die --message="You need to set a password to enable SFTP"
+[ $with_sftp -eq 0 ] || [ "$password" != "" ] || ynh_die "You need to set a password to enable SFTP"
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..." --weight=1
+ynh_script_progression "Storing installation settings..."
 
-ynh_app_setting_set --app=$app --key=password --value=$password
+ynh_app_setting_set --key=password --value=$password
 
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
 
 if [ $database != "none" ]; then
-    ynh_script_progression --message="Creating a database..." --weight=2
+    ynh_script_progression "Creating a database..."
 
     db_name=$(ynh_sanitize_dbid --db_name=$app)
     db_user=$db_name
     db_pwd=$(ynh_string_random --length=30)
-    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-    ynh_app_setting_set --app=$app --key=db_user --value=$db_user
-    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+    ynh_app_setting_set --key=db_name --value=$db_name
+    ynh_app_setting_set --key=db_user --value=$db_user
+    ynh_app_setting_set --key=db_pwd --value=$db_pwd
 
     if [ $database == "mysql" ]; then
-        ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+        ynh_mysql_create_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
     elif [ $database == "postgresql" ]; then
-        ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+        ynh_psql_create_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
     fi
 fi
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --weight=2
+ynh_script_progression "Configuring NGINX web server..."
 
 nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
 mkdir -p "$nginx_extra_conf_dir"
 
 # Prepare nginx extra conf
-if [ $phpversion != "none" ]
+if [ $php_version != "none" ]
 then
-    ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-    YNH_PHP_VERSION="$phpversion"
+    ynh_config_add --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+    YNH_PHP_VERSION="$php_version"
 fi
 
 if [ $custom_error_file -eq 1 ]
 then
     # Add the custom error build with the application
-    ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
+    ynh_config_add --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
 fi
 
-
 # Create a dedicated NGINX config
-ynh_add_nginx_config
-ynh_add_config --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
+ynh_config_add_nginx
+ynh_config_add --template="example-custom-nginx-config.conf" --destination="$nginx_extra_conf_dir/sample.conf"
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..."
+ynh_script_progression "Configuring system user..."
 
 if [ $with_sftp -eq 1 ]
 then
@@ -90,7 +85,7 @@ else
     groups=""
 fi
 
-    ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$groups"
+ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$groups"
 
 if [ $with_sftp -eq 1 ]
 then
@@ -99,8 +94,6 @@ then
 fi
 
 #=================================================
-# SPECIFIC SETUP
-#=================================================
 # MODIFY A CONFIG FILE
 #=================================================
 
@@ -108,9 +101,9 @@ mkdir -p "$install_dir/www"
 
 if [ $with_sftp -eq 1 ]
 then
-    ynh_add_config --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
+    ynh_config_add --template="../sources/www/index.html" --destination="$install_dir/www/index.html"
 else
-    ynh_add_config --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
+    ynh_config_add --template="../sources/www/index_no_sftp.html" --destination="$install_dir/www/index.html"
 fi
 
 chown -R $app:www-data "$install_dir"
@@ -125,16 +118,16 @@ chmod 750 "$install_dir"
 # PHP-FPM CONFIGURATION
 #=================================================
 
-if [ $phpversion != "none" ]
+if [ $php_version != "none" ]
 then
-    ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
+    ynh_script_progression "Configuring PHP-FPM..."
 
     # Create a dedicatedPHP-FPM config
-    ynh_add_fpm_config
+    ynh_config_add_phpfpm
 fi
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --last
+ynh_script_progression "Installation of $app completed"

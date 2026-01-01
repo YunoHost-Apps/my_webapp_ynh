@@ -1,53 +1,45 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# STANDARD REMOVE
 #=================================================
 # REMOVE THE MYSQL DATABASE
 #=================================================
 
 if [ $database != "none" ]; then
-    ynh_script_progression --message="Removing the database..." --weight=2
+    ynh_script_progression "Removing the database..."
 
-    db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+    db_name=$(ynh_app_setting_get --key=db_name)
     db_user=$db_name
 
     # Remove a database if it exists, along with the associated user
     if [ $database == "mysql" ]; then
-        ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
+        ynh_mysql_drop_db && ynh_mysql_drop_user --db_user=$db_user --db_name=$db_name
     elif [ $database == "postgresql" ]; then
-        ynh_psql_remove_db --db_user=$db_user --db_name=$db_name
+        ynh_psql_drop_db && ynh_psql_drop_user --db_user=$db_user --db_name=$db_name
     fi
 fi
 
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing NGINX web server configuration..." --weight=2
+ynh_script_progression "Removing NGINX web server configuration..."
 
 # Remove the dedicated NGINX config
-ynh_remove_nginx_config
-ynh_secure_remove --file="/etc/nginx/conf.d/$domain.d/$app.d"
+ynh_config_remove_nginx
+ynh_safe_rm "/etc/nginx/conf.d/$domain.d/$app.d"
 
 #=================================================
 # REMOVE PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing PHP-FPM configuration..."
+ynh_script_progression "Removing PHP-FPM configuration..."
 
 # Remove the dedicated PHP-FPM config
-ynh_remove_fpm_config
+ynh_config_remove_phpfpm
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Removal of $app completed" --last
+ynh_script_progression "Removal of $app completed"
