@@ -5,7 +5,7 @@ It shall NOT be edited by hand.
 
 <h1>
   <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/my_webapp.png" width="32px" alt="Logo of My Webapp">
-  My Webapp, packaged for YunoHost
+  My Webapp,dfsfsdfsdfd packaged for YunoHost
 </h1>
 
 Custom Web app with SFTP access to serve static (HTML, CSS, JS) and PHP files
