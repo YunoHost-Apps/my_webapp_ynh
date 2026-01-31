@@ -2,9 +2,9 @@ This application allows you to easily install an "empty" web application, in whi
 
 Files can be uploaded [via SFTP](https://yunohost.org/en/filezilla) or any other method of your chosing.
 
-During installation, you can also choose to initialize a MySQL or PostgreSQL database, which will be backed up and restored just like the other files in your application. The connection details will be stored in the file `db_access.txt` located in the root directory of the app.
+During installation, you can also chose to initialize a MySQL or PostgreSQL database, which will be backed up and restored just like the other files in your application. The connection details will be displayed after installation of the app.
 
-PHP-FPM version can also be selected among (none), `7.4`, `8.0`, `8.1`, `8.2`, `8.3`, `8.4` and `8.5`.
+PHP-FPM version can also be selected among (none), `8.1`, `8.2`, `8.3`, `8.4` and `8.5`.
 
 **Once installed, go to the chosen URL to know the user, domain and port you will have to use for the SFTP access.** The password is the one specified during the installation. Under the app directory, you will see a `www` folder which contains the public files served by this app. You can put all the files of your custom web application inside.
 
