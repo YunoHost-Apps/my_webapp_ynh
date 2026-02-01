@@ -9,7 +9,6 @@ ynh_app_setting_set --key=php_upload_max_filesize --value=500M
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-password=$YNH_APP_ARG_PASSWORD
 app_nb=$YNH_APP_INSTANCE_NUMBER
 ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
 
