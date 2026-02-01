@@ -1,23 +1,17 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC STARTING
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
-ynh_abort_if_errors
+#REMOVEME? ynh_abort_if_errors
 
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
 
-install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path=$(ynh_app_setting_get --app=$app --key=path)
+install_dir=$(ynh_app_setting_get --key=install_dir)
+domain=$(ynh_app_setting_get --key=domain)
+path=$(ynh_app_setting_get --key=path)
 
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
@@ -34,12 +28,10 @@ path=$(ynh_app_setting_get --app=$app --key=path)
 set__password() {
     if [ ! "$password" == "" ]
     then
-        ynh_app_setting_set --app=$app --key=password --value="$password"
+        ynh_app_setting_set --key=password --value="$password"
     fi
 }
 
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 
 ynh_app_config_validate() {
@@ -47,43 +39,43 @@ ynh_app_config_validate() {
 
     if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ] && [ "$password" == "" ]
     then
-        ynh_die --message="You need to set a password to enable SFTP"
+        ynh_die "You need to set a password to enable SFTP"
     fi
 }
 
 ynh_app_config_apply() {
     _ynh_app_config_apply
 
-    if [ "${changed[phpversion]}" == "true" ]
+    if [ "${changed[php_version]}" == "true" ]
     then
-        if [ "${old[phpversion]}" != "none" ]
+        if [ "${old[php_version]}" != "none" ]
         then
-            ynh_app_setting_set --app=$app --key=phpversion --value="${old[phpversion]}"
-            ynh_remove_fpm_config
+            ynh_app_setting_set --key=php_version --value="${old[php_version]}"
+            ynh_config_remove_phpfpm
         fi
-        ynh_remove_app_dependencies
-        YNH_PHP_VERSION=$phpversion
-        # ^ ynh_add_config replaces __PHPVERSION__ by __PHP_YNH_VERSION__...
-        ynh_app_setting_set --app=$app --key=phpversion --value="$phpversion"
+        ynh_apt_remove_dependencies
+        YNH_PHP_VERSION=$php_version
+        # ^ ynh_config_add replaces __PHP_VERSION__ by __PHP_YNH_VERSION__...
+        ynh_app_setting_set --key=php_version --value="$php_version"
 
-        database=$(ynh_app_setting_get --app=$app --key=database)
+        database=$(ynh_app_setting_get --key=database)
         dependencies="$(ynh_read_manifest -k "resources.apt.packages")"
         dependencies_from_raw_bash=$(eval "$(ynh_read_manifest -k "resources.apt.packages_from_raw_bash")" | tr "\n" " ")
-        ynh_install_app_dependencies "$dependencies $dependencies_from_raw_bash"
+        ynh_apt_install_dependencies "$dependencies $dependencies_from_raw_bash"
 
         nginx_extra_conf_dir="/etc/nginx/conf.d/$domain.d/$app.d"
         mkdir -p "$nginx_extra_conf_dir"
-        if [ "$phpversion" == "none" ]
+        if [ "$php_version" == "none" ]
         then
-            ynh_delete_file_checksum --file="$nginx_extra_conf_dir/php.conf"
-            ynh_secure_remove --file="$nginx_extra_conf_dir/php.conf"
+            ynh_delete_file_checksum "$nginx_extra_conf_dir/php.conf"
+            ynh_safe_rm "$nginx_extra_conf_dir/php.conf"
         else
-            ynh_add_config --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
-            ynh_add_fpm_config --phpversion=$phpversion
-            # ^ the helper takes care of ynh_app_setting_set the phpversion
+            ynh_config_add --template="nginx-php.conf" --destination="$nginx_extra_conf_dir/php.conf"
+            ynh_config_add_phpfpm
+            # ^ the helper takes care of ynh_app_setting_set the php_version
         fi
 
-        ynh_add_nginx_config
+        ynh_config_add_nginx
     fi
 
     if [ "${changed[with_sftp]}" == "true" ] && [ $with_sftp -eq 1 ]
@@ -98,7 +90,7 @@ ynh_app_config_apply() {
     then
         ynh_system_user_del_group --username=$app --groups="sftp.app"
     fi
-    
+
     if [ "${changed[password]}" == "true" ] && [ ! "$password" == "" ]
     then
         chpasswd <<< "${app}:${password}"
@@ -111,17 +103,17 @@ ynh_app_config_apply() {
 
         if [ $custom_error_file -eq 1 ]
         then
-            ynh_add_config --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
+            ynh_config_add --template="nginx-code-error.conf" --destination="$nginx_extra_conf_dir/error-code.conf"
         elif [ $custom_error_file -eq 0 ]
         then
-            ynh_secure_remove --file="$nginx_extra_conf_dir/error-code.conf"
+            ynh_safe_rm "$nginx_extra_conf_dir/error-code.conf"
         fi
-        ynh_systemd_action --service_name=nginx --action=reload
+        ynh_systemctl --service=nginx --action=reload
     fi
 
-    if [ "$phpversion" != "none" ]
+    if [ "$php_version" != "none" ]
     then
-        ynh_add_fpm_config --phpversion=$phpversion
+        ynh_config_add_phpfpm
     fi
 }
 
