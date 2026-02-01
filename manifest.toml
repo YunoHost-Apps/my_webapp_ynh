@@ -13,7 +13,7 @@ maintainers = []
 license = "GPL-3.0-only"
 
 [integration]
-yunohost = ">= 11.2.4"
+yunohost = ">= 12.1.38"
 architectures = "all"
 multi_instance = true
 
