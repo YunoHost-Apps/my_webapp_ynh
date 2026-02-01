@@ -85,7 +85,7 @@ ynh_maintenance_mode_OFF () {
 
 ynh_system_user_add_group() {
     # Declare an array to define the options of this helper.
-    #REMOVEME? local legacy_args=uhs
+    local legacy_args=uhs
     local -A args_array=([u]=username= [g]=groups=)
     local username
     local groups
@@ -102,7 +102,7 @@ ynh_system_user_add_group() {
 
 ynh_system_user_del_group() {
     # Declare an array to define the options of this helper.
-    #REMOVEME? local legacy_args=uhs
+    local legacy_args=uhs
     local -A args_array=([u]=username= [g]=groups=)
     local username
     local groups
