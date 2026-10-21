@@ -14,6 +14,7 @@ license = "GPL-3.0-only"
 
 [integration]
 yunohost = ">= 12.1.40"
+helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
 
@@ -52,7 +53,7 @@ ram.runtime = "50M"
     ask.en = "Choose a PHP version you want to use for your app"
     ask.fr = "Choisissez une version PHP que vous souhaitez utiliser pour votre application"
     type = "select"
-    choices = ["none", "8.3", "8.4", "8.5"]
+    choices = ["none", "8.4", "8.5"]
     default = "none"
 
     [install.database]
@@ -74,6 +75,7 @@ ram.runtime = "50M"
     [resources.system_user]
 
     [resources.install_dir]
+    group = "www-data:r-x"
 
     [resources.permissions]
     main.url = "/"
