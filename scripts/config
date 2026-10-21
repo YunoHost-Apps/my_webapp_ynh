@@ -3,8 +3,6 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#REMOVEME? ynh_abort_if_errors
-
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
@@ -12,14 +10,6 @@ source /usr/share/yunohost/helpers
 install_dir=$(ynh_app_setting_get --key=install_dir)
 domain=$(ynh_app_setting_get --key=domain)
 path=$(ynh_app_setting_get --key=path)
-
-#=================================================
-# SPECIFIC GETTERS FOR TOML SHORT KEY
-#=================================================
-
-#=================================================
-# SPECIFIC VALIDATORS FOR TOML SHORT KEYS
-#=================================================
 
 #=================================================
 # SPECIFIC SETTERS FOR TOML SHORT KEYS
