@@ -1,4 +1,4 @@
-Cette app est uniquement un squelette : il vous appartient d'ajouter vos propre pages HTML, CSS, PHP, ... à l'intérieur de `__INSTALL_DIR__/www/`. Une manière de procéder est d'utiliser SFTP.
+Cette app est uniquement un squelette : il vous appartient d'ajouter vos propre pages HTML, CSS, PHP... à l'intérieur de `__INSTALL_DIR__/www/`. Une manière de procéder est d'utiliser SFTP.
 
 ### Connexion avec SFTP
 
